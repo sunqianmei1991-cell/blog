@@ -158,33 +158,6 @@
                 color: var(--text-primary);
                 background: rgba(212, 165, 116, 0.05);
             }
-            .claude-diagram {
-                background: white;
-                border: 1px solid var(--border);
-                border-radius: 12px;
-                padding: 2em;
-                margin: 2em 0;
-                font-family: 'JetBrains Mono', monospace;
-                font-size: 0.9rem;
-                line-height: 1.8;
-            }
-            .claude-box {
-                border: 1.5px solid var(--border);
-                border-radius: 8px;
-                padding: 1em 1.25em;
-                margin: 0.5em 0;
-                background: var(--bg-primary);
-            }
-            .claude-arrow {
-                text-align: center;
-                color: var(--accent);
-                font-size: 1.2rem;
-                margin: 0.25em 0;
-            }
-            .claude-label {
-                color: var(--accent);
-                font-weight: 500;
-            }
         }
     </style>
 </head>
@@ -213,7 +186,7 @@
                 <div>
                     <p class="text-[#D4A574] text-sm tracking-[0.2em] uppercase mb-4">产品知识</p>
                     <h1 class="font-display text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight mb-6">从 LLM 到 Agent：建立 AI Agent 认知框架</h1>
-                    <p class="text-lg text-[#666666] leading-relaxed mb-8">通过智能客服场景，系统梳理从 LLM 到 Agent 的完整技术演进路径，构建清晰的技术认知框架</p>
+                    <p class="text-lg text-[#666666] leading-relaxed mb-8">给 AI 初学者的系统性指南：用一个客服助手的故事，看懂从 LLM 到 Agent 的完整进化</p>
                     <div class="flex items-center gap-4 text-sm text-[#999999]">
                         <span>2026年2月2日</span>
                         <span class="w-1 h-1 rounded-full bg-[#D4A574]"></span>
@@ -234,12 +207,12 @@
                         <p class="text-xs text-[#999999] mb-3 uppercase tracking-wider">目录</p>
                         <nav class="toc">
                             <ul>
-                                <li><a href="#intro">引言</a></li>
-                                <li><a href="#llm">一、LLM 的局限性及增强方案</a></li>
-                                <li><a href="#agent">二、Agent 架构的核心组件</a></li>
-                                <li><a href="#levels">三、能力成熟度模型</a></li>
-                                <li><a href="#roadmap">四、产品演进路线图</a></li>
-                                <li><a href="#conclusion">结论</a></li>
+                                <li><a href="#intro">写在前面</a></li>
+                                <li><a href="#llm">一、只会说话的新员工</a></li>
+                                <li><a href="#agent">二、能真的帮你办事的员工</a></li>
+                                <li><a href="#levels">三、从新手到专家的能力分级</a></li>
+                                <li><a href="#roadmap">四、技术演进路径</a></li>
+                                <li><a href="#conclusion">写在最后</a></li>
                             </ul>
                         </nav>
                     </div>
@@ -247,411 +220,498 @@
 
                 <!-- Main Content -->
                 <div class="article-content max-w-2xl mx-auto lg:mx-0">
-                    <h2 id="intro">引言</h2>
+                    <h2 id="intro">写在前面</h2>
                     
-                    <p>对于刚接触 AI Agent 的产品经理而言，技术栈中的概念体系往往显得庞杂而模糊：LLM、Prompt Engineering、RAG、Agent、Context Management、Memory、Orchestration……这些术语各自指代什么？它们之间存在怎样的逻辑关联？</p>
+                    <p>如果你是刚接触 AI Agent 的产品经理，可能会被一堆术语搞得晕头转向：LLM、Prompt、RAG、Agent、上下文、记忆、编排……这些词到底是什么意思？它们之间又是什么关系？</p>
 
-                    <p>本文以<strong>智能客服系统</strong>为场景载体，从技术演进视角梳理从 LLM 到 Agent 的完整路径，帮助读者建立系统性的技术认知框架。</p>
+                    <p>这篇文章会用一个你熟悉的场景——<strong>智能客服助手</strong>——带你从零开始，看看 AI 是如何一步步从"只会聊天"进化到"真正能干活"的。</p>
 
                     <div class="callout">
                         <div class="callout-title">
                             <svg class="w-4 h-4 text-[#D4A574]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            阅读本文后，你将获得
+                            读完这篇文章，你会清楚地理解：
                         </div>
                         <ul style="margin-bottom: 0;">
-                            <li>LLM 与 Agent 的本质差异及技术边界</li>
-                            <li>Agent 系统的核心组件及其协作机制</li>
-                            <li>Agent 技术选型的决策框架</li>
-                            <li>Agent 在真实业务场景中的落地路径</li>
+                            <li>LLM 和 Agent 的本质区别</li>
+                            <li>Agent 的核心组成部分（大脑、双手、神经系统）</li>
+                            <li>什么时候该用 Agent，什么时候不该用</li>
+                            <li>Agent 在真实世界中如何运作</li>
                         </ul>
                     </div>
 
-                    <h2 id="llm">一、LLM 的局限性及增强方案</h2>
+                    <p>更重要的是，你会建立起一个清晰的认知框架，不再被各种新概念搞晕。</p>
 
-                    <h3>1.1 LLM 的技术边界</h3>
+                    <p>我们先从最简单的聊天机器人开始。</p>
 
-                    <p>LLM（Large Language Model）基于大规模语料预训练，具备强大的语言理解与生成能力。然而，当直接应用于企业级客服场景时，会暴露三个核心局限：</p>
+                    <h2 id="llm">一、只会说话的新员工（LLM）</h2>
 
-                    <ul>
-                        <li><strong>知识边界：</strong>训练数据存在时间截断，无法获取实时信息</li>
-                        <li><strong>领域适配：</strong>缺乏企业私有知识，回答偏离业务实际</li>
-                        <li><strong>上下文限制：</strong>多轮对话中容易丢失历史信息</li>
-                    </ul>
+                    <h3>1.1 什么是 LLM？</h3>
 
-                    <h3>1.2 Prompt Engineering：角色定义与行为约束</h3>
+                    <p>LLM（Large Language Model，大语言模型）——它就像一个读过海量书籍的聪明人，能理解你的问题，用自然语言回答你。</p>
 
-                    <p>Prompt Engineering 通过结构化指令为 LLM 设定角色边界与行为准则，是解决领域适配问题的首要手段。</p>
+                    <p>假设你是一家电商公司的产品经理，老板让你做一个智能客服。如果你直接接入了 LLM，那它会基于<strong>训练时学到的知识乱说</strong>，一会儿像百科，一会儿像网友。</p>
 
-                    <div class="code-block">
-                        <div class="code-header">
-                            <div class="code-dot bg-[#ff5f56]"></div>
-                            <div class="code-dot bg-[#ffbd2e]"></div>
-                            <div class="code-dot bg-[#27ca40]"></div>
-                            <span class="ml-2 text-xs text-[#6c7086]">system-prompt.txt</span>
-                        </div>
-                        <div class="code-body">
-                            <pre class="text-[#cdd6f4]"><code>[角色定义]
-你是某电商平台的智能客服助手，负责处理用户咨询、订单查询、售后申请等业务。
+                    <p>所以在它上岗之前，需要给它一个"岗位说明书"。</p>
 
-[知识边界]
-- 退货政策：7天无理由退货，商品需保持完好
-- 运费规则：订单满99元包邮
-- 会员权益：会员享受95折优惠
+                    <h3>1.2 Prompt Engineering</h3>
 
-[行为约束]
-1. 使用礼貌用语，称呼用户为"您"
-2. 对不确定信息明确告知"我需要查询确认"
-3. 复杂问题主动引导至人工客服
-4. 禁止编造不存在的产品信息或政策</code></pre>
-                        </div>
-                    </div>
+                    <p>直接接入 LLM 的客服系统，会像"一个没培训过的新员工"——读过很多书，但不知道你是谁、你的业务规则是什么。结果是回答风格飘忽不定，甚至可能给出不符合公司政策的建议。</p>
 
-                    <h3>1.3 RAG：外部知识检索增强</h3>
+                    <p>Prompt 的作用，就是给这位"新员工"一本详细的工作手册。</p>
 
-                    <p>RAG（Retrieval-Augmented Generation）通过向量检索将外部知识库与 LLM 结合，解决知识边界与实时性问题。</p>
+                    <p>通过角色定义、知识注入和行为约束，Prompt 将通用 LLM 转化为"领域专家"：角色定义让模型进入"客服模式"，明确"我是谁"；知识注入限定回答的知识边界，告诉它"我知道什么"；行为约束则规范回答风格，明确"我该怎么做"。</p>
 
-                    <div class="callout">
-                        <div class="callout-title">RAG 的技术价值</div>
-                        <ul style="margin-bottom: 0;">
-                            <li>知识库可动态扩展，无需重新训练模型</li>
-                            <li>文档更新即时生效，保证信息时效性</li>
-                            <li>回答可追溯至原始文档，降低幻觉风险</li>
-                            <li>实现成本显著低于模型微调</li>
-                        </ul>
-                    </div>
-
-                    <h3>1.4 Context Management：对话状态维护</h3>
-
-                    <p>Context Management 通过维护对话历史与关键状态，解决多轮对话中的信息丢失问题。</p>
-
-                    <div class="callout">
-                        <div class="callout-title">关键认知</div>
-                        <p style="margin-bottom: 0;">经过 Prompt Engineering、RAG 和 Context Management 三层增强，系统已具备"合格客服"的能力：理解业务语境、检索专业知识、维护对话连续性。但此时系统仍属于<strong>被动响应型</strong>，只能"回答问题"，无法"执行操作"。</p>
-                    </div>
-
-                    <p><strong>从 LLM 到 Agent 的分水岭，在于系统是否具备主动执行能力。</strong></p>
-
-                    <h2 id="agent">二、Agent 架构的核心组件</h2>
-
-                    <h3>2.1 Function Calling：工具调用机制</h3>
-
-                    <p>Function Calling 使 LLM 能够识别需要外部工具支持的场景，并生成结构化的工具调用请求。</p>
-
-                    <div class="code-block">
-                        <div class="code-header">
-                            <div class="code-dot bg-[#ff5f56]"></div>
-                            <div class="code-dot bg-[#ffbd2e]"></div>
-                            <div class="code-dot bg-[#27ca40]"></div>
-                            <span class="ml-2 text-xs text-[#6c7086]">tool-calling.json</span>
-                        </div>
-                        <div class="code-body">
-                            <pre class="text-[#cdd6f4]"><code>// 用户输入：帮我查一下订单 12345 的物流
-
-// LLM 判断需要调用查询工具
-{
-  "tool": "get_logistics",
-  "parameters": {
-    "order_id": "12345"
-  }
-}
-
-// 系统执行工具调用，返回结果
-{
-  "status": "shipped",
-  "carrier": "SF",
-  "tracking_no": "SF1234567890",
-  "eta": "2024-03-15"
-}
-
-// LLM 基于工具返回生成回复
-"您的订单已发货，顺丰快递单号 SF1234567890，预计 3月15日送达。"</code></pre>
-                        </div>
-                    </div>
+                    <p>实际效果对比：</p>
 
                     <table class="comparison-table">
                         <thead>
                             <tr>
                                 <th>维度</th>
-                                <th>LLM（增强后）</th>
-                                <th>Agent</th>
+                                <th>无 Prompt</th>
+                                <th>有 Prompt</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>交互模式</td>
-                                <td>被动响应</td>
-                                <td>主动执行</td>
-                            </tr>
-                                <td>能力边界</td>
-                                <td>文本生成</td>
-                                <td>文本生成 + 工具调用</td>
+                                <td>身份认知</td>
+                                <td>通用助手</td>
+                                <td>电商客服专员</td>
                             </tr>
                             <tr>
-                                <td>系统角色</td>
-                                <td>顾问（Advisor）</td>
-                                <td>执行者（Executor）</td>
+                                <td>知识边界</td>
+                                <td>训练数据截止点</td>
+                                <td>公司政策实时更新</td>
                             </tr>
                             <tr>
-                                <td>典型应用</td>
-                                <td>知识问答</td>
-                                <td>订单处理、退款申请</td>
+                                <td>回答风格</td>
+                                <td>随机多变</td>
+                                <td>统一规范</td>
+                            </tr>
+                            <tr>
+                                <td>风险控制</td>
+                                <td>可能违规回答</td>
+                                <td>明确约束边界</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h3>2.2 ReAct：推理-行动循环框架</h3>
-
-                    <p>ReAct（Reasoning + Acting）是 Agent 系统的核心编排模式，通过显式的推理-行动循环实现复杂任务处理。</p>
+                    <p>一个典型的电商客服 Prompt：</p>
 
                     <div class="code-block">
                         <div class="code-header">
                             <div class="code-dot bg-[#ff5f56]"></div>
                             <div class="code-dot bg-[#ffbd2e]"></div>
                             <div class="code-dot bg-[#27ca40]"></div>
-                            <span class="ml-2 text-xs text-[#6c7086]">react-loop.md</span>
+                            <span class="ml-2 text-xs text-[#6c7086]">prompt.txt</span>
                         </div>
                         <div class="code-body">
-                            <pre class="text-[#cdd6f4]"><code>ReAct 循环模式：
+                            <pre class="text-[#cdd6f4]"><code>你是 XX 电商的客服助手。
 
-1. Thought（推理）
-   分析当前状态，制定下一步行动计划
+【公司政策】
+- 退货政策: 7天无理由退货,需保持商品完好
+- 运费规则: 满99元包邮
+- 会员权益: 会员享受95折优惠
 
-2. Action（行动）
-   调用具体工具执行操作
+【回答规则】
+1. 态度友好,称呼用户为"亲"
+2. 不确定的信息不要编造,告诉用户"我帮您查一下"
+3. 复杂问题转人工客服
+4. 请用友好、专业的语气回答用户问题
 
-3. Observation（观察）
-   获取工具执行结果
-
-4. 循环
-   基于观察结果继续推理，直至任务完成</code></pre>
+用户问题: {用户问题}</code></pre>
                         </div>
                     </div>
 
-                    <p><strong>ReAct 的技术优势：</strong></p>
+                    <p>但 Prompt 也有明显边界。它通常只有几千字的长度限制，无法注入全部公司知识；知识变更需要手动修改，无法实时同步；更重要的是，Prompt 未覆盖的问题，模型仍可能一本正经地胡说八道——这就是 LLM 的<strong>幻觉（Hallucination）</strong>。</p>
+
+                    <p>换句话说，Prompt 解决了"角色适配"问题，让 LLM 知道"我是谁、我该怎么做"，但无法解决"我知道什么"的实时性问题。当公司产品线不断扩展、政策频繁更新时，靠 Prompt 注入知识的方式就显得力不从心了。</p>
+
+                    <h3>1.3 RAG</h3>
+
+                    <p>LLM 的知识是固定的，Prompt 又有长度限制，你不可能把所有公司信息都塞进去。而且公司的产品信息、订单数据每天都在变化，总不能每天改 Prompt 吧？</p>
+
+                    <p>RAG（Retrieval-Augmented Generation，检索增强生成）就像给 LLM 配了一个<strong>图书管理员</strong>。当用户提问时，系统先去公司的知识库里搜索相关信息，然后把搜到的内容和用户问题一起交给 LLM，让它基于这些实时信息来回答。</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot bg-[#ff5f56]"></div>
+                            <div class="code-dot bg-[#ffbd2e]"></div>
+                            <div class="code-dot bg-[#27ca40]"></div>
+                            <span class="ml-2 text-xs text-[#6c7086]">RAG Workflow</span>
+                        </div>
+                        <div class="code-body">
+                            <pre class="text-[#cdd6f4]"><code>1. 准备知识库
+   - 产品说明书
+   - 退货政策
+   - FAQ
+   - 用户手册
+
+2. 用户提问时:
+   用户: "iPhone 15 怎么退货?"
+   ↓
+   系统自动搜索知识库
+   ↓
+   找到相关文档: "iPhone 15 退货政策.pdf"
+   ↓
+   把文档内容和用户问题一起给 LLM
+   ↓
+   LLM 基于真实文档回答
+
+3. LLM: "iPhone 15 支持7天无理由退货……"</code></pre>
+                        </div>
+                    </div>
+
+                    <p><strong>RAG 的核心价值：</strong></p>
                     <ul>
-                        <li><strong>可解释性：</strong>每一步决策过程透明可追溯</li>
-                        <li><strong>灵活性：</strong>支持基于中间结果的动态调整</li>
-                        <li><strong>可调试性：</strong>故障定位可精确到具体步骤</li>
+                        <li>知识可以无限扩展</li>
+                        <li>更新文档就自动更新知识</li>
+                        <li>回答有据可查，不会乱编</li>
+                        <li>成本更低（不用重新训练模型）</li>
                     </ul>
 
-                    <h3>2.3 Memory：分层记忆机制</h3>
+                    <h3>1.4 Context</h3>
+
+                    <p>我们先不管这个术语，先看它解决了什么问题。</p>
+
+                    <p>没有 Context 管理时：</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot bg-[#ff5f56]"></div>
+                            <div class="code-dot bg-[#ffbd2e]"></div>
+                            <div class="code-dot bg-[#27ca40]"></div>
+                            <span class="ml-2 text-xs text-[#6c7086]">对话示例</span>
+                        </div>
+                        <div class="code-body">
+                            <pre class="text-[#cdd6f4]"><code>用户: "我想买 iPhone 15"
+机器人: "好的,iPhone 15 有三个版本……"
+
+用户: "最便宜的多少钱?"
+机器人: "请问您想了解哪个产品的价格?"
+(已经忘了刚才在聊 iPhone)</code></pre>
+                        </div>
+                    </div>
+
+                    <p>简单说，就是管理对话历史，让 LLM"记住"之前说了什么。就像给它一个记事本。</p>
+
+                    <p>有 Context 管理时：</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot bg-[#ff5f56]"></div>
+                            <div class="code-dot bg-[#ffbd2e]"></div>
+                            <div class="code-dot bg-[#27ca40]"></div>
+                            <span class="ml-2 text-xs text-[#6c7086]">有 Context 管理</span>
+                        </div>
+                        <div class="code-body">
+                            <pre class="text-[#cdd6f4]"><code>【对话历史】
+用户: "我想买 iPhone 15"
+机器人: "好的,iPhone 15 有三个版本……"
+
+用户: "最便宜的多少钱?"
+↓
+系统把对话历史一起给 LLM:
+  - 用户之前说想买 iPhone 15
+  - 现在问最便宜的多少钱
+↓
+机器人: "iPhone 15 标准版 5999 元起"</code></pre>
+                        </div>
+                    </div>
+
+                    <p>本质上，这一步是在帮 Agent 每一次思考，都拿到"当前最重要的信息"。常见策略包括只保留最近 N 轮对话、提取关键信息（比如用户意图、订单号）、对历史对话做摘要。</p>
+
+                    <h3>1.5 阶段性总结</h3>
+
+                    <p>这三个真实场景，暴露了纯 LLM 的三大致命问题：</p>
+                    <ul>
+                        <li><strong>没有限制乱发挥：</strong>只会说话没有经过岗位培训的新员工</li>
+                        <li><strong>知识过时：</strong>只知道训练时学到的"通用知识"，不知道公司的真实政策、最新产品、库存情况</li>
+                        <li><strong>没有记忆：</strong>每次对话都是全新的，不记得上一次说了什么，多轮对话体验很差</li>
+                    </ul>
+
+                    <p>通过 Prompt Engineering、RAG 和 Context 三个工具，让 LLM 从"只会背书"变成"会查资料的客服"：</p>
+                    <ul>
+                        <li><strong>Prompt Engineering：</strong>给 LLM 明确的角色和规则</li>
+                        <li><strong>RAG：</strong>让 LLM 查询大量外部知识</li>
+                        <li><strong>Context：</strong>管理多轮对话历史，补充多轮对话的重要内容</li>
+                    </ul>
+
+                    <p>你的助手已经是一个"合格的客服"了：知道公司政策、能查资料、能理解上下文、不会乱编。但它还不是 Agent——因为它只能"回答问题"，不能"执行操作"。</p>
+
+                    <p><strong>LLM 和 Agent 真正的分水岭，是它能不能替你做事。</strong></p>
+
+                    <h2 id="agent">二、能真的帮你办事的员工（Agent）</h2>
+
+                    <h3>2.1 Tools</h3>
+
+                    <p>如果用户说"帮我查一下我的订单"，这需要真正去调用订单系统的 API，而不只是查知识库。</p>
+
+                    <p><strong>Tools（工具）</strong>——简单说，Tool 就像给 LLM 配了一套工具箱：查订单、退款、修改地址、发优惠券……每个工具都是一个可以执行的功能。</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot bg-[#ff5f56]"></div>
+                            <div class="code-dot bg-[#ffbd2e]"></div>
+                            <div class="code-dot bg-[#27ca40]"></div>
+                            <span class="ml-2 text-xs text-[#6c7086]">Tool Calling</span>
+                        </div>
+                        <div class="code-body">
+                            <pre class="text-[#cdd6f4]"><code>用户："帮我查一下订单 12345 的物流"
+
+LLM 判断：需要调用"查询物流"工具
+
+系统调用：get_logistics(order_id="12345")
+
+返回结果：商品已发货，预计明天送达
+
+LLM 整理回复："您的订单已发货，预计明天送达，
+快递单号是 SF1234567890。"</code></pre>
+                        </div>
+                    </div>
+
+                    <p><strong>Tool 调用的关键技术：Function Calling</strong></p>
+
+                    <p>这个术语听起来很技术，但本质很简单：LLM 现在能"告诉你它想调用哪个工具"。</p>
+
+                    <p><strong>LLM 和 Agent 的本质区别：</strong></p>
 
                     <table class="comparison-table">
                         <thead>
                             <tr>
-                                <th>特性</th>
-                                <th>短期记忆（Short-term）</th>
-                                <th>长期记忆（Long-term）</th>
+                                <th>维度</th>
+                                <th>LLM</th>
+                                <th>Agent</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>数据范围</td>
-                                <td>当前会话上下文</td>
-                                <td>跨会话用户画像</td>
+                                <td>能力</td>
+                                <td>只能"说"</td>
+                                <td>能"说"也能"做"</td>
                             </tr>
                             <tr>
-                                <td>存储周期</td>
-                                <td>会话级（Session）</td>
-                                <td>持久化（Persistent）</td>
+                                <td>类比</td>
+                                <td>顾问</td>
+                                <td>员工</td>
                             </tr>
                             <tr>
-                                <td>典型内容</td>
-                                <td>当前订单号、对话轮次</td>
+                                <td>工具</td>
+                                <td>无</td>
+                                <td>有（API、数据库等）</td>
+                            </tr>
+                            <tr>
+                                <td>自主性</td>
+                                <td>被动回答</td>
+                                <td>主动执行任务</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>2.2 Orchestration</h3>
+
+                    <p>现在 Agent 有"大脑"（LLM）和"双手"（Tools）了，但还缺一样东西：怎么协调它们？</p>
+
+                    <p><strong>Orchestration（编排）</strong>——就是让 Agent 能"像人一样做事"：先想想怎么做，再一步步执行。</p>
+
+                    <p>业界形成了 6 类主流编排模式，从「最可控」到「最灵活」：</p>
+                    <ul>
+                        <li>顺序编排（Chain / Workflow）</li>
+                        <li>条件路由（Router）</li>
+                        <li>Planner → Executor（计划-执行）</li>
+                        <li>ReAct（思考-行动循环）</li>
+                        <li>Orchestrator → Workers（调度-工人）</li>
+                        <li>多 Agent 协作（Role-based / Debate / Team）</li>
+                    </ul>
+
+                    <h3>核心模式：ReAct（Reason + Act）</h3>
+
+                    <p>ReAct ——这个模式在学术上叫 ReAct(Reason + Act)，但本质上，这一步是在让 Agent "像人一样做事"。</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot bg-[#ff5f56]"></div>
+                            <div class="code-dot bg-[#ffbd2e]"></div>
+                            <div class="code-dot bg-[#27ca40]"></div>
+                            <span class="ml-2 text-xs text-[#6c7086]">ReAct Workflow</span>
+                        </div>
+                        <div class="code-body">
+                            <pre class="text-[#cdd6f4]"><code>1. Reason(推理): 分析问题,制定计划
+2. Act(行动): 执行一个工具
+3. Observe(观察): 看执行结果
+4. 重复 1-3,直到任务完成</code></pre>
+                        </div>
+                    </div>
+
+                    <p><strong>实际案例：</strong></p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot bg-[#ff5f56]"></div>
+                            <div class="code-dot bg-[#ffbd2e]"></div>
+                            <div class="code-dot bg-[#27ca40]"></div>
+                            <span class="ml-2 text-xs text-[#6c7086]">退货流程示例</span>
+                        </div>
+                        <div class="code-body">
+                            <pre class="text-[#cdd6f4]"><code>用户:"帮我退货,订单号 12345"
+
+【第 1 轮】
+Reason:"我需要先查订单信息,确认能否退货"
+Act: 调用 query_order(12345)
+Observe: 返回 {"status": "已签收", "can_refund": true}
+
+【第 2 轮】
+Reason:"订单可以退货,现在创建退货单"
+Act: 调用 create_refund(12345)
+Observe: 返回 "退货单已创建,退货单号 R789"
+
+【第 3 轮】
+Reason:"任务完成,告诉用户"
+Act: 回复用户
+Observe: 完成</code></pre>
+                        </div>
+                    </div>
+
+                    <p><strong>为什么 ReAct 重要？</strong></p>
+                    <ul>
+                        <li><strong>可解释：</strong>每一步的思考过程都看得见</li>
+                        <li><strong>灵活：</strong>可以根据中间结果动态调整</li>
+                        <li><strong>可调试：</strong>出错了能看到是哪一步出了问题</li>
+                    </ul>
+
+                    <h3>2.3 Memory</h3>
+
+                    <p><strong>Memory（记忆）</strong>——是让 Agent 记住重要信息，不用每次都重新问。</p>
+
+                    <p><strong>两种记忆：</strong></p>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>类型</th>
+                                <th>短期记忆</th>
+                                <th>长期记忆</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>范围</td>
+                                <td>只记住当前对话</td>
+                                <td>跨对话的持久化信息</td>
+                            </tr>
+                            <tr>
+                                <td>生命周期</td>
+                                <td>对话结束就清空</td>
+                                <td>永久保存</td>
+                            </tr>
+                            <tr>
+                                <td>例子</td>
+                                <td>当前订单号</td>
                                 <td>用户偏好、历史行为</td>
                             </tr>
-                            <tr>
-                                <td>技术实现</td>
-                                <td>Redis / 内存缓存</td>
-                                <td>向量数据库 / 图数据库</td>
-                            </tr>
                         </tbody>
                     </table>
-
-                    <h3>2.4 Agent 系统架构</h3>
-
-                    <div class="claude-diagram">
-                        <div class="claude-box">
-                            <span class="claude-label">Model Layer（认知层）</span><br>
-                            GPT-4 / Claude / Gemini<br>
-                            职责：语义理解、推理决策、文本生成
-                        </div>
-                        <div class="claude-arrow">↑ ↓</div>
-                        <div class="claude-box">
-                            <span class="claude-label">Orchestration Layer（编排层）</span><br>
-                            • Planning（任务规划）<br>
-                            • Memory Management（记忆管理）<br>
-                            • Context Engineering（上下文组装）<br>
-                            • ReAct Loop（推理-行动循环）
-                        </div>
-                        <div class="claude-arrow">↑ ↓</div>
-                        <div class="claude-box">
-                            <span class="claude-label">Tool Layer（工具层）</span><br>
-                            • 订单查询 API<br>
-                            • 退款申请 API<br>
-                            • RAG 检索服务<br>
-                            • 外部系统接口
-                        </div>
-                    </div>
 
                     <div class="callout">
-                        <div class="callout-title">架构核心洞察</div>
-                        <p style="margin-bottom: 0;">Agent 系统的本质是将 LLM 的<strong>认知能力</strong>与外部工具的<strong>执行能力</strong>通过<strong>编排层</strong>有机整合，实现从"能说"到"能做"的能力跃迁。</p>
+                        <div class="callout-title">Memory 的关键价值</div>
+                        <p style="margin-bottom: 0;">Memory 是 Agent 从"工具"变成"伙伴"的关键——有记忆的 Agent 能理解你，提供个性化服务。</p>
                     </div>
 
-                    <h2 id="levels">三、能力成熟度模型</h2>
+                    <h3>2.4 Context Engineering</h3>
 
-                    <p>Google 提出的 Agent 五级能力模型，为技术演进提供了清晰的阶段划分：</p>
+                    <p>每次 Agent 思考时，需要把所有相关信息组装成一个"完整的上下文"：</p>
 
-                    <table class="comparison-table">
-                        <thead>
-                            <tr>
-                                <th>Level</th>
-                                <th>名称</th>
-                                <th>技术特征</th>
-                                <th>典型能力</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>L0</td>
-                                <td>核心推理系统</td>
-                                <td>纯 LLM，无外部交互</td>
-                                <td>基于训练知识的文本生成</td>
-                            </tr>
-                            <tr>
-                                <td>L1</td>
-                                <td>连接型问题解决者</td>
-                                <td>+ Tool Use</td>
-                                <td>实时数据查询（搜索、API）</td>
-                            </tr>
-                            <tr>
-                                <td>L2</td>
-                                <td>战略型问题解决者</td>
-                                <td>+ Planning + Context</td>
-                                <td>多步骤任务规划与执行</td>
-                            </tr>
-                            <tr>
-                                <td>L3</td>
-                                <td>协作型多智能体系统</td>
-                                <td>Multi-Agent 架构</td>
-                                <td>专业化 Agent 分工协作</td>
-                            </tr>
-                            <tr>
-                                <td>L4</td>
-                                <td>自我进化系统</td>
-                                <td>自主能力扩展</td>
-                                <td>动态创建工具与 Agent（研究中）</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <h2 id="roadmap">四、产品演进路线图</h2>
-
-                    <p>基于技术成熟度与业务价值的平衡，建议采用以下五阶段演进策略：</p>
-
-                    <h3>阶段一：MVP（最小可行产品）</h3>
-                    <ul>
-                        <li><strong>技术栈：</strong>LLM + Prompt Engineering</li>
-                        <li><strong>核心能力：</strong>标准 FAQ 回答</li>
-                        <li><strong>投入成本：</strong>低</li>
-                        <li><strong>阶段目标：</strong>验证需求，快速上线</li>
-                    </ul>
-
-                    <h3>阶段二：知识增强</h3>
-                    <ul>
-                        <li><strong>技术栈：</strong>+ RAG</li>
-                        <li><strong>核心能力：</strong>企业私有知识问答</li>
-                        <li><strong>投入成本：</strong>中</li>
-                        <li><strong>阶段目标：</strong>提升回答准确性与时效性</li>
-                    </ul>
-
-                    <h3>阶段三：功能扩展</h3>
-                    <ul>
-                        <li><strong>技术栈：</strong>+ Function Calling</li>
-                        <li><strong>核心能力：</strong>订单查询、状态变更等操作</li>
-                        <li><strong>投入成本：</strong>中高</li>
-                        <li><strong>阶段目标：</strong>从"能说"到"能做"</li>
-                    </ul>
-
-                    <h3>阶段四：智能升级</h3>
-                    <ul>
-                        <li><strong>技术栈：</strong>+ ReAct + Memory</li>
-                        <li><strong>核心能力：</strong>复杂任务自主规划与执行</li>
-                        <li><strong>投入成本：</strong>高</li>
-                        <li><strong>阶段目标：</strong>高价值场景的深度自动化</li>
-                    </ul>
-
-                    <h3>阶段五：规模化</h3>
-                    <ul>
-                        <li><strong>技术栈：</strong>+ Multi-Agent + 长期记忆</li>
-                        <li><strong>核心能力：</strong>个性化服务、跨系统协作</li>
-                        <li><strong>投入成本：</strong>很高</li>
-                        <li><strong>阶段目标：</strong>企业级智能服务中台</li>
-                    </ul>
-
-                    <h2 id="conclusion">结论</h2>
-
-                    <p>从 LLM 到 Agent 的技术演进，本质是从<strong>静态知识</strong>到<strong>动态能力</strong>的转化过程。作为产品经理，在技术选型时应始终回归业务本质：</p>
-
-                    <ul>
-                        <li>用户的真实痛点是什么？</li>
-                        <li>最小可行的技术方案是什么？</li>
-                        <li>技术投入的 ROI 如何评估？</li>
-                    </ul>
-
-                    <p>技术概念的迭代速度远超业务场景的演变，理解底层逻辑比追逐最新技术更为重要。建立清晰的技术认知框架，才能在快速变化的技术浪潮中做出稳健的产品决策。</p>
-
-                    <blockquote>
-                        <p>本文通过智能客服这一具体场景，梳理了 LLM、RAG、Agent 等核心概念的逻辑关系与技术边界。希望读者能够基于此框架，在实际产品工作中做出适合自身业务的技术选型。</p>
-                    </blockquote>
-
-                    <!-- References -->
-                    <div class="mt-12 pt-8 border-t border-[#e5e5e5]">
-                        <h3 class="font-display text-lg font-semibold mb-4">术语表</h3>
-                        <ul class="space-y-2 text-sm text-[#666666]">
-                            <li><strong>LLM（Large Language Model）：</strong>大语言模型，基于 Transformer 架构的预训练语言模型</li>
-                            <li><strong>Prompt Engineering：</strong>提示工程，通过结构化指令优化模型输出的技术</li>
-                            <li><strong>RAG（Retrieval-Augmented Generation）：</strong>检索增强生成，结合外部知识检索的文本生成方法</li>
-                            <li><strong>Function Calling：</strong>函数调用，LLM 生成结构化请求调用外部工具的能力</li>
-                            <li><strong>Agent：</strong>智能体，具备感知、决策、执行能力的自主系统</li>
-                            <li><strong>ReAct（Reasoning + Acting）：</strong>推理-行动框架，显式化推理过程的 Agent 编排模式</li>
-                            <li><strong>Context Management：</strong>上下文管理，维护对话状态与历史信息的技术</li>
-                        </ul>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot bg-[#ff5f56]"></div>
+                            <div class="code-dot bg-[#ffbd2e]"></div>
+                            <div class="code-dot bg-[#27ca40]"></div>
+                            <span class="ml-2 text-xs text-[#6c7086]">完整 Context</span>
+                        </div>
+                        <div class="code-body">
+                            <pre class="text-[#cdd6f4]"><code>完整的 Context 包含:
+┌─────────────────────────────┐
+│ 1. System Prompt            │ ← "你是电商客服"
+├─────────────────────────────┤
+│ 2. Long-term Memory         │ ← "用户是会员,喜欢 Apple"
+├─────────────────────────────┤
+│ 3. RAG 检索结果              │ ← "iPhone 15 产品说明"
+├─────────────────────────────┤
+│ 4. 对话历史                  │ ← 最近 10 轮对话
+├─────────────────────────────┤
+│ 5. 工具返回结果              │ ← "订单 12345 的信息"
+├─────────────────────────────┤
+│ 6. 用户当前问题              │ ← "帮我退货"
+└─────────────────────────────┘
+          ↓
+    喂给 LLM 进行推理</code></pre>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Related Articles -->
-    <section class="py-16 px-6 md:px-12 bg-white border-t border-[#e5e5e5] relative z-10">
-        <div class="max-w-3xl mx-auto">
-            <h2 class="font-display text-xl font-semibold mb-6 text-center">相关文章</h2>
-            <div class="grid md:grid-cols-3 gap-4">
-                <a href="../article.html" class="related-card block border border-[#e5e5e5] rounded-xl p-4 hover:border-[#D4A574] transition-colors">
-                    <span class="text-xs text-[#999999] mb-2 block">产品思考</span>
-                    <h3 class="font-display text-base font-semibold leading-snug">LLM 推理时的认知架构设计</h3>
-                </a>
-                <a href="#" class="related-card block border border-[#e5e5e5] rounded-xl p-4 hover:border-[#D4A574] transition-colors">
-                    <span class="text-xs text-[#999999] mb-2 block">开源解读</span>
-                    <h3 class="font-display text-base font-semibold leading-snug">LangChain vs LlamaIndex</h3>
-                </a>
-                <a href="#" class="related-card block border border-[#e5e5e5] rounded-xl p-4 hover:border-[#D4A574] transition-colors">
-                    <span class="text-xs text-[#999999] mb-2 block">产品知识</span>
-                    <h3 class="font-display text-base font-semibold leading-snug">Agent 产品的信任设计</h3>
-                </a>
-            </div>
-        </div>
-    </section>
+                    <h3>2.5 Agent 的完整架构</h3>
 
-    <!-- Footer -->
-    <footer class="py-8 px-6 md:px-12 border-t border-[#e5e5e5] relative z-10">
-        <div class="max-w-3xl mx-auto text-center">
-            <p class="text-sm text-[#999999]">© 2024 Qianmei's Agent Lab</p>
-        </div>
-    </footer>
-</body>
-</html>
+                    <p>现在，我们可以画出 Agent 的完整架构了：</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot bg-[#ff5f56]"></div>
+                            <div class="code-dot bg-[#ffbd2e]"></div>
+                            <div class="code-dot bg-[#27ca40]"></div>
+                            <span class="ml-2 text-xs text-[#6c7086]">Agent Architecture</span>
+                        </div>
+                        <div class="code-body">
+                            <pre class="text-[#cdd6f4]"><code>┌─────────────────────────────────────┐
+│         Model(大脑)                  │
+│    GPT-4 / Claude / Gemini          │
+│    负责:理解、推理、决策              │
+└─────────────────────────────────────┘
+              ↕
+┌─────────────────────────────────────┐
+│     Orchestration(神经系统)          │
+│  ┌─────────────────────────────┐   │
+│  │ Planning(规划)               │   │
+│  │ - ReAct 框架                 │   │
+│  │ - 任务分解                   │   │
+│  └─────────────────────────────┘   │
+│  ┌─────────────────────────────┐   │
+│  │ Memory(记忆)                 │   │
+│  │ - Session(短期)              │   │
+│  │ - Memory(长期)               │   │
+│  └─────────────────────────────┘   │
+│  ┌─────────────────────────────┐   │
+│  │ Context Engineering(上下文)  │   │
+│  │ - 动态组装信息               │   │
+│  │ - 长度管理                   │   │
+│  └─────────────────────────────┘   │
+└─────────────────────────────────────┘
+              ↕
+┌─────────────────────────────────────┐
+│         Tools(双手)                  │
+│  - 查询订单 API                      │
+│  - 创建退货单 API                    │
+│  - RAG 知识库                        │
+│  - 发优惠券 API                      │
+│  - ...                              │
+└─────────────────────────────────────┘</code></pre>
+                        </div>
+                    </div>
+
+                    <p>现在你的客服助手已经是一个真正的 Agent 了！它能：</p>
+                    <ul>
+                        <li>理解用户意图（大脑）</li>
+                        <li>查询知识库（RAG）</li>
+                        <li>记住对话历史（Context）</li>
+                        <li>记住用户偏好（Memory）</li>
+                        <li>规划多步骤任务（Planning）</li>
+                        <li>调用工具执行操作（Tools）</li>
+                    </ul>
+
+                    <div class="callout">
+                        <div class="callout-title">核心洞察</div>
+                        <p style="margin-bottom: 0;">从 LLM 到 Agent，本质上是从<strong>"只会说"</strong>到<strong>"能做事"</strong>的跨越。这不是技术的堆砌，而是能力的质变。</p>
+                    </div>
+
+                    <h2 id="levels">三、从新手到专家的能力分级</h2>
+
+                    <p>你的 Agent
