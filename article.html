@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM 推理时的认知架构设计 - Qianmei's Agent Lab 博客</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --bg-primary: #FAF9F6;
+                --text-primary: #1a1a1a;
+                --accent: #D4A574;
+                --text-secondary: #666666;
+                --border: #e5e5e5;
+                --code-bg: #1e1e2e;
+            }
+            body {
+                font-family: 'Source Serif Pro', serif;
+                background-color: var(--bg-primary);
+                color: var(--text-primary);
+                line-height: 1.8;
+            }
+            h1, h2, h3, h4, .font-display {
+                font-family: 'Playfair Display', serif;
+                line-height: 1.3;
+            }
+            code, pre {
+                font-family: 'JetBrains Mono', monospace;
+            }
+            p {
+                margin-bottom: 1.5em;
+            }
+        }
+        @layer components {
+            .grain-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                opacity: 0.03;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            }
+            .article-content h2 {
+                font-size: 1.6rem;
+                font-weight: 600;
+                margin-top: 2.5em;
+                margin-bottom: 0.8em;
+                color: var(--text-primary);
+            }
+            .article-content h3 {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-top: 2em;
+                margin-bottom: 0.7em;
+                color: var(--text-primary);
+            }
+            .article-content p {
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .article-content ul, .article-content ol {
+                margin-bottom: 1.5em;
+                padding-left: 1.5em;
+            }
+            .article-content li {
+                margin-bottom: 0.5em;
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .article-content ul li {
+                list-style-type: disc;
+            }
+            .article-content ol li {
+                list-style-type: decimal;
+            }
+            .article-content a {
+                color: var(--accent);
+                text-decoration: underline;
+                text-decoration-color: rgba(212, 165, 116, 0.4);
+                text-underline-offset: 3px;
+                transition: all 0.3s ease;
+            }
+            .article-content a:hover {
+                text-decoration-color: var(--accent);
+            }
+            .article-content blockquote {
+                border-left: 3px solid var(--accent);
+                padding-left: 1.5em;
+                margin: 2em 0;
+                font-style: italic;
+                color: var(--text-secondary);
+            }
+            .article-content blockquote p {
+                margin-bottom: 0;
+            }
+            .article-content strong {
+                color: var(--text-primary);
+                font-weight: 600;
+            }
+            .code-block {
+                background: var(--code-bg);
+                border-radius: 12px;
+                overflow: hidden;
+                margin: 2em 0;
+            }
+            .code-header {
+                background: rgba(22, 22, 30, 0.8);
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                padding: 12px 16px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .code-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+            }
+            .code-body {
+                padding: 20px;
+                overflow-x: auto;
+            }
+            .code-body pre {
+                margin: 0;
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+            .callout {
+                border-left: 3px solid var(--accent);
+                background: linear-gradient(90deg, rgba(212, 165, 116, 0.08) 0%, transparent 100%);
+                padding: 1.25em 1.5em;
+                margin: 2em 0;
+                border-radius: 0 8px 8px 0;
+            }
+            .callout-title {
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 0.5em;
+                display: flex;
+                align-items: center;
+                gap: 0.5em;
+            }
+            .callout p {
+                margin-bottom: 0;
+                font-size: 1rem;
+            }
+            .toc {
+                border-left: 1px solid var(--border);
+                padding-left: 1.25em;
+            }
+            .toc ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            .toc li {
+                margin-bottom: 0.4em;
+            }
+            .toc a {
+                color: #999;
+                text-decoration: none;
+                font-size: 0.85rem;
+                transition: color 0.3s ease;
+            }
+            .toc a:hover {
+                color: var(--accent);
+            }
+            .tag {
+                display: inline-block;
+                padding: 3px 10px;
+                border: 1px solid var(--border);
+                border-radius: 20px;
+                font-size: 0.7rem;
+                letter-spacing: 0.05em;
+                color: #999;
+            }
+            .tag-accent {
+                border-color: var(--accent);
+                color: var(--accent);
+            }
+            .related-card {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.25em;
+                transition: all 0.3s ease;
+            }
+            .related-card:hover {
+                border-color: var(--accent);
+                transform: translateY(-2px);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="grain-overlay"></div>
+    
+    <!-- Simple Header -->
+    <header class="py-4 px-6 md:px-12 border-b border-[#e5e5e5]">
+        <div class="max-w-3xl mx-auto flex justify-between items-center">
+            <a href="home.html" class="text-[#1a1a1a] font-display text-lg font-semibold">← 返回</a>
+            <nav class="flex gap-6 text-sm text-[#666666]">
+                <a href="home.html" class="hover:text-[#1a1a1a] transition-colors">文章</a>
+                <a href="#" class="hover:text-[#1a1a1a] transition-colors">关于</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Article Header -->
+    <article class="pt-16 pb-12 px-6 md:px-12">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid lg:grid-cols-[200px_1fr] gap-12">
+                <!-- Spacer for TOC alignment -->
+                <div class="hidden lg:block"></div>
+                
+                <!-- Header Content -->
+                <div class="max-w-2xl">
+                    <!-- Category -->
+                    <p class="text-[#D4A574] text-sm tracking-[0.2em] uppercase mb-4">产品思考</p>
+
+                    <!-- Title -->
+                    <h1 class="font-display text-4xl md:text-5xl font-semibold leading-tight mb-6">
+                        LLM 推理时的认知架构设计
+                    </h1>
+
+                    <!-- Subtitle -->
+                    <p class="text-xl text-[#666666] leading-relaxed mb-8">
+                        深入探讨 Chain-of-Thought、Tree-of-Thought 等推理架构在 Agent 产品中的应用
+                    </p>
+
+                    <!-- Meta -->
+                    <div class="flex items-center gap-4 text-sm text-[#999999]">
+                        <span>2024年3月15日</span>
+                        <span class="w-1 h-1 rounded-full bg-[#D4A574]"></span>
+                        <span>12 分钟阅读</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- Article Content -->
+    <div class="pb-20 px-6 md:px-12">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid lg:grid-cols-[200px_1fr] gap-12 items-start">
+                <!-- TOC Sidebar -->
+                <aside class="hidden lg:block">
+                    <div class="sticky top-24">
+                        <p class="text-xs text-[#999999] mb-3 uppercase tracking-wider">目录</p>
+                        <nav class="toc">
+                            <ul>
+                                <li><a href="#react">ReAct 循环</a></li>
+                                <li><a href="#cot">Chain-of-Thought</a></li>
+                                <li><a href="#tot">Tree-of-Thought</a></li>
+                                <li><a href="#reflection">Reflexion</a></li>
+                                <li><a href="#ui-design">UI 设计</a></li>
+                                <li><a href="#conclusion">结语</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- Main Content -->
+                <div class="article-content max-w-2xl mx-auto lg:mx-0">
+                    <p>
+                        随着大语言模型（LLM）能力的不断提升，AI Agent 正在从简单的问答工具演变为能够自主规划、执行复杂任务的智能体。在这个过程中，<strong>如何让 LLM 进行有效的推理</strong>成为了产品设计的核心挑战之一。
+                    </p>
+
+                    <p>
+                        本文将系统梳理当前主流的 LLM 认知架构设计模式，从基础的 Chain-of-Thought 到复杂的 Multi-Agent 系统，探讨它们在 Agent 产品中的应用场景与实践经验。
+                    </p>
+
+                    <h2 id="react">一、ReAct：思考与行动的循环</h2>
+
+                    <p>
+                        ReAct（Reasoning + Acting）是构建 AI Agent 最基础的认知架构。它的核心思想是让 LLM 在解决问题时，交替进行<strong>思考（Thought）</strong>和<strong>行动（Action）</strong>，并通过观察（Observation）来更新状态。
+                    </p>
+
+                    <div class="callout">
+                        <div class="callout-title">
+                            <svg class="w-4 h-4 text-[#D4A574]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            关键洞察
+                        </div>
+                        <p>
+                            ReAct 的核心价值在于让 LLM 显式地输出思考过程，这不仅提升了推理的准确性，更为产品的可解释性设计提供了基础。
+                        </p>
+                    </div>
+
+                    <p>以下是一个典型的 ReAct 循环实现：</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot bg-[#ff5f56]"></div>
+                            <div class="code-dot bg-[#ffbd2e]"></div>
+                            <div class="code-dot bg-[#27ca40]"></div>
+                            <span class="ml-2 text-xs text-[#6c7086]">agent.py</span>
+                        </div>
+                        <div class="code-body">
+                            <pre class="text-[#cdd6f4]"><code><span class="text-[#cba6f7]">class</span> <span class="text-[#f9e2af]">ReActAgent</span>:
+    <span class="text-[#6c7086]">"""ReAct Agent with tool use"""</span>
+    
+    <span class="text-[#cba6f7]">def</span> <span class="text-[#89b4fa]">__init__</span>(self, llm, tools):
+        self.llm = llm
+        self.tools = tools
+        self.memory = []
+        
+    <span class="text-[#cba6f7]">def</span> <span class="text-[#89b4fa]">run</span>(self, query: <span class="text-[#f9e2af]">str</span>) -> <span class="text-[#f9e2af]">str</span>:
+        <span class="text-[#6c7086]"># 初始化思考上下文</span>
+        context = <span class="text-[#a6e3a1]">f"Question: {query}\n"</span>
+        
+        <span class="text-[#cba6f7]">for</span> step <span class="text-[#cba6f7]">in</span> range(self.max_steps):
+            <span class="text-[#6c7086]"># 1. Thought: 分析当前状态并决定下一步</span>
+            thought = self.llm.generate(
+                context + <span class="text-[#a6e3a1]">"Thought: "</span>
+            )
+            context += <span class="text-[#a6e3a1]">f"Thought: {thought}\n"</span>
+            
+            <span class="text-[#6c7086]"># 2. Action: 执行具体操作</span>
+            action = self.parse_action(thought)
+            <span class="text-[#cba6f7]">if</span> action.type == <span class="text-[#a6e3a1]">"finish"</span>:
+                <span class="text-[#cba6f7]">return</span> action.answer
+                
+            <span class="text-[#6c7086]"># 3. Observation: 获取执行结果</span>
+            observation = self.execute_action(action)
+            context += <span class="text-[#a6e3a1]">f"Observation: {observation}\n"</span>
+            
+        <span class="text-[#cba6f7]">return</span> <span class="text-[#a6e3a1]">"Max steps reached"</span></code></pre>
+                        </div>
+                    </div>
+
+                    <h2 id="cot">二、Chain-of-Thought：显式推理链</h2>
+
+                    <p>
+                        Chain-of-Thought（CoT）提示技术通过引导 LLM 生成中间推理步骤，显著提升了模型在复杂任务上的表现。对于 Agent 产品而言，CoT 不仅是提升性能的手段，更是建立用户信任的关键。
+                    </p>
+
+                    <p>在产品设计中，我们可以将 CoT 应用于以下场景：</p>
+
+                    <ul>
+                        <li><strong>数学计算</strong>：展示每一步的推导过程</li>
+                        <li><strong>逻辑推理</strong>：呈现从前提得出结论的完整链条</li>
+                        <li><strong>决策解释</strong>：说明为什么选择某个行动方案</li>
+                        <li><strong>代码生成</strong>：解释代码的设计思路和关键决策</li>
+                    </ul>
+
+                    <h2 id="tot">三、Tree-of-Thought：探索与决策</h2>
+
+                    <p>
+                        当问题需要探索多个可能的解决方案时，Tree-of-Thought（ToT）提供了更强大的认知架构。它将推理过程建模为树形结构，允许 LLM 在多个思考路径中进行搜索和评估。
+                    </p>
+
+                    <div class="callout">
+                        <div class="callout-title">
+                            <svg class="w-4 h-4 text-[#D4A574]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            </svg>
+                            设计考量
+                        </div>
+                        <p>
+                            ToT 虽然强大，但计算成本较高。在产品中应用时，需要权衡探索深度与响应速度，可以考虑使用异步处理或流式输出来优化用户体验。
+                        </p>
+                    </div>
+
+                    <h2 id="reflection">四、Reflexion：自我反思与改进</h2>
+
+                    <p>
+                        Reflexion 架构引入了<strong>自我反思</strong>机制，让 Agent 能够从失败中学习。它通过维护一个"经验记忆"，记录每次任务的执行结果和反思总结，从而在未来的任务中避免重复犯错。
+                    </p>
+
+                    <p>Reflexion 的工作流程包括：</p>
+
+                    <ol>
+                        <li><strong>执行</strong>：Agent 尝试完成任务</li>
+                        <li><strong>评估</strong>：判断任务是否成功完成</li>
+                        <li><strong>反思</strong>：分析失败原因，总结经验教训</li>
+                        <li><strong>记忆</strong>：将反思结果存储到长期记忆中</li>
+                        <li><strong>应用</strong>：在后续任务中检索相关经验</li>
+                    </ol>
+
+                    <h2 id="ui-design">五、思维可视化的 UI 设计</h2>
+
+                    <p>
+                        认知架构的价值不仅在于提升推理能力，更在于为用户提供可理解的交互界面。以下是几种常见的思维可视化设计模式：
+                    </p>
+
+                    <h3>5.1 时间线式展示</h3>
+
+                    <p>
+                        将 Thought-Action-Observation 循环以时间线形式展示，用户可以清晰地看到 Agent 的思考演进过程。这种模式适合步骤较少、逻辑清晰的任务。
+                    </p>
+
+                    <h3>5.2 思维导图式</h3>
+
+                    <p>
+                        对于 ToT 等多路径推理，可以使用树形或思维导图的形式展示不同的思考分支，让用户理解 Agent 是如何在多个方案中进行权衡的。
+                    </p>
+
+                    <h3>5.3 折叠式详情</h3>
+
+                    <p>
+                        默认展示高层思考摘要，用户可以点击展开查看详细的推理过程。这种渐进式披露的设计既保证了界面的简洁，又满足了深度用户的需求。
+                    </p>
+
+                    <h2 id="conclusion">结语</h2>
+
+                    <p>
+                        LLM 的认知架构设计是 Agent 产品的核心能力之一。从 ReAct 到 Reflexion，每种架构都有其适用的场景和 trade-off。作为产品经理，我们需要深入理解这些技术原理，才能做出既强大又易用的 AI 产品。
+                    </p>
+
+                    <blockquote>
+                        <p>最好的 AI 产品不是让用户感觉在与机器对话，而是感觉在与一个聪明、可靠的助手合作。</p>
+                    </blockquote>
+
+                    <p>
+                        在下一篇文章中，我们将探讨如何将 Multi-Agent 架构应用于复杂的工作流自动化场景，敬请期待。
+                    </p>
+
+                    <!-- References -->
+                    <div class="mt-12 pt-8 border-t border-[#e5e5e5]">
+                        <h3 class="font-display text-lg font-semibold mb-4">参考内容</h3>
+                        <ul class="space-y-2 text-sm text-[#666666]">
+                            <li>
+                                <a href="https://arxiv.org/abs/2210.03629" target="_blank" class="hover:text-[#D4A574] transition-colors">
+                                    [1] ReAct: Synergizing Reasoning and Acting in Language Models
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://arxiv.org/abs/2201.11903" target="_blank" class="hover:text-[#D4A574] transition-colors">
+                                    [2] Chain-of-Thought Prompting Elicits Reasoning in Large Language Models
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://arxiv.org/abs/2305.10601" target="_blank" class="hover:text-[#D4A574] transition-colors">
+                                    [3] Tree of Thoughts: Deliberate Problem Solving with Large Language Models
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://arxiv.org/abs/2303.11366" target="_blank" class="hover:text-[#D4A574] transition-colors">
+                                    [4] Reflexion: Self-Reflective Agents with Verbal Reinforcement Learning
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Articles -->
+    <section class="py-16 px-6 md:px-12 bg-white border-t border-[#e5e5e5]">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="font-display text-xl font-semibold mb-6 text-center">相关文章</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <a href="#" class="related-card block">
+                    <span class="text-xs text-[#999999] mb-2 block">开源解读</span>
+                    <h3 class="font-display text-base font-semibold leading-snug">
+                        LangChain vs LlamaIndex
+                    </h3>
+                </a>
+                <a href="#" class="related-card block">
+                    <span class="text-xs text-[#999999] mb-2 block">产品知识</span>
+                    <h3 class="font-display text-base font-semibold leading-snug">
+                        Agent 产品的信任设计
+                    </h3>
+                </a>
+                <a href="#" class="related-card block">
+                    <span class="text-xs text-[#999999] mb-2 block">技术实践</span>
+                    <h3 class="font-display text-base font-semibold leading-snug">
+                        Prompt Engineering 方法论
+                    </h3>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6 md:px-12 border-t border-[#e5e5e5]">
+        <div class="max-w-3xl mx-auto text-center">
+            <p class="text-sm text-[#999999]">© 2024 Qianmei's Agent Lab</p>
+        </div>
+    </footer>
+</body>
+</html>

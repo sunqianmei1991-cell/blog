@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qianmei's Agent Lab 博客 - Terminal Chic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --bg-primary: #0f172a;
+                --bg-secondary: #1e293b;
+                --accent: #4ade80;
+                --accent-dim: #22c55e;
+                --text-primary: #f8fafc;
+                --text-secondary: #94a3b8;
+                --border: #334155;
+            }
+            body {
+                font-family: 'JetBrains Mono', monospace;
+                background-color: var(--bg-primary);
+                color: var(--text-primary);
+            }
+            h1, h2, h3, .font-display {
+                font-family: 'Space Grotesk', sans-serif;
+            }
+        }
+        @layer components {
+            .terminal-window {
+                background: var(--bg-secondary);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            .terminal-header {
+                background: rgba(51, 65, 85, 0.5);
+                border-bottom: 1px solid var(--border);
+                padding: 12px 16px;
+            }
+            .terminal-body {
+                padding: 20px;
+            }
+            .cursor-blink {
+                animation: blink 1s step-end infinite;
+            }
+            @keyframes blink {
+                50% { opacity: 0; }
+            }
+            .glow-text {
+                text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+            }
+            .scanline {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                background: linear-gradient(
+                    to bottom,
+                    transparent 50%,
+                    rgba(0, 0, 0, 0.1) 50%
+                );
+                background-size: 100% 4px;
+                opacity: 0.3;
+            }
+            .article-card {
+                border: 1px solid var(--border);
+                background: rgba(30, 41, 59, 0.5);
+                transition: all 0.3s ease;
+            }
+            .article-card:hover {
+                border-color: var(--accent);
+                box-shadow: 0 0 20px rgba(74, 222, 128, 0.1);
+            }
+            .prompt {
+                color: var(--accent);
+            }
+            .code-block {
+                background: #0d1117;
+                border: 1px solid #30363d;
+                border-radius: 6px;
+            }
+            .syntax-keyword { color: #ff7b72; }
+            .syntax-string { color: #a5d6ff; }
+            .syntax-function { color: #d2a8ff; }
+            .syntax-comment { color: #8b949e; }
+            .syntax-variable { color: #79c0ff; }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="scanline"></div>
+    
+    <!-- Header -->
+    <header class="border-b border-[#334155]">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-3 h-3 rounded-full bg-[#4ade80] animate-pulse"></div>
+                    <span class="font-display text-xl font-semibold tracking-tight">
+                        <span class="text-[#4ade80]">~/</span>agent-pm
+                    </span>
+                </div>
+                <nav class="hidden md:flex items-center gap-6 text-sm">
+                    <a href="#" class="text-[#94a3b8] hover:text-[#4ade80] transition-colors flex items-center gap-2">
+                        <span class="text-[#4ade80]">$</span> ls posts/
+                    </a>
+                    <a href="#" class="text-[#94a3b8] hover:text-[#4ade80] transition-colors flex items-center gap-2">
+                        <span class="text-[#4ade80]">$</span> cat about.md
+                    </a>
+                    <a href="#" class="text-[#94a3b8] hover:text-[#4ade80] transition-colors flex items-center gap-2">
+                        <span class="text-[#4ade80]">$</span> git log
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Terminal -->
+    <section class="py-16 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="terminal-window">
+                <div class="terminal-header flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+                    <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+                    <div class="w-3 h-3 rounded-full bg-[#27ca40]"></div>
+                    <span class="ml-4 text-xs text-[#64748b]">bash — 80x24</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="mb-4">
+                        <span class="prompt">➜</span> <span class="text-[#94a3b8]">~</span> <span class="text-[#f8fafc]">whoami</span>
+                    </div>
+                    <div class="mb-6 text-lg">
+                        <span class="text-[#4ade80] glow-text font-display text-2xl font-bold">Qianmei's Agent Lab</span>
+                        <span class="text-[#64748b]"> — 技术博客</span>
+                    </div>
+                    <div class="mb-4">
+                        <span class="prompt">➜</span> <span class="text-[#94a3b8]">~</span> <span class="text-[#f8fafc]">cat mission.txt</span>
+                    </div>
+                    <div class="mb-6 text-[#94a3b8] leading-relaxed max-w-2xl">
+                        探索 Agent 产品的设计与实现。<br/>
+                        分享产品洞察、架构思考与开源项目解读。<br/>
+                        面向构建下一代 AI 产品的产品经理与开发者。
+                    </div>
+                    <div class="mb-4">
+                        <span class="prompt">➜</span> <span class="text-[#94a3b8]">~</span> <span class="text-[#f8fafc]">ls -la stats/</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 mb-6 text-sm">
+                        <div class="border border-[#334155] rounded p-3">
+                            <span class="text-[#64748b]">total posts</span>
+                            <div class="text-[#4ade80] text-xl font-semibold">42</div>
+                        </div>
+                        <div class="border border-[#334155] rounded p-3">
+                            <span class="text-[#64748b]">uv this month</span>
+                            <div class="text-[#4ade80] text-xl font-semibold">12.5k</div>
+                        </div>
+                        <div class="border border-[#334155] rounded p-3">
+                            <span class="text-[#64748b]">subscribers</span>
+                            <div class="text-[#4ade80] text-xl font-semibold">890</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="prompt">➜</span> <span class="text-[#94a3b8]">~</span> <span class="cursor-blink">_</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Post -->
+    <section class="py-12 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-2 mb-4 text-sm text-[#64748b]">
+                <span class="text-[#4ade80]">★</span>
+                <span>featured_post.md</span>
+            </div>
+            <div class="article-card rounded-lg p-6">
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 rounded bg-[#4ade80]/10 flex items-center justify-center border border-[#4ade80]/30">
+                        <svg class="w-6 h-6 text-[#4ade80]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-xs px-2 py-1 rounded bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/30">产品思考</span>
+                            <span class="text-xs text-[#64748b]">2024.03.15</span>
+                        </div>
+                        <h2 class="font-display text-2xl font-semibold mb-3 hover:text-[#4ade80] transition-colors cursor-pointer">
+                            LLM 推理时的认知架构设计
+                        </h2>
+                        <p class="text-[#94a3b8] leading-relaxed mb-4">
+                            深入探讨 Chain-of-Thought、Tree-of-Thought 等推理架构在 Agent 产品中的应用，以及如何设计用户可理解的思维可视化界面...
+                        </p>
+                        <div class="flex items-center gap-4 text-xs text-[#64748b]">
+                            <span>read_time: 12min</span>
+                            <span>views: 2.3k</span>
+                            <span class="text-[#4ade80]">→ read_more</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article Grid -->
+    <section class="py-12 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-2 mb-6 text-sm text-[#64748b]">
+                <span>$</span>
+                <span>ls -la posts/ | head -5</span>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Article 1 -->
+                <div class="article-card rounded-lg p-4 flex items-center gap-4 cursor-pointer group">
+                    <div class="flex-shrink-0 text-[#64748b] text-sm font-mono">drwxr-xr-x</div>
+                    <div class="flex-shrink-0 text-[#4ade80]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-medium truncate group-hover:text-[#4ade80] transition-colors">
+                            langchain-vs-llamaindex.md
+                        </h3>
+                        <p class="text-xs text-[#64748b] truncate">开源解读 · 8 min read</p>
+                    </div>
+                    <div class="text-xs text-[#64748b]">Mar 10</div>
+                </div>
+
+                <!-- Article 2 -->
+                <div class="article-card rounded-lg p-4 flex items-center gap-4 cursor-pointer group">
+                    <div class="flex-shrink-0 text-[#64748b] text-sm font-mono">drwxr-xr-x</div>
+                    <div class="flex-shrink-0 text-[#4ade80]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-medium truncate group-hover:text-[#4ade80] transition-colors">
+                            trust-design-in-agent-products.md
+                        </h3>
+                        <p class="text-xs text-[#64748b] truncate">产品知识 · 15 min read</p>
+                    </div>
+                    <div class="text-xs text-[#64748b]">Mar 05</div>
+                </div>
+
+                <!-- Article 3 -->
+                <div class="article-card rounded-lg p-4 flex items-center gap-4 cursor-pointer group">
+                    <div class="flex-shrink-0 text-[#64748b] text-sm font-mono">drwxr-xr-x</div>
+                    <div class="flex-shrink-0 text-[#4ade80]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-medium truncate group-hover:text-[#4ade80] transition-colors">
+                            prompt-engineering-patterns.md
+                        </h3>
+                        <p class="text-xs text-[#64748b] truncate">技术实践 · 10 min read</p>
+                    </div>
+                    <div class="text-xs text-[#64748b]">Feb 28</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code & Diagram Preview -->
+    <section class="py-16 px-6 bg-[#0d1117]">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center gap-2 mb-6 text-sm text-[#64748b]">
+                <span>$</span>
+                <span>cat examples/demo.py</span>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Code Block -->
+                <div class="code-block">
+                    <div class="flex items-center gap-2 px-4 py-2 border-b border-[#30363d]">
+                        <span class="text-xs text-[#8b949e]">Python</span>
+                    </div>
+                    <pre class="p-4 text-sm overflow-x-auto"><code><span class="syntax-comment"># ReAct Agent Implementation</span>
+<span class="syntax-keyword">class</span> <span class="syntax-function">Agent</span>:
+    <span class="syntax-keyword">def</span> <span class="syntax-function">__init__</span>(self, llm, tools):
+        self.llm = llm
+        self.tools = tools
+        
+    <span class="syntax-keyword">def</span> <span class="syntax-function">run</span>(self, query):
+        <span class="syntax-comment"># Thought → Action → Observation</span>
+        <span class="syntax-keyword">while</span> <span class="syntax-keyword">not</span> self.is_done():
+            thought = self.think(query)
+            action = self.act(thought)
+            obs = self.observe(action)
+            
+    <span class="syntax-keyword">def</span> <span class="syntax-function">think</span>(self, context):
+        <span class="syntax-keyword">return</span> self.llm.generate(
+            <span class="syntax-string">f"Thought: {context}"</span>
+        )</code></pre>
+                </div>
+
+                <!-- ASCII Diagram -->
+                <div class="code-block">
+                    <div class="flex items-center gap-2 px-4 py-2 border-b border-[#30363d]">
+                        <span class="text-xs text-[#8b949e]">Architecture</span>
+                    </div>
+                    <pre class="p-4 text-sm text-[#4ade80] overflow-x-auto">
+┌─────────────┐
+│  User Input │
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐     ┌──────────┐
+│   Thought   │────▶│  Action  │
+└─────────────┘     └────┬─────┘
+       ▲                 │
+       │                 ▼
+       │            ┌──────────┐
+       └────────────│Observation│
+                    └──────────┘
+
+<span class="text-[#8b949e]"># ReAct Loop Pattern</span>
+<span class="text-[#ff7b72]">while</span> not done:
+    think()  →  act()  →  observe()
+                    </pre>
+                </div>
+            </div>
+
+            <!-- Callout -->
+            <div class="mt-6 border border-[#4ade80]/30 rounded-lg p-4 bg-[#4ade80]/5">
+                <div class="flex items-start gap-3">
+                    <span class="text-[#4ade80]">➜</span>
+                    <div>
+                        <p class="text-sm font-medium text-[#4ade80] mb-1">TIP</p>
+                        <p class="text-sm text-[#94a3b8]">ReAct 循环的核心在于让 LLM 显式地输出思考过程，这对于产品设计的可解释性至关重要。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6 border-t border-[#334155]">
+        <div class="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-[#64748b]">
+            <div class="flex items-center gap-2">
+                <span class="text-[#4ade80]">➜</span>
+                <span>echo "© 2024 Qianmei's Agent Lab"</span>
+            </div>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-[#4ade80] transition-colors">GitHub</a>
+                <a href="#" class="hover:text-[#4ade80] transition-colors">Twitter</a>
+                <a href="#" class="hover:text-[#4ade80] transition-colors">RSS</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
