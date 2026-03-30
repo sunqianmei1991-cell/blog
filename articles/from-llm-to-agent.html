@@ -714,4 +714,141 @@ Observe: 完成</code></pre>
 
                     <h2 id="levels">三、从新手到专家的能力分级</h2>
 
-                    <p>你的 Agent
+                    <p>你的 Agent                    <h2 id="levels">三、从新手到专家的能力分级</h2>
+
+                    <p>你的 Agent 上线了，效果不错。但老板又问："别的公司的 Agent 能做什么？我们处于什么水平？"</p>
+
+                    <p>这就需要了解 Agent 能力分级了。</p>
+
+                    <h3>Google 五级能力模型</h3>
+
+                    <p><strong>Level 0: 核心推理系统（The Core Reasoning System）</strong>——这是你的第一个版本</p>
+                    <ul>
+                        <li>能力：纯 LLM，没有任何工具、记忆或与外部环境的交互</li>
+                        <li>特点：只能基于预训练知识回答问题，无法获取实时信息</li>
+                        <li>例子：可以解释棒球规则和洋基队历史，但无法回答"昨晚洋基队比赛结果"</li>
+                    </ul>
+
+                    <p><strong>Level 1: 连接型问题解决者（The Connected Problem-Solver）</strong>——这是你加了 Tools 之后的版本</p>
+                    <ul>
+                        <li>能力：推理引擎 + 外部工具调用</li>
+                        <li>特点：可以通过工具获取实时数据（搜索、API、数据库等）</li>
+                        <li>例子：通过 Google Search API 查询昨晚的比赛结果并回答</li>
+                    </ul>
+
+                    <p><strong>Level 2: 战略型问题解决者（The Strategic Problem-Solver）</strong>——这是你加了编排能力后的版本</p>
+                    <ul>
+                        <li>能力：多步规划 + 上下文工程（Context Engineering）</li>
+                        <li>特点：能够规划复杂的多步骤任务，主动选择和管理相关信息</li>
+                        <li>例子：找到两个地址的中点，然后在该地点搜索高评分咖啡店</li>
+                    </ul>
+
+                    <p><strong>Level 3: 协作型多智能体系统（The Collaborative Multi-Agent System）</strong>——需要多个 Agent 协同工作</p>
+                    <ul>
+                        <li>能力：多个专业化 Agent 协同工作</li>
+                        <li>特点：采用"专家团队"模式，Agent 之间相互调用，分工协作</li>
+                        <li>例子：项目管理 Agent 将任务委派给市场研究、营销、网页开发等专业 Agent</li>
+                    </ul>
+
+                    <p><strong>Level 4: 自我进化系统（The Self-Evolving System）</strong>——这还在研究阶段</p>
+                    <ul>
+                        <li>能力：自主识别能力缺口并动态创建新工具或新 Agent</li>
+                        <li>特点：可以自主扩展能力，从固定资源使用转向主动创造资源</li>
+                        <li>例子：项目管理 Agent 发现需要监控社交媒体情绪，自动创建一个情感分析 Agent</li>
+                    </ul>
+
+                    <p>不要一上来就追求高 Level，从用户真实需求出发，选择合适的能力层级。</p>
+
+                    <h2 id="roadmap">四、技术演进路径</h2>
+
+                    <p>回到我们的智能客服例子，看看一个 Agent 产品是如何一步步进化的：</p>
+
+                    <p><strong>第一阶段：MVP（最小可行产品）</strong></p>
+                    <ul>
+                        <li>技术：LLM + Prompt</li>
+                        <li>能力：回答常见问题</li>
+                        <li>成本：低</li>
+                        <li>适用：验证需求，快速上线</li>
+                    </ul>
+
+                    <p><strong>第二阶段：知识增强</strong></p>
+                    <ul>
+                        <li>技术：+ RAG</li>
+                        <li>能力：回答公司特定问题，信息实时更新</li>
+                        <li>成本：中</li>
+                        <li>适用：知识库丰富，需要准确性</li>
+                    </ul>
+
+                    <p><strong>第三阶段：功能扩展</strong></p>
+                    <ul>
+                        <li>技术：+ Tool</li>
+                        <li>能力：执行操作（查订单、退款等）</li>
+                        <li>成本：中高</li>
+                        <li>适用：需要真正"干活"，不只是聊天</li>
+                    </ul>
+
+                    <p><strong>第四阶段：智能升级</strong></p>
+                    <ul>
+                        <li>技术：+ Agent（自主规划）</li>
+                        <li>能力：处理复杂、多步骤任务</li>
+                        <li>成本：高</li>
+                        <li>适用：高价值场景，用户体验要求高</li>
+                    </ul>
+
+                    <p><strong>第五阶段：规模化</strong></p>
+                    <ul>
+                        <li>技术：+ Agent 编排 + 记忆</li>
+                        <li>能力：多 Agent 协作，个性化服务</li>
+                        <li>成本：很高</li>
+                        <li>适用：企业级应用，长期用户关系</li>
+                    </ul>
+
+                    <h2 id="conclusion">写在最后</h2>
+
+                    <p>从 LLM 到 Agent，技术在进化，但产品思维不变：</p>
+                    <ul>
+                        <li>用户需要什么？</li>
+                        <li>最简单的方案是什么？</li>
+                        <li>ROI 如何？</li>
+                    </ul>
+
+                    <p>不要被术语吓到，也不要盲目追求最新技术。理解每个概念的本质，选择适合你产品的方案，才是好的产品经理。</p>
+
+                    <blockquote>
+                        <p>希望这篇文章能帮你理清 AI Agent 的技术脉络。下次再听到 LLM、RAG、Agent 这些词，你就知道它们在整个拼图中的位置了。</p>
+                    </blockquote>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Articles -->
+    <section class="py-16 px-6 md:px-12 bg-white border-t border-[#e5e5e5] relative z-10">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="font-display text-xl font-semibold mb-6 text-center">相关文章</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <a href="../article.html" class="related-card block border border-[#e5e5e5] rounded-xl p-4 hover:border-[#D4A574] transition-colors">
+                    <span class="text-xs text-[#999999] mb-2 block">产品思考</span>
+                    <h3 class="font-display text-base font-semibold leading-snug">LLM 推理时的认知架构设计</h3>
+                </a>
+                <a href="#" class="related-card block border border-[#e5e5e5] rounded-xl p-4 hover:border-[#D4A574] transition-colors">
+                    <span class="text-xs text-[#999999] mb-2 block">开源解读</span>
+                    <h3 class="font-display text-base font-semibold leading-snug">LangChain vs LlamaIndex</h3>
+                </a>
+                <a href="#" class="related-card block border border-[#e5e5e5] rounded-xl p-4 hover:border-[#D4A574] transition-colors">
+                    <span class="text-xs text-[#999999] mb-2 block">产品知识</span>
+                    <h3 class="font-display text-base font-semibold leading-snug">Agent 产品的信任设计</h3>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6 md:px-12 border-t border-[#e5e5e5] relative z-10">
+        <div class="max-w-3xl mx-auto text-center">
+            <p class="text-sm text-[#999999]">© 2024 Qianmei's Agent Lab</p>
+        </div>
+    </footer>
+</body>
+</html>
