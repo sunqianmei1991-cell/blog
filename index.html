@@ -2,10 +2,276 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=home.html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Qianmei's Agent Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --bg-primary: #FAF9F6;
+                --text-primary: #1a1a1a;
+                --accent: #D4A574;
+                --text-secondary: #666666;
+                --border: #e5e5e5;
+            }
+            body {
+                font-family: 'Source Serif Pro', serif;
+                background-color: var(--bg-primary);
+                color: var(--text-primary);
+            }
+            h1, h2, h3, .font-display {
+                font-family: 'Playfair Display', serif;
+            }
+        }
+        @layer components {
+            .grain-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                opacity: 0.03;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            }
+            .article-item {
+                border-bottom: 1px solid var(--border);
+                transition: all 0.3s ease;
+            }
+            .article-item:hover {
+                background: linear-gradient(90deg, rgba(212, 165, 116, 0.03) 0%, transparent 100%);
+            }
+            .article-item:hover .article-title {
+                color: var(--accent);
+            }
+            .article-number {
+                font-family: 'Playfair Display', serif;
+                color: #e5e5e5;
+                transition: color 0.3s ease;
+            }
+            .article-item:hover .article-number {
+                color: var(--accent);
+            }
+            .tag {
+                font-size: 0.7rem;
+                letter-spacing: 0.05em;
+                color: #999;
+            }
+        }
+    </style>
 </head>
-<body>
-    <p>Redirecting to <a href="home.html">home.html</a>...</p>
+<body class="min-h-screen">
+    <div class="grain-overlay"></div>
+    
+    <!-- Header -->
+    <header class="py-8 px-6 md:px-12">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-[#1a1a1a] flex items-center justify-center">
+                    <span class="text-[#FAF9F6] font-display text-lg font-bold">Q</span>
+                </div>
+                <span class="font-display text-xl font-semibold tracking-tight">Qianmei's Agent Lab</span>
+            </a>
+            <nav class="hidden md:flex gap-6 text-sm text-[#666666]">
+                <a href="#" class="hover:text-[#1a1a1a] transition-colors">文章</a>
+                <a href="#" class="hover:text-[#1a1a1a] transition-colors">关于</a>
+                <a href="#" class="hover:text-[#1a1a1a] transition-colors">RSS</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Intro -->
+    <section class="py-12 md:py-16 px-6 md:px-12">
+        <div class="max-w-4xl mx-auto">
+            <p class="text-[#D4A574] text-sm tracking-[0.25em] uppercase mb-4">技术博客</p>
+            <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-semibold leading-[1.05] mb-6">
+                探索 Agent 产品的<br/>设计与思考
+            </h1>
+            <p class="text-lg md:text-xl text-[#666666] leading-relaxed max-w-2xl">
+                面向 Agent 产品经理的知识库，分享产品洞察、技术解读与开源项目分析。
+            </p>
+        </div>
+    </section>
+
+    <!-- Article List -->
+    <section class="py-8 px-6 md:px-12">
+        <div class="max-w-4xl mx-auto">
+            <!-- Article 1 (Latest) -->
+            <a href="article.html" class="article-item block py-8 group">
+                <div class="flex gap-6 md:gap-8">
+                    <div class="flex-shrink-0 w-12 md:w-16 text-right">
+                        <span class="article-number text-3xl md:text-4xl font-light">01</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="tag">产品思考</span>
+                            <span class="text-xs text-[#999999]">2024.03.15</span>
+                            <span class="text-xs text-[#999999]">·</span>
+                            <span class="text-xs text-[#999999]">12 min read</span>
+                        </div>
+                        <h2 class="article-title font-display text-xl md:text-2xl font-semibold mb-3 transition-colors">
+                            LLM 推理时的认知架构设计
+                        </h2>
+                        <p class="text-[#666666] text-sm md:text-base leading-relaxed mb-3">
+                            深入探讨 Chain-of-Thought、Tree-of-Thought 等推理架构在 Agent 产品中的应用...
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs text-[#D4A574]">#ReAct</span>
+                            <span class="text-xs text-[#D4A574]">#CoT</span>
+                            <span class="text-xs text-[#D4A574]">#Agent架构</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Article 2 -->
+            <a href="#" class="article-item block py-8 group">
+                <div class="flex gap-6 md:gap-8">
+                    <div class="flex-shrink-0 w-12 md:w-16 text-right">
+                        <span class="article-number text-3xl md:text-4xl font-light">02</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="tag">开源解读</span>
+                            <span class="text-xs text-[#999999]">2024.03.10</span>
+                            <span class="text-xs text-[#999999]">·</span>
+                            <span class="text-xs text-[#999999]">8 min read</span>
+                        </div>
+                        <h2 class="article-title font-display text-xl md:text-2xl font-semibold mb-3 transition-colors">
+                            LangChain vs LlamaIndex：RAG 架构选型指南
+                        </h2>
+                        <p class="text-[#666666] text-sm md:text-base leading-relaxed mb-3">
+                            对比两大主流框架的设计理念、适用场景与性能表现...
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs text-[#D4A574]">#RAG</span>
+                            <span class="text-xs text-[#D4A574]">#LangChain</span>
+                            <span class="text-xs text-[#D4A574]">#LlamaIndex</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Article 3 -->
+            <a href="#" class="article-item block py-8 group">
+                <div class="flex gap-6 md:gap-8">
+                    <div class="flex-shrink-0 w-12 md:w-16 text-right">
+                        <span class="article-number text-3xl md:text-4xl font-light">03</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="tag">产品知识</span>
+                            <span class="text-xs text-[#999999]">2024.03.05</span>
+                            <span class="text-xs text-[#999999]">·</span>
+                            <span class="text-xs text-[#999999]">15 min read</span>
+                        </div>
+                        <h2 class="article-title font-display text-xl md:text-2xl font-semibold mb-3 transition-colors">
+                            Agent 产品的信任设计：从黑盒到可解释
+                        </h2>
+                        <p class="text-[#666666] text-sm md:text-base leading-relaxed mb-3">
+                            探讨如何通过透明度设计、渐进式披露和思维链可视化来建立用户信任...
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs text-[#D4A574]">#信任设计</span>
+                            <span class="text-xs text-[#D4A574]">#可解释AI</span>
+                            <span class="text-xs text-[#D4A574]">#透明度</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Article 4 -->
+            <a href="#" class="article-item block py-8 group">
+                <div class="flex gap-6 md:gap-8">
+                    <div class="flex-shrink-0 w-12 md:w-16 text-right">
+                        <span class="article-number text-3xl md:text-4xl font-light">04</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="tag">技术实践</span>
+                            <span class="text-xs text-[#999999]">2024.02.28</span>
+                            <span class="text-xs text-[#999999]">·</span>
+                            <span class="text-xs text-[#999999]">10 min read</span>
+                        </div>
+                        <h2 class="article-title font-display text-xl md:text-2xl font-semibold mb-3 transition-colors">
+                            Prompt Engineering 的系统化方法论
+                        </h2>
+                        <p class="text-[#666666] text-sm md:text-base leading-relaxed mb-3">
+                            从 Few-shot 到 Chain-of-Thought，系统梳理提示工程的最佳实践...
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs text-[#D4A574]">#Prompt</span>
+                            <span class="text-xs text-[#D4A574]">#FewShot</span>
+                            <span class="text-xs text-[#D4A574]">#提示工程</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Article 5 -->
+            <a href="#" class="article-item block py-8 group">
+                <div class="flex gap-6 md:gap-8">
+                    <div class="flex-shrink-0 w-12 md:w-16 text-right">
+                        <span class="article-number text-3xl md:text-4xl font-light">05</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="tag">产品思考</span>
+                            <span class="text-xs text-[#999999]">2024.02.20</span>
+                            <span class="text-xs text-[#999999]">·</span>
+                            <span class="text-xs text-[#999999]">12 min read</span>
+                        </div>
+                        <h2 class="article-title font-display text-xl md:text-2xl font-semibold mb-3 transition-colors">
+                            AI 产品的交互范式转移：从 GUI 到 LUI
+                        </h2>
+                        <p class="text-[#666666] text-sm md:text-base leading-relaxed mb-3">
+                            探讨语言用户界面(LUI)如何改变产品设计思维...
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs text-[#D4A574]">#GUI</span>
+                            <span class="text-xs text-[#D4A574]">#LUI</span>
+                            <span class="text-xs text-[#D4A574]">#交互设计</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Article 6 -->
+            <a href="#" class="article-item block py-8 group">
+                <div class="flex gap-6 md:gap-8">
+                    <div class="flex-shrink-0 w-12 md:w-16 text-right">
+                        <span class="article-number text-3xl md:text-4xl font-light">06</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="tag">行业观察</span>
+                            <span class="text-xs text-[#999999]">2024.02.15</span>
+                            <span class="text-xs text-[#999999]">·</span>
+                            <span class="text-xs text-[#999999]">8 min read</span>
+                        </div>
+                        <h2 class="article-title font-display text-xl md:text-2xl font-semibold mb-3 transition-colors">
+                            2024 年 AI Agent 赛道投资趋势分析
+                        </h2>
+                        <p class="text-[#666666] text-sm md:text-base leading-relaxed mb-3">
+                            梳理过去一年 AI Agent 领域的融资动态、热门方向与创业机会...
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs text-[#D4A574]">#投资</span>
+                            <span class="text-xs text-[#D4A574]">#趋势</span>
+                            <span class="text-xs text-[#D4A574]">#创业</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 md:px-12">
+        <div class="max-w-4xl mx-auto text-center">
+            <p class="text-sm text-[#999999]">© 2024 Qianmei's Agent Lab</p>
+        </div>
+    </footer>
 </body>
 </html>
