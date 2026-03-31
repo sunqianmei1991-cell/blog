@@ -202,10 +202,10 @@
         <div class="max-w-5xl mx-auto">
             <div class="grid lg:grid-cols-[200px_1fr] gap-12 items-start">
                 <!-- TOC Sidebar -->
-                <aside class="hidden lg:block">
-                    <div class="sticky top-24">
+                <aside class="hidden lg:block relative">
+                    <div class="sticky top-24 self-start">
                         <p class="text-xs text-[#999999] mb-3 uppercase tracking-wider">目录</p>
-                        <nav class="toc">
+                        <nav class="toc max-h-[calc(100vh-200px)] overflow-y-auto">
                             <ul>
                                 <li><a href="#intro">写在前面</a></li>
                                 <li><a href="#llm">一、只会说话的新员工</a></li>
