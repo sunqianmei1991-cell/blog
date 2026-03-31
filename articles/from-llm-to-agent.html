@@ -622,30 +622,63 @@ Observe: 完成</code></pre>
 
                     <p>每次 Agent 思考时，需要把所有相关信息组装成一个"完整的上下文"：</p>
 
-                    <div class="code-block">
-                        <div class="code-header">
-                            <div class="code-dot bg-[#ff5f56]"></div>
-                            <div class="code-dot bg-[#ffbd2e]"></div>
-                            <div class="code-dot bg-[#27ca40]"></div>
-                            <span class="ml-2 text-xs text-[#6c7086]">完整 Context</span>
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
+                        <h4 class="font-display text-lg font-semibold mb-4 text-center text-[#1a1a1a]">完整的 Context 组装流程</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-4">
+                                <div class="flex-1 bg-[#FAF9F6] border border-[#D4A574] rounded-lg p-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-medium text-[#1a1a1a]">1. System Prompt</span>
+                                        <span class="text-sm text-[#666666]">"你是电商客服"</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex-1 bg-[#FAF9F6] border border-[#D4A574] rounded-lg p-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-medium text-[#1a1a1a]">2. Long-term Memory</span>
+                                        <span class="text-sm text-[#666666]">"用户是会员，喜欢 Apple"</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex-1 bg-[#FAF9F6] border border-[#D4A574] rounded-lg p-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-medium text-[#1a1a1a]">3. RAG 检索结果</span>
+                                        <span class="text-sm text-[#666666]">"iPhone 15 产品说明"</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex-1 bg-[#FAF9F6] border border-[#D4A574] rounded-lg p-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-medium text-[#1a1a1a]">4. 对话历史</span>
+                                        <span class="text-sm text-[#666666]">最近 10 轮对话</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex-1 bg-[#FAF9F6] border border-[#D4A574] rounded-lg p-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-medium text-[#1a1a1a]">5. 工具返回结果</span>
+                                        <span class="text-sm text-[#666666]">"订单 12345 的信息"</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex-1 bg-[#FAF9F6] border border-[#D4A574] rounded-lg p-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-medium text-[#1a1a1a]">6. 用户当前问题</span>
+                                        <span class="text-sm text-[#666666]">"帮我退货"</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="code-body">
-                            <pre class="text-[#cdd6f4]"><code>完整的 Context 包含:
-┌─────────────────────────────┐
-│ 1. System Prompt            │ ← "你是电商客服"
-├─────────────────────────────┤
-│ 2. Long-term Memory         │ ← "用户是会员,喜欢 Apple"
-├─────────────────────────────┤
-│ 3. RAG 检索结果              │ ← "iPhone 15 产品说明"
-├─────────────────────────────┤
-│ 4. 对话历史                  │ ← 最近 10 轮对话
-├─────────────────────────────┤
-│ 5. 工具返回结果              │ ← "订单 12345 的信息"
-├─────────────────────────────┤
-│ 6. 用户当前问题              │ ← "帮我退货"
-└─────────────────────────────┘
-          ↓
-    喂给 LLM 进行推理</code></pre>
+                        <div class="flex justify-center my-4">
+                            <div class="w-px h-6 bg-[#D4A574]"></div>
+                        </div>
+                        <div class="bg-[#1a1a1a] text-white rounded-lg p-4 text-center">
+                            <span class="font-medium">喂给 LLM 进行推理</span>
                         </div>
                     </div>
 
@@ -653,47 +686,67 @@ Observe: 完成</code></pre>
 
                     <p>现在，我们可以画出 Agent 的完整架构了：</p>
 
-                    <div class="code-block">
-                        <div class="code-header">
-                            <div class="code-dot bg-[#ff5f56]"></div>
-                            <div class="code-dot bg-[#ffbd2e]"></div>
-                            <div class="code-dot bg-[#27ca40]"></div>
-                            <span class="ml-2 text-xs text-[#6c7086]">Agent Architecture</span>
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
+                        <h4 class="font-display text-lg font-semibold mb-6 text-center text-[#1a1a1a]">Agent 完整架构图</h4>
+                        
+                        <!-- Model Layer -->
+                        <div class="bg-gradient-to-r from-[#1a1a1a] to-[#2d2d2d] text-white rounded-xl p-4 mb-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-xl">🧠</span>
+                                <span class="font-display text-lg font-semibold">Model（大脑）</span>
+                            </div>
+                            <p class="text-sm text-gray-300 mb-1">GPT-4 / Claude / Gemini</p>
+                            <p class="text-xs text-[#D4A574]">负责：理解、推理、决策</p>
                         </div>
-                        <div class="code-body">
-                            <pre class="text-[#cdd6f4]"><code>┌─────────────────────────────────────┐
-│         Model(大脑)                  │
-│    GPT-4 / Claude / Gemini          │
-│    负责:理解、推理、决策              │
-└─────────────────────────────────────┘
-              ↕
-┌─────────────────────────────────────┐
-│     Orchestration(神经系统)          │
-│  ┌─────────────────────────────┐   │
-│  │ Planning(规划)               │   │
-│  │ - ReAct 框架                 │   │
-│  │ - 任务分解                   │   │
-│  └─────────────────────────────┘   │
-│  ┌─────────────────────────────┐   │
-│  │ Memory(记忆)                 │   │
-│  │ - Session(短期)              │   │
-│  │ - Memory(长期)               │   │
-│  └─────────────────────────────┘   │
-│  ┌─────────────────────────────┐   │
-│  │ Context Engineering(上下文)  │   │
-│  │ - 动态组装信息               │   │
-│  │ - 长度管理                   │   │
-│  └─────────────────────────────┘   │
-└─────────────────────────────────────┘
-              ↕
-┌─────────────────────────────────────┐
-│         Tools(双手)                  │
-│  - 查询订单 API                      │
-│  - 创建退货单 API                    │
-│  - RAG 知识库                        │
-│  - 发优惠券 API                      │
-│  - ...                              │
-└─────────────────────────────────────┘</code></pre>
+                        
+                        <!-- Arrow -->
+                        <div class="flex justify-center my-2">
+                            <span class="text-[#D4A574] text-xl">↕</span>
+                        </div>
+                        
+                        <!-- Orchestration Layer -->
+                        <div class="bg-[#FAF9F6] border-2 border-[#D4A574] rounded-xl p-4 mb-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-xl">🔄</span>
+                                <span class="font-display text-lg font-semibold text-[#1a1a1a]">Orchestration（神经系统）</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div class="bg-white rounded-lg p-3 border border-[#e5e5e5]">
+                                    <div class="font-medium text-[#1a1a1a] mb-1">📋 Planning</div>
+                                    <div class="text-xs text-[#666666]">ReAct 框架</div>
+                                    <div class="text-xs text-[#666666]">任务分解</div>
+                                </div>
+                                <div class="bg-white rounded-lg p-3 border border-[#e5e5e5]">
+                                    <div class="font-medium text-[#1a1a1a] mb-1">💾 Memory</div>
+                                    <div class="text-xs text-[#666666]">Session（短期）</div>
+                                    <div class="text-xs text-[#666666]">Memory（长期）</div>
+                                </div>
+                                <div class="bg-white rounded-lg p-3 border border-[#e5e5e5]">
+                                    <div class="font-medium text-[#1a1a1a] mb-1">📦 Context</div>
+                                    <div class="text-xs text-[#666666]">动态组装信息</div>
+                                    <div class="text-xs text-[#666666]">长度管理</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Arrow -->
+                        <div class="flex justify-center my-2">
+                            <span class="text-[#D4A574] text-xl">↕</span>
+                        </div>
+                        
+                        <!-- Tools Layer -->
+                        <div class="bg-gradient-to-r from-[#D4A574] to-[#c49a6b] text-white rounded-xl p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-xl">🛠️</span>
+                                <span class="font-display text-lg font-semibold">Tools（双手）</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-white/20 px-2 py-1 rounded text-sm">查询订单 API</span>
+                                <span class="bg-white/20 px-2 py-1 rounded text-sm">创建退货单 API</span>
+                                <span class="bg-white/20 px-2 py-1 rounded text-sm">RAG 知识库</span>
+                                <span class="bg-white/20 px-2 py-1 rounded text-sm">发优惠券 API</span>
+                                <span class="bg-white/20 px-2 py-1 rounded text-sm">...</span>
+                            </div>
                         </div>
                     </div>
 
