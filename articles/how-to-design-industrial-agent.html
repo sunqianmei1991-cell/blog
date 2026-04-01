@@ -1078,44 +1078,65 @@
                     <h3>8.2 实际场景的模式组合</h3>
                     
                     <p><strong>智能客服系统组合：</strong></p>
-                    <div class="flow-diagram">
-                        <div class="flow-node">
-                            <div class="flow-node-title">Prompt Chaining（步骤拆解）</div>
+                    <div style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.5em; margin: 1.5em 0;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1em;">
+                            <div style="background: #E3F2FD; border: 2px solid #4A90E2; border-radius: 12px; padding: 1em; text-align: center;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔗</div>
+                                <div style="font-weight: 600; font-size: 0.85rem; color: #1565C0;">Prompt Chaining</div>
+                                <div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">步骤拆解</div>
+                            </div>
+                            <div style="background: #FFF3E0; border: 2px solid #F5A623; border-radius: 12px; padding: 1em; text-align: center;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔀</div>
+                                <div style="font-weight: 600; font-size: 0.85rem; color: #EF6C00;">Routing</div>
+                                <div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">路由分发</div>
+                            </div>
+                            <div style="background: #E8F5E9; border: 2px solid #7ED321; border-radius: 12px; padding: 1em; text-align: center;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📚</div>
+                                <div style="font-weight: 600; font-size: 0.85rem; color: #2E7D32;">RAG</div>
+                                <div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">知识检索</div>
+                            </div>
+                            <div style="background: #F3E5F5; border: 2px solid #9C27B0; border-radius: 12px; padding: 1em; text-align: center;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🛠️</div>
+                                <div style="font-weight: 600; font-size: 0.85rem; color: #7B1FA2;">Tool Use</div>
+                                <div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">工具调用</div>
+                            </div>
+                            <div style="background: #FFEBEE; border: 2px solid #E53935; border-radius: 12px; padding: 1em; text-align: center;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🛡️</div>
+                                <div style="font-weight: 600; font-size: 0.85rem; color: #C62828;">Guardrails</div>
+                                <div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">安全护栏</div>
+                            </div>
                         </div>
-                        <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">Routing（路由到不同处理路径）</div>
-                        </div>
-                        <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">RAG（部分路径需要检索知识库）</div>
-                        </div>
-                        <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">Tool Use（部分路径需要调用工具）</div>
-                        </div>
-                        <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">Guardrails（护栏保证内容安全）</div>
+                        <div style="text-align: center; margin-top: 1em; padding-top: 1em; border-top: 1px dashed #e5e5e5; color: #999; font-size: 0.85rem;">
+                            这些模式<strong style="color: var(--accent);">组合使用</strong>，而非顺序执行
                         </div>
                     </div>
 
                     <p><strong>研究助手组合：</strong></p>
-                    <div class="flow-diagram">
-                        <div class="flow-node">
-                            <div class="flow-node-title">Planning（规划研究框架）</div>
+                    <div style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1.5em; margin: 1.5em 0;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1em;">
+                            <div style="background: #E0F7FA; border: 2px solid #00BCD4; border-radius: 12px; padding: 1em; text-align: center;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🎯</div>
+                                <div style="font-weight: 600; font-size: 0.85rem; color: #00838F;">Planning</div>
+                                <div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">规划框架</div>
+                            </div>
+                            <div style="background: #FFF8E1; border: 2px solid #FFC107; border-radius: 12px; padding: 1em; text-align: center;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔄</div>
+                                <div style="font-weight: 600; font-size: 0.85rem; color: #FF8F00;">ReAct</div>
+                                <div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">边想边做</div>
+                            </div>
+                            <div style="background: #E8F5E9; border: 2px solid #4CAF50; border-radius: 12px; padding: 1em; text-align: center;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚡</div>
+                                <div style="font-weight: 600; font-size: 0.85rem; color: #2E7D32;">Parallelization</div>
+                                <div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">并行检索</div>
+                            </div>
+                            <div style="background: #F3E5F5; border: 2px solid #9C27B0; border-radius: 12px; padding: 1em; text-align: center;">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🪞</div>
+                                <div style="font-weight: 600; font-size: 0.85rem; color: #7B1FA2;">Reflection</div>
+                                <div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">自我审查</div>
+                            </div>
                         </div>
-                        <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">ReAct（边检索边分析）</div>
-                        </div>
-                        <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">Parallelization（并行检索多信息源）</div>
-                        </div>
-                        <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">Reflection（研究结果自我审查）</div>
+                        <div style="text-align: center; margin-top: 1em; padding-top: 1em; border-top: 1px dashed #e5e5e5; color: #999; font-size: 0.85rem;">
+                            这些模式<strong style="color: var(--accent);">协同工作</strong>，构建完整研究能力
                         </div>
                     </div>
 
