@@ -421,40 +421,64 @@
                 border-left: 3px solid var(--accent);
             }
             .flow-step-v.input { 
-                border-left-color: #8B9DC3; 
-                background: linear-gradient(135deg, #F5F7FA 0%, #E8ECF1 100%); 
+                border-left-color: #7B8FA8; 
+                background: #F7F9FC; 
             }
             .flow-step-v.process { 
-                border-left-color: #D4A574; 
-                background: linear-gradient(135deg, #FDF8F3 0%, #F5EDE3 100%); 
+                border-left-color: #C9A87C; 
+                background: #FCFAF7; 
             }
             .flow-step-v.output { 
-                border-left-color: #9CAF88; 
-                background: linear-gradient(135deg, #F6F8F4 0%, #E8EDE3 100%); 
+                border-left-color: #8FA68B; 
+                background: #F8FAF7; 
+            }
+            .flow-step-v {
+                display: flex;
+                align-items: center;
+                gap: 1em;
+                padding: 1em;
+                border-radius: 8px;
+                margin-bottom: 0.5em;
+                border-left: 3px solid;
+                border-top: 1px solid #E8E8E8;
+                border-right: 1px solid #E8E8E8;
+                border-bottom: 1px solid #E8E8E8;
             }
             .flow-step-icon {
                 width: 2rem;
                 height: 2rem;
-                border-radius: 8px;
+                border-radius: 6px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 0.75rem;
+                font-size: 0.7rem;
                 font-weight: 600;
                 flex-shrink: 0;
-                border: 1px solid rgba(0,0,0,0.08);
             }
             .flow-step-v.input .flow-step-icon { 
-                background: #8B9DC3; 
-                color: white; 
+                background: #E8EDF2; 
+                color: #5A6B7D;
+                border: 1px solid #D0D8E0;
             }
             .flow-step-v.process .flow-step-icon { 
-                background: #D4A574; 
-                color: white; 
+                background: #F5EDE0; 
+                color: #9A7B5A;
+                border: 1px solid #E5D9C8;
             }
             .flow-step-v.output .flow-step-icon { 
-                background: #9CAF88; 
-                color: white; 
+                background: #E8EFE5; 
+                color: #6B7D68;
+                border: 1px solid #D0D8CD;
+            }
+            .flow-step-v .flow-step-title {
+                font-weight: 600;
+                color: #3A3A3A;
+                font-size: 0.95rem;
+            }
+            .flow-step-v .flow-step-desc {
+                font-size: 0.85rem;
+                color: #666;
+                margin-top: 0.2rem;
             }
             
             /* 样式2: 水平卡片流程 */
