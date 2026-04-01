@@ -854,24 +854,44 @@
                     </div>
                     
                     <div class="flow-diagram">
-                        <div class="flow-node">
-                            <div class="flow-node-title">用户："帮我查一下订单 12345 的物流"</div>
+                        <div class="flow-step-v input">
+                            <div class="flow-step-icon">IN</div>
+                            <div>
+                                <div style="font-weight: 600;">用户输入</div>
+                                <div style="font-size: 0.85rem; color: #666;">"帮我查一下订单 12345 的物流"</div>
+                            </div>
                         </div>
                         <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">LLM 判断：需要调用"查询物流"工具</div>
+                        <div class="flow-step-v process">
+                            <div class="flow-step-icon">TH</div>
+                            <div>
+                                <div style="font-weight: 600;">LLM 判断</div>
+                                <div style="font-size: 0.85rem; color: #666;">需要调用"查询物流"工具</div>
+                            </div>
                         </div>
                         <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">系统调用：get_logistics(order_id="12345")</div>
+                        <div class="flow-step-v process">
+                            <div class="flow-step-icon">AC</div>
+                            <div>
+                                <div style="font-weight: 600;">系统调用</div>
+                                <div style="font-size: 0.85rem; color: #666;">get_logistics(order_id="12345")</div>
+                            </div>
                         </div>
                         <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">返回结果：{status: "已发货", courier: "顺丰"}</div>
+                        <div class="flow-step-v output">
+                            <div class="flow-step-icon">OB</div>
+                            <div>
+                                <div style="font-weight: 600;">返回结果</div>
+                                <div style="font-size: 0.85rem; color: #666;">{status: "已发货", courier: "顺丰"}</div>
+                            </div>
                         </div>
                         <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">LLM 整理回复用户</div>
+                        <div class="flow-step-v output">
+                            <div class="flow-step-icon">RP</div>
+                            <div>
+                                <div style="font-weight: 600;">LLM 回复</div>
+                                <div style="font-size: 0.85rem; color: #666;">"您的订单已发货，顺丰快递..."</div>
+                            </div>
                         </div>
                     </div>
 
@@ -891,24 +911,44 @@
                     <p><strong>核心思想</strong>：智能体不可能记住所有知识，且知识会不断更新。RAG 让它能从外部知识库检索信息，然后基于检索内容生成回答。</p>
                     
                     <div class="flow-diagram">
-                        <div class="flow-node">
-                            <div class="flow-node-title">用户提问："iPhone 15 怎么退货？"</div>
+                        <div class="flow-step-v input">
+                            <div class="flow-step-icon">Q</div>
+                            <div>
+                                <div style="font-weight: 600;">用户提问</div>
+                                <div style="font-size: 0.85rem; color: #666;">"iPhone 15 怎么退货？"</div>
+                            </div>
                         </div>
                         <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">向量化检索 → 找到相关文档</div>
+                        <div class="flow-step-v process">
+                            <div class="flow-step-icon">S</div>
+                            <div>
+                                <div style="font-weight: 600;">向量化检索</div>
+                                <div style="font-size: 0.85rem; color: #666;">找到相关文档</div>
+                            </div>
                         </div>
                         <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">获取文档："iPhone 15 退货政策.pdf"</div>
+                        <div class="flow-step-v process">
+                            <div class="flow-step-icon">D</div>
+                            <div>
+                                <div style="font-weight: 600;">获取文档</div>
+                                <div style="font-size: 0.85rem; color: #666;">"iPhone 15 退货政策.pdf"</div>
+                            </div>
                         </div>
                         <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">结合上下文生成回答</div>
+                        <div class="flow-step-v process">
+                            <div class="flow-step-icon">G</div>
+                            <div>
+                                <div style="font-weight: 600;">生成回答</div>
+                                <div style="font-size: 0.85rem; color: #666;">结合上下文处理</div>
+                            </div>
                         </div>
                         <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">输出："iPhone 15 支持7天无理由退货..."</div>
+                        <div class="flow-step-v output">
+                            <div class="flow-step-icon">A</div>
+                            <div>
+                                <div style="font-weight: 600;">输出答案</div>
+                                <div style="font-size: 0.85rem; color: #666;">"iPhone 15 支持7天无理由退货..."</div>
+                            </div>
                         </div>
                     </div>
 
@@ -955,24 +995,44 @@
                     <p><strong>作用</strong>：在多次交互、任务或较长周期内保留信息的仓库，类似于长期知识库。</p>
                     
                     <div class="flow-diagram">
-                        <div class="flow-node">
-                            <div class="flow-node-title">智能体需要信息时</div>
+                        <div class="flow-step-v input">
+                            <div class="flow-step-icon">T</div>
+                            <div>
+                                <div style="font-weight: 600;">触发检索</div>
+                                <div style="font-size: 0.85rem; color: #666;">智能体需要信息时</div>
+                            </div>
                         </div>
                         <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">查询外部存储（向量数据库等）</div>
+                        <div class="flow-step-v process">
+                            <div class="flow-step-icon">Q</div>
+                            <div>
+                                <div style="font-weight: 600;">查询存储</div>
+                                <div style="font-size: 0.85rem; color: #666;">向量数据库等外部存储</div>
+                            </div>
                         </div>
                         <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">检索相关数据</div>
+                        <div class="flow-step-v process">
+                            <div class="flow-step-icon">R</div>
+                            <div>
+                                <div style="font-weight: 600;">检索数据</div>
+                                <div style="font-size: 0.85rem; color: #666;">获取相关历史信息</div>
+                            </div>
                         </div>
                         <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">整合到短期上下文</div>
+                        <div class="flow-step-v process">
+                            <div class="flow-step-icon">I</div>
+                            <div>
+                                <div style="font-weight: 600;">整合上下文</div>
+                                <div style="font-size: 0.85rem; color: #666;">合并到短期记忆中</div>
+                            </div>
                         </div>
                         <div class="flow-arrow-v">↓</div>
-                        <div class="flow-node">
-                            <div class="flow-node-title">实现知识融合</div>
+                        <div class="flow-step-v output">
+                            <div class="flow-step-icon">F</div>
+                            <div>
+                                <div style="font-weight: 600;">知识融合</div>
+                                <div style="font-size: 0.85rem; color: #666;">实现长期记忆调用</div>
+                            </div>
                         </div>
                     </div>
 
