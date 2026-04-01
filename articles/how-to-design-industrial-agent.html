@@ -565,3 +565,415 @@
                     <div class="callout">
                         <p class="mb-0"><strong>关键区别</strong>：前三种模式是<strong>人为规划好路径</strong>，Planning 是<strong>智能体自己规划路径</strong>。</p>
                     </div>
+
+
+                    <h2 id="reasoning">三、推理提升：让思考更清晰</h2>
+                    
+                    <p>推理提升类模式解决的是 Agent 的"脑力"问题：<strong>如何让 LLM 想得更深入、推理更可靠</strong>。</p>
+
+                    <h3>3.1 思维链（Chain of Thought, CoT）</h3>
+                    
+                    <p><strong>核心思想</strong>：模型在生成最终答案前，先将问题拆解，逐步推导出中间步骤。</p>
+                    
+                    <div class="highlight-box">
+                        <div style="margin-bottom: 1em;"><strong>问题：</strong>一个农场有 35 只鸡和 20 只兔子，一共有多少条腿？</div>
+                        <div style="background: #f9f9f9; padding: 1em; border-radius: 6px; margin-bottom: 1em;">
+                            <div style="font-weight: 600; margin-bottom: 0.5em;">推理过程：</div>
+                            <div style="color: #666; line-height: 1.8; font-size: 0.95rem;">
+                                • 每只鸡有 2 条腿，35 只鸡有 35 × 2 = <strong>70 条腿</strong><br>
+                                • 每只兔子有 4 条腿，20 只兔子有 20 × 4 = <strong>80 条腿</strong><br>
+                                • 总共：70 + 80 = <strong>150 条腿</strong>
+                            </div>
+                        </div>
+                        <p class="mb-0"><strong>答案：150 条腿</strong></p>
+                    </div>
+
+                    <h3>3.2 思维树（Tree of Thought, ToT）</h3>
+                    
+                    <p><strong>核心思想</strong>：比 CoT 更进一步，探索多个思考分支，评估每个分支，选择最优解。</p>
+                    
+                    <table class="comparison-table">
+                        <tr><th>对比维度</th><th>CoT</th><th>ToT</th></tr>
+                        <tr><td>思考路径</td><td>单条路径（线性）</td><td>多分支探索（树状）</td></tr>
+                        <tr><td>适用场景</td><td>数学计算、逻辑推理</td><td>创意写作、策略规划</td></tr>
+                        <tr><td>复杂度</td><td>低</td><td>高</td></tr>
+                    </table>
+
+                    <h3>3.3 ReAct（推理+行动）</h3>
+                    
+                    <p><strong>核心思想</strong>：推理与行动交替进行，不是"先想完再做"，而是"边想边做"。</p>
+                    
+                    <div class="flow-diagram">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 0.75em; flex-wrap: wrap;">
+                            <div class="flow-node" style="margin: 0;">
+                                <div class="flow-node-title">思考 Thought</div>
+                            </div>
+                            <span style="color: #999;">→</span>
+                            <div class="flow-node" style="margin: 0;">
+                                <div class="flow-node-title">行动 Action</div>
+                            </div>
+                            <span style="color: #999;">→</span>
+                            <div class="flow-node" style="margin: 0;">
+                                <div class="flow-node-title">观察 Observation</div>
+                            </div>
+                            <span style="color: #999;">→ ...</span>
+                        </div>
+                    </div>
+
+                    <h3>3.4 Reflection（反思）</h3>
+                    
+                    <p><strong>核心思想</strong>：智能体具备自省能力，生成结果后自我反思答案是否合理、逻辑是否严谨。</p>
+                    
+                    <div class="highlight-box">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1em;">
+                            <div style="background: #f9f9f9; padding: 1em; border-radius: 6px;">
+                                <div style="font-weight: 600; margin-bottom: 0.5em; color: var(--accent);">方式一</div>
+                                <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25em;">自我反思</div>
+                                <div style="font-size: 0.875rem; color: #666;">智能体自己回顾检查</div>
+                            </div>
+                            <div style="background: #f9f9f9; padding: 1em; border-radius: 6px;">
+                                <div style="font-weight: 600; margin-bottom: 0.5em; color: var(--accent);">方式二</div>
+                                <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25em;">独立批评者</div>
+                                <div style="font-size: 0.875rem; color: #666;">创建独立"批评者"智能体，按特定标准严格审查</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>四种推理模式对比</h3>
+                    
+                    <table class="comparison-table">
+                        <tr><th>模式</th><th>思考时机</th><th>特点</th></tr>
+                        <tr><td>CoT</td><td>前置思考</td><td>先想清楚再行动</td></tr>
+                        <tr><td>ToT</td><td>前置思考</td><td>多路径探索</td></tr>
+                        <tr><td>ReAct</td><td>过程中思考</td><td>边想边做</td></tr>
+                        <tr><td>Reflection</td><td>后置思考</td><td>做完了自省</td></tr>
+                    </table>
+
+                    <h2 id="external">四、外部交互：连接真实世界</h2>
+                    
+                    <p>智能体不能只活在"文字世界"里，它需要连接真实世界获取数据、执行操作。</p>
+
+                    <h3>4.1 Tool Use（工具调用）</h3>
+                    
+                    <p><strong>核心思想</strong>：赋予智能体"手和脚"，让它能调用搜索引擎、计算器、数据库、API 等外部工具。</p>
+                    
+                    <div class="callout">
+                        <p class="mb-0">这是从<strong>"只会说话"到"能做事情"</strong>的关键一跃。</p>
+                    </div>
+                    
+                    <div class="flow-diagram">
+                        <div class="flow-node">
+                            <div class="flow-node-title">用户："帮我查一下订单 12345 的物流"</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">LLM 判断：需要调用"查询物流"工具</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">系统调用：get_logistics(order_id="12345")</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">返回结果：{status: "已发货", courier: "顺丰"}</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">LLM 整理回复用户</div>
+                        </div>
+                    </div>
+
+                    <h3>4.2 MCP（模型上下文协议）</h3>
+                    
+                    <p><strong>核心思想</strong>：标准化的连接协议，让智能体以统一方式连接各种外部数据源。</p>
+                    
+                    <table class="comparison-table">
+                        <tr><th>对比</th><th>Tool Use</th><th>MCP</th></tr>
+                        <tr><td>类比</td><td>专用工具（特定扳手）</td><td>通用接口（USB/插座）</td></tr>
+                        <tr><td>适用</td><td>固定任务场景</td><td>动态、可扩展场景</td></tr>
+                        <tr><td>开发</td><td>每个工具单独适配</td><td>标准化接入</td></tr>
+                    </table>
+
+                    <h3>4.3 RAG（检索增强生成）</h3>
+                    
+                    <p><strong>核心思想</strong>：智能体不可能记住所有知识，且知识会不断更新。RAG 让它能从外部知识库检索信息，然后基于检索内容生成回答。</p>
+                    
+                    <div class="flow-diagram">
+                        <div class="flow-node">
+                            <div class="flow-node-title">用户提问："iPhone 15 怎么退货？"</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">向量化检索 → 找到相关文档</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">获取文档："iPhone 15 退货政策.pdf"</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">结合上下文生成回答</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">输出："iPhone 15 支持7天无理由退货..."</div>
+                        </div>
+                    </div>
+
+                    <h2 id="memory">五、记忆管理：从一次性对话到持续关系</h2>
+                    
+                    <p>人类有短期记忆和长期记忆，智能体也需要。记忆管理是 Agent 从"一次性对话"进化到"持续关系"的关键。</p>
+
+                    <h3>5.1 短期记忆（上下文记忆）</h3>
+                    
+                    <p><strong>作用</strong>：类似于工作记忆，保存当前正在处理或最近访问的信息。</p>
+                    
+                    <div class="highlight-box">
+                        <div style="display: flex; align-items: center; padding: 0.6em 0; border-bottom: 1px solid #f0f0f0;">
+                            <span style="color: #999; width: 1.5em;">1.</span>
+                            <span>最近的消息历史</span>
+                        </div>
+                        <div style="display: flex; align-items: center; padding: 0.6em 0; border-bottom: 1px solid #f0f0f0;">
+                            <span style="color: #999; width: 1.5em;">2.</span>
+                            <span>智能体的回复</span>
+                        </div>
+                        <div style="display: flex; align-items: center; padding: 0.6em 0; border-bottom: 1px solid #f0f0f0;">
+                            <span style="color: #999; width: 1.5em;">3.</span>
+                            <span>工具使用结果</span>
+                        </div>
+                        <div style="display: flex; align-items: center; padding: 0.6em 0;">
+                            <span style="color: #999; width: 1.5em;">4.</span>
+                            <span>当前交互中的反思内容</span>
+                        </div>
+                        <div style="margin-top: 1em; padding-top: 1em; border-top: 1px solid #e5e5e5; font-size: 0.9rem; color: #666;">
+                            <strong>特点：</strong>影响 LLM 后续响应，但会话结束后丢失
+                        </div>
+                    </div>
+
+                    <h3>5.2 长期记忆（持久记忆）</h3>
+                    
+                    <p><strong>作用</strong>：在多次交互、任务或较长周期内保留信息的仓库，类似于长期知识库。</p>
+                    
+                    <div class="flow-diagram">
+                        <div class="flow-node">
+                            <div class="flow-node-title">智能体需要信息时</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">查询外部存储（向量数据库等）</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">检索相关数据</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">整合到短期上下文</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">实现知识融合</div>
+                        </div>
+                    </div>
+
+
+                    <h2 id="collaboration">六、系统协作：多智能体团队</h2>
+                    
+                    <p>单一的智能体在面对复杂多领域任务时，能力往往受限。这时候就需要将系统结构化为多个独立的智能体，进行团队协作。</p>
+
+                    <h3>6.1 协作形式</h3>
+                    
+                    <div class="arch-box">
+                        <div class="arch-item">
+                            <div class="arch-icon">A</div>
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 0.25em;">专家团队模式</div>
+                                <div style="font-size: 0.9rem; color: #666; line-height: 1.6;">
+                                    研究员 Agent：负责信息搜集和研究<br>
+                                    编辑 Agent：负责内容整理和润色<br>
+                                    资料收集 Agent：负责数据获取和整理
+                                </div>
+                            </div>
+                        </div>
+                        <div class="arch-item">
+                            <div class="arch-icon dark">B</div>
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 0.25em;">对抗模式</div>
+                                <div style="font-size: 0.9rem; color: #666; line-height: 1.6;">
+                                    内容生成 Agent：负责创作内容<br>
+                                    内容审查 Agent：负责审核和提出改进意见
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>6.2 A2A 协议（Agent-to-Agent）</h3>
+                    
+                    <p><strong>核心作用</strong>：定义智能体之间的通信标准，让不同智能体能够相互理解、协作配合。</p>
+                    
+                    <div class="callout">
+                        <p class="mb-0"><strong>价值：</strong>让专业化的智能体各司其职，协同完成复杂任务。</p>
+                    </div>
+
+                    <h2 id="governance">七、可靠性与治理：让系统安全可控</h2>
+                    
+                    <p>一个好用的系统不仅仅是满足功能需求，它同时需要是<strong>稳定的、安全的、可控的</strong>。</p>
+
+                    <h3>7.1 评估与监控</h3>
+                    
+                    <p>评估智能体的轨迹路径、准确率、延迟、资源消耗（LLM Token 用量等），确保智能体始终符合预期目标。</p>
+
+                    <h3>7.2 护栏与安全（Guardrails）</h3>
+                    
+                    <p>作为保护层，引导智能体的行为，确保输出可信、可预测、有益。</p>
+                    
+                    <div class="highlight-box">
+                        <div style="display: flex; align-items: center; padding: 0.6em 0; border-bottom: 1px solid #f0f0f0;">
+                            <span style="color: #999; width: 1.5em;">1.</span>
+                            <span>内容安全过滤（防止生成有害内容）</span>
+                        </div>
+                        <div style="display: flex; align-items: center; padding: 0.6em 0; border-bottom: 1px solid #f0f0f0;">
+                            <span style="color: #999; width: 1.5em;">2.</span>
+                            <span>输出格式校验（确保输出符合预期格式）</span>
+                        </div>
+                        <div style="display: flex; align-items: center; padding: 0.6em 0;">
+                            <span style="color: #999; width: 1.5em;">3.</span>
+                            <span>敏感信息保护（防止泄露隐私数据）</span>
+                        </div>
+                    </div>
+
+                    <h3>7.3 异常处理与恢复</h3>
+                    
+                    <p>机制包括：错误日志记录、自动重试机制、备用方案切换、服务降级策略、状态恢复机制。</p>
+
+                    <h3>7.4 Human-in-the-Loop（人机协同）</h3>
+                    
+                    <p>在需要细致判断、伦理推理或复杂模糊语境理解的任务上，引入人类监督，确保 AI 行为符合人类价值和安全规范。</p>
+
+                    <h2 id="composition">八、模式组合：1+1>2 的力量</h2>
+                    
+                    <div class="callout">
+                        <p class="mb-0"><strong>最重要的认知</strong>：不要孤立地看待每个模式，要学会组合！这才是设计模式的真正力量。</p>
+                    </div>
+
+                    <h3>8.1 经典组合示例</h3>
+                    
+                    <table class="comparison-table">
+                        <tr><th>组合</th><th>能力描述</th><th>应用场景</th></tr>
+                        <tr><td>提示链 + 工具调用 + RAG</td><td>能够联网查资料并逐步分析</td><td>研究助手</td></tr>
+                        <tr><td>规划 + 多智能体协作 + 反思 + 记忆管理</td><td>能够自主完成复杂项目</td><td>AI 项目管理团队</td></tr>
+                        <tr><td>路由 + 并行化 + 资源感知优化</td><td>高效且经济的任务处理</td><td>智能客服系统</td></tr>
+                        <tr><td>HITL + 护栏 + 异常处理</td><td>安全可控的自动化决策</td><td>金融风控、医疗诊断</td></tr>
+                    </table>
+
+                    <h3>8.2 实际场景的模式组合</h3>
+                    
+                    <p><strong>智能客服系统组合：</strong></p>
+                    <div class="flow-diagram">
+                        <div class="flow-node">
+                            <div class="flow-node-title">Prompt Chaining（步骤拆解）</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">Routing（路由到不同处理路径）</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">RAG（部分路径需要检索知识库）</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">Tool Use（部分路径需要调用工具）</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">Guardrails（护栏保证内容安全）</div>
+                        </div>
+                    </div>
+
+                    <p><strong>研究助手组合：</strong></p>
+                    <div class="flow-diagram">
+                        <div class="flow-node">
+                            <div class="flow-node-title">Planning（规划研究框架）</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">ReAct（边检索边分析）</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">Parallelization（并行检索多信息源）</div>
+                        </div>
+                        <div class="flow-arrow-v">↓</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">Reflection（研究结果自我审查）</div>
+                        </div>
+                    </div>
+
+                    <h2 id="practices">九、实践建议：从理论到落地</h2>
+
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-number">1</div>
+                            <div class="timeline-title">从简单开始</div>
+                            <div class="timeline-desc">不要一开始就构建复杂的多智能体系统。先从<strong>提示链、工具调用</strong>等基础模式开始，逐步增加复杂度。就像登山，要一步步往上走。</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-number">2</div>
+                            <div class="timeline-title">根据场景选择</div>
+                            <div class="timeline-desc">没有"最好"的模式组合，只有"最适合"的。分析你的具体需求，选择合适的模式。</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-number">3</div>
+                            <div class="timeline-title">持续迭代</div>
+                            <div class="timeline-desc">智能体系统的优化是一个持续过程。先构建 MVP，然后根据实际运行情况不断优化。</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-number">4</div>
+                            <div class="timeline-title">重视可靠性</div>
+                            <div class="timeline-desc">不要只关注功能，<strong>安全、监控、异常处理</strong>同样重要。</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-number">5</div>
+                            <div class="timeline-title">拥抱开源生态</div>
+                            <div class="timeline-desc"><strong>LangChain、Google ADK、CrewAI</strong> 等框架已经实现了大部分设计模式，不需要从零开始造轮子。</div>
+                        </div>
+                    </div>
+
+                    <blockquote>一个不可控的强大系统，比一个可控的简单系统更危险。</blockquote>
+
+                    <h2 id="conclusion">结语：架构设计是核心竞争力</h2>
+                    
+                    <p>Google 的《Agentic Design Patterns》给我们最大的启示是：<strong>Agent 系统的竞争力不在于单点技术的先进性，而在于架构设计的合理性</strong>。</p>
+                    
+                    <p>21 种设计模式就像乐高积木，如何组合、如何取舍、如何平衡复杂度与效果，考验的是产品经理的架构思维。</p>
+                    
+                    <p>在 Agent 时代，能够设计出<strong>可上线、可扩展、可治理</strong>的智能体系统的产品经理，将成为最稀缺的人才。</p>
+
+                    <div class="callout">
+                        <p class="mb-0"><strong>参考资源</strong>：Google《Agentic Design Patterns》白皮书（400+ 页）</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="py-16 px-6 md:px-12 bg-white border-t border-[#e5e5e5]">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="font-display text-xl font-semibold mb-6 text-center">相关文章</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <a href="from-llm-to-agent.html" class="block p-4 border border-[#e5e5e5] rounded-lg hover:border-[#D4A574] transition-colors">
+                    <p class="text-xs text-[#D4A574] mb-2">产品知识</p>
+                    <h3 class="font-display font-semibold text-gray-900">从 LLM 到 Agent：建立 AI Agent 认知框架</h3>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-8 px-6 md:px-12 border-t border-[#e5e5e5]">
+        <div class="max-w-3xl mx-auto text-center">
+            <p class="text-sm text-[#999999]">© 2024 Qianmei's Agent Lab</p>
+        </div>
+    </footer>
+</body>
+</html>
