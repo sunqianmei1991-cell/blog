@@ -340,7 +340,199 @@
                 color: var(--text-primary);
             }
         }
-    </style>
+    
+            /* 改进的文本块 - 带琥珀色点缀 */
+            .feature-list {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.5em;
+                margin: 1.5em 0;
+            }
+            .feature-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 1em;
+                padding: 1em 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .feature-item:last-child {
+                border-bottom: none;
+            }
+            .feature-number {
+                width: 1.75rem;
+                height: 1.75rem;
+                background: var(--accent);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.8rem;
+                font-weight: 600;
+                flex-shrink: 0;
+            }
+            .feature-content {
+                flex: 1;
+            }
+            .feature-title {
+                font-weight: 600;
+                margin-bottom: 0.25em;
+            }
+            .feature-desc {
+                font-size: 0.9rem;
+                color: #666;
+            }
+            .feature-footer {
+                margin-top: 1em;
+                padding-top: 1em;
+                border-top: 1px solid #e5e5e5;
+                font-size: 0.9rem;
+                color: #666;
+            }
+            
+            /* 多样化的流程图样式 */
+            /* 样式1: 垂直流程 - 带颜色编码 */
+            .flow-vertical {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.5em;
+                margin: 1.5em 0;
+            }
+            .flow-step-v {
+                display: flex;
+                align-items: center;
+                gap: 1em;
+                padding: 1em;
+                background: #f8f9fa;
+                border-radius: 8px;
+                margin-bottom: 0.5em;
+                border-left: 3px solid var(--accent);
+            }
+            .flow-step-v.input { border-left-color: #4A90E2; background: #F0F7FF; }
+            .flow-step-v.process { border-left-color: #F5A623; background: #FFF8E7; }
+            .flow-step-v.output { border-left-color: #7ED321; background: #F0FFE5; }
+            .flow-step-icon {
+                width: 2rem;
+                height: 2rem;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.9rem;
+                flex-shrink: 0;
+            }
+            .flow-step-v.input .flow-step-icon { background: #4A90E2; color: white; }
+            .flow-step-v.process .flow-step-icon { background: #F5A623; color: white; }
+            .flow-step-v.output .flow-step-icon { background: #7ED321; color: white; }
+            
+            /* 样式2: 水平卡片流程 */
+            .flow-cards {
+                display: flex;
+                gap: 1em;
+                margin: 1.5em 0;
+                overflow-x: auto;
+                padding-bottom: 0.5em;
+            }
+            .flow-card {
+                flex: 1;
+                min-width: 150px;
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.25em;
+                text-align: center;
+                position: relative;
+            }
+            .flow-card::after {
+                content: "→";
+                position: absolute;
+                right: -0.8em;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #ccc;
+                font-size: 1.2rem;
+            }
+            .flow-card:last-child::after {
+                display: none;
+            }
+            .flow-card-icon {
+                width: 3rem;
+                height: 3rem;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 0.75em;
+                font-size: 1.2rem;
+            }
+            .flow-card:nth-child(1) .flow-card-icon { background: #E3F2FD; color: #1976D2; }
+            .flow-card:nth-child(2) .flow-card-icon { background: #FFF3E0; color: #F57C00; }
+            .flow-card:nth-child(3) .flow-card-icon { background: #E8F5E9; color: #388E3C; }
+            .flow-card:nth-child(4) .flow-card-icon { background: #F3E5F5; color: #7B1FA2; }
+            
+            /* 样式3: 环形/循环流程 */
+            .flow-cycle {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.5em;
+                margin: 1.5em 0;
+            }
+            .flow-cycle-items {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 0.5em;
+                flex-wrap: wrap;
+            }
+            .flow-cycle-item {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 0.75em 1.25em;
+                border-radius: 25px;
+                font-size: 0.9rem;
+                font-weight: 500;
+            }
+            .flow-cycle-arrow {
+                color: #999;
+                font-size: 1.2rem;
+            }
+            
+            /* 样式4: 树形分支 - 彩色 */
+            .flow-tree {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.5em;
+                margin: 1.5em 0;
+            }
+            .flow-tree-root {
+                background: #1a1a1a;
+                color: white;
+                padding: 1em;
+                border-radius: 8px;
+                text-align: center;
+                margin-bottom: 1em;
+            }
+            .flow-tree-branches {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75em;
+            }
+            .flow-tree-branch {
+                padding: 0.75em;
+                border-radius: 8px;
+                text-align: center;
+                font-size: 0.85rem;
+            }
+            .flow-tree-branch:nth-child(1) { background: #FFEBEE; color: #C62828; }
+            .flow-tree-branch:nth-child(2) { background: #E3F2FD; color: #1565C0; }
+            .flow-tree-branch:nth-child(3) { background: #E8F5E9; color: #2E7D32; }
+            .flow-tree-branch:nth-child(4) { background: #FFF3E0; color: #EF6C00; }
+
+        </style>
 </head>
 <body class="min-h-screen">
     <div class="grain-overlay"></div>
@@ -728,24 +920,32 @@
                     
                     <p><strong>作用</strong>：类似于工作记忆，保存当前正在处理或最近访问的信息。</p>
                     
-                    <div class="highlight-box">
-                        <div style="display: flex; align-items: center; padding: 0.6em 0; border-bottom: 1px solid #f0f0f0;">
-                            <span style="color: #999; width: 1.5em;">1.</span>
-                            <span>最近的消息历史</span>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-number">1</div>
+                            <div class="feature-content">
+                                <div class="feature-title">最近的消息历史</div>
+                            </div>
                         </div>
-                        <div style="display: flex; align-items: center; padding: 0.6em 0; border-bottom: 1px solid #f0f0f0;">
-                            <span style="color: #999; width: 1.5em;">2.</span>
-                            <span>智能体的回复</span>
+                        <div class="feature-item">
+                            <div class="feature-number">2</div>
+                            <div class="feature-content">
+                                <div class="feature-title">智能体的回复</div>
+                            </div>
                         </div>
-                        <div style="display: flex; align-items: center; padding: 0.6em 0; border-bottom: 1px solid #f0f0f0;">
-                            <span style="color: #999; width: 1.5em;">3.</span>
-                            <span>工具使用结果</span>
+                        <div class="feature-item">
+                            <div class="feature-number">3</div>
+                            <div class="feature-content">
+                                <div class="feature-title">工具使用结果</div>
+                            </div>
                         </div>
-                        <div style="display: flex; align-items: center; padding: 0.6em 0;">
-                            <span style="color: #999; width: 1.5em;">4.</span>
-                            <span>当前交互中的反思内容</span>
+                        <div class="feature-item">
+                            <div class="feature-number">4</div>
+                            <div class="feature-content">
+                                <div class="feature-title">当前交互中的反思内容</div>
+                            </div>
                         </div>
-                        <div style="margin-top: 1em; padding-top: 1em; border-top: 1px solid #e5e5e5; font-size: 0.9rem; color: #666;">
+                        <div class="feature-footer">
                             <strong>特点：</strong>影响 LLM 后续响应，但会话结束后丢失
                         </div>
                     </div>
@@ -827,18 +1027,27 @@
                     
                     <p>作为保护层，引导智能体的行为，确保输出可信、可预测、有益。</p>
                     
-                    <div class="highlight-box">
-                        <div style="display: flex; align-items: center; padding: 0.6em 0; border-bottom: 1px solid #f0f0f0;">
-                            <span style="color: #999; width: 1.5em;">1.</span>
-                            <span>内容安全过滤（防止生成有害内容）</span>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-number">1</div>
+                            <div class="feature-content">
+                                <div class="feature-title">内容安全过滤</div>
+                                <div class="feature-desc">防止生成有害内容</div>
+                            </div>
                         </div>
-                        <div style="display: flex; align-items: center; padding: 0.6em 0; border-bottom: 1px solid #f0f0f0;">
-                            <span style="color: #999; width: 1.5em;">2.</span>
-                            <span>输出格式校验（确保输出符合预期格式）</span>
+                        <div class="feature-item">
+                            <div class="feature-number">2</div>
+                            <div class="feature-content">
+                                <div class="feature-title">输出格式校验</div>
+                                <div class="feature-desc">确保输出符合预期格式</div>
+                            </div>
                         </div>
-                        <div style="display: flex; align-items: center; padding: 0.6em 0;">
-                            <span style="color: #999; width: 1.5em;">3.</span>
-                            <span>敏感信息保护（防止泄露隐私数据）</span>
+                        <div class="feature-item">
+                            <div class="feature-number">3</div>
+                            <div class="feature-content">
+                                <div class="feature-title">敏感信息保护</div>
+                                <div class="feature-desc">防止泄露隐私数据</div>
+                            </div>
                         </div>
                     </div>
 
