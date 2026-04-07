@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>构建高效Agent - 核心模式与工程实践 - Qianmei's Agent Lab</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J95ZCBCXP7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J95ZCBCXP7');
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --bg-primary: #FAF9F6;
+                --text-primary: #1a1a1a;
+                --accent: #D4A574;
+                --text-secondary: #666666;
+                --border: #e5e5e5;
+                --code-bg: #1e1e2e;
+            }
+            body {
+                font-family: 'Source Serif Pro', serif;
+                background-color: var(--bg-primary);
+                color: var(--text-primary);
+                line-height: 1.8;
+            }
+            h1, h2, h3, h4, .font-display {
+                font-family: 'Playfair Display', serif;
+                line-height: 1.3;
+            }
+            code, pre {
+                font-family: 'JetBrains Mono', monospace;
+            }
+            p {
+                margin-bottom: 1.5em;
+            }
+        }
+        @layer components {
+            .grain-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                opacity: 0.03;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            }
+            .article-content h2 {
+                font-size: 1.6rem;
+                font-weight: 600;
+                margin-top: 2.5em;
+                margin-bottom: 0.8em;
+                color: var(--text-primary);
+            }
+            .article-content h3 {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-top: 2em;
+                margin-bottom: 0.7em;
+                color: var(--text-primary);
+            }
+            .article-content p {
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .article-content ul, .article-content ol {
+                margin-bottom: 1.5em;
+                padding-left: 1.5em;
+            }
+            .article-content li {
+                margin-bottom: 0.5em;
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .article-content a {
+                color: var(--accent);
+                text-decoration: underline;
+                text-decoration-color: rgba(212, 165, 116, 0.4);
+                text-underline-offset: 3px;
+            }
+            .article-content strong {
+                color: var(--text-primary);
+                font-weight: 600;
+            }
+            .callout {
+                border-left: 3px solid var(--accent);
+                background: linear-gradient(90deg, rgba(212, 165, 116, 0.08) 0%, transparent 100%);
+                padding: 1.25em 1.5em;
+                margin: 2em 0;
+                border-radius: 0 8px 8px 0;
+            }
+            .callout-title {
+                font-weight: 600;
+                color: var(--accent);
+                margin-bottom: 0.5em;
+                font-size: 0.9rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            .toc {
+                border-left: 1px solid var(--border);
+                padding-left: 1.25em;
+            }
+            .toc ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            .toc li {
+                margin-bottom: 0.4em;
+            }
+            .toc a {
+                color: #999;
+                text-decoration: none;
+                font-size: 0.85rem;
+            }
+            .toc a:hover {
+                color: var(--text-primary);
+            }
+            /* Flowchart styles */
+            .flowchart {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 2em;
+                margin: 2em 0;
+                overflow-x: auto;
+            }
+            .flow-node {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0.75em 1.25em;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                font-weight: 500;
+                min-width: 120px;
+                text-align: center;
+            }
+            .flow-llm {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+            .flow-tool {
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                color: white;
+            }
+            .flow-decision {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                color: white;
+            }
+            .flow-data {
+                background: #f8f9fa;
+                border: 2px solid var(--border);
+                color: var(--text-secondary);
+            }
+            .flow-arrow {
+                color: #999;
+                font-size: 1.5rem;
+                margin: 0 0.5em;
+            }
+            .flow-arrow-down {
+                display: block;
+                text-align: center;
+                color: #999;
+                font-size: 1.5rem;
+                margin: 0.5em 0;
+            }
+            .flow-row {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 0.5em;
+                margin: 1em 0;
+            }
+            .flow-column {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            /* Code block */
+            .code-block {
+                background: var(--code-bg);
+                border-radius: 8px;
+                padding: 1.25em 1.5em;
+                margin: 1.5em 0;
+                overflow-x: auto;
+            }
+            .code-block pre {
+                margin: 0;
+                color: #e0e0e0;
+                font-size: 0.85rem;
+                line-height: 1.6;
+            }
+            .code-block .comment {
+                color: #6a9955;
+            }
+            .code-block .keyword {
+                color: #569cd6;
+            }
+            .code-block .string {
+                color: #ce9178;
+            }
+            .code-block .function {
+                color: #dcdcaa;
+            }
+            .code-block .property {
+                color: #9cdcfe;
+            }
+            /* Architecture diagram */
+            .arch-diagram {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 2em;
+                margin: 2em 0;
+            }
+            .arch-box {
+                border: 2px solid var(--border);
+                border-radius: 8px;
+                padding: 1em;
+                text-align: center;
+                background: #fafafa;
+            }
+            .arch-box-highlight {
+                border-color: var(--accent);
+                background: linear-gradient(135deg, rgba(212, 165, 116, 0.1) 0%, rgba(212, 165, 116, 0.05) 100%);
+            }
+            .arch-label {
+                font-size: 0.75rem;
+                color: #999;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.5em;
+            }
+            /* Comparison table */
+            .comparison-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 1.5em 0;
+                font-size: 0.95rem;
+            }
+            .comparison-table th {
+                background: #f5f5f5;
+                padding: 0.75em 1em;
+                text-align: left;
+                font-weight: 600;
+                border-bottom: 2px solid var(--border);
+            }
+            .comparison-table td {
+                padding: 0.75em 1em;
+                border-bottom: 1px solid var(--border);
+                color: var(--text-secondary);
+                vertical-align: top;
+            }
+            .comparison-table td:first-child {
+                font-weight: 600;
+                color: var(--text-primary);
+            }
+            /* Pattern grid */
+            .pattern-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1em;
+                margin: 1.5em 0;
+            }
+            .pattern-card {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 1.25em;
+                transition: all 0.3s ease;
+            }
+            .pattern-card:hover {
+                border-color: var(--accent);
+                box-shadow: 0 4px 12px rgba(212, 165, 116, 0.15);
+            }
+            .pattern-card-title {
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 0.5em;
+                font-size: 1rem;
+            }
+            .pattern-card-desc {
+                font-size: 0.85rem;
+                color: var(--text-secondary);
+            }
+            /* Text block */
+            .text-block {
+                background: linear-gradient(135deg, #f8f9fa 0%, #f0f0f0 100%);
+                border-radius: 8px;
+                padding: 1.5em;
+                margin: 1.5em 0;
+                border-left: 4px solid var(--accent);
+            }
+            .text-block-title {
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 0.75em;
+            }
+            /* Step list */
+            .step-list {
+                counter-reset: step;
+                list-style: none;
+                padding: 0;
+            }
+            .step-item {
+                counter-increment: step;
+                position: relative;
+                padding-left: 3em;
+                margin-bottom: 1.5em;
+            }
+            .step-item::before {
+                content: counter(step);
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 2em;
+                height: 2em;
+                background: var(--accent);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.85rem;
+                font-weight: 600;
+            }
+            .step-title {
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 0.25em;
+            }
+            .step-desc {
+                color: var(--text-secondary);
+                font-size: 0.95rem;
+            }
+            /* Highlight box */
+            .highlight-box {
+                background: linear-gradient(135deg, rgba(212, 165, 116, 0.1) 0%, rgba(212, 165, 116, 0.05) 100%);
+                border: 1px solid rgba(212, 165, 116, 0.3);
+                border-radius: 8px;
+                padding: 1.25em 1.5em;
+                margin: 1.5em 0;
+            }
+            .highlight-box-title {
+                font-weight: 600;
+                color: var(--accent);
+                margin-bottom: 0.5em;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="grain-overlay"></div>
+
+    <header class="py-4 px-6 md:px-12 border-b border-[#e5e5e5]">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <a href="../index.html" class="text-[#1a1a1a] font-display text-lg font-semibold hover:text-[#D4A574] transition-colors">← 返回首页</a>
+            <nav class="flex gap-6 text-sm text-[#666666]">
+                <a href="../index.html" class="hover:text-[#1a1a1a]">文章</a>
+                <a href="#" class="hover:text-[#1a1a1a]">关于</a>
+            </nav>
+        </div>
+    </header>
+
+    <article class="pt-16 pb-12 px-6 md:px-12">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid lg:grid-cols-[200px_1fr] gap-12">
+                <div class="hidden lg:block"></div>
+                <div class="max-w-2xl">
+                    <p class="text-[#D4A574] text-sm tracking-[0.2em] uppercase mb-4">产品知识</p>
+                    <h1 class="font-display text-4xl md:text-5xl font-semibold leading-tight mb-6">构建高效 Agent</h1>
+                    <p class="text-lg text-[#666666] leading-relaxed mb-8">深入解析 Google Agent Design Patterns，5 大核心工作流模式与工程实践指南</p>
+                    <div class="flex items-center gap-4 text-sm text-[#999999]">
+                        <span>2026年4月7日</span>
+                        <span class="w-1 h-1 rounded-full bg-[#D4A574]"></span>
+                        <span>22 分钟阅读</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <div class="pb-20 px-6 md:px-12">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid lg:grid-cols-[200px_1fr] gap-12 items-start">
+                <aside class="hidden lg:block">
+                    <div class="sticky top-24">
+                        <p class="text-xs text-[#999999] mb-3 uppercase tracking-wider">目录</p>
+                        <nav class="toc">
+                            <ul>
+                                <li><a href="#intro">核心观点</a></li>
+                                <li><a href="#workflows">5大工作流模式</a></li>
+                                <li><a href="#prompt-chaining">Prompt Chaining</a></li>
+                                <li><a href="#parallelization">Parallelization</a></li>
+                                <li><a href="#routing">Routing</a></li>
+                                <li><a href="#orchestrator-workers">Orchestrator-Workers</a></li>
+                                <li><a href="#evaluator-evaluator">Evaluator-Optimizer</a></li>
+                                <li><a href="#decision">何时用 Workflow</a></li>
+                                <li><a href="#rag">Agentic RAG</a></li>
+                                <li><a href="#tool-use">Tool Use</a></li>
+                                <li><a href="#evaluation">Evaluation</a></li>
+                                <li><a href="#guardrails">Guardrails</a></li>
+                                <li><a href="#conclusion">结语</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </aside>
+
+                <div class="article-content max-w-2xl mx-auto lg:mx-0">
+
+                    <h2 id="intro">核心观点：模式组合的力量</h2>
+
+                    <p>Google 在《Building Effective Agents》白皮书中给出了来自数十个跨行业团队的实践总结：<strong>不要孤立地使用单一模式，真正的威力在于多种模式的巧妙组合</strong>。</p>
+
+                    <div class="highlight-box">
+                        <div class="highlight-box-title">关键洞察</div>
+                        <p class="mb-0">从 Anthropic、Google、OpenAI 等公司的实践来看，90% 以上的生产级 Agent 都采用了<strong>Workflow（预定义工作流）</strong>模式，而非完全自主的<strong>Agent（自主规划）</strong>模式。原因在于：Workflow 更可控、更可预测、更容易优化。</p>
+                    </div>
+
+                    <p>这篇文章将深入解析 5 大核心工作流模式，以及何时该用 Workflow、何时该用 Agent 的决策框架。</p>
+
+                    <h2 id="workflows">5 大核心工作流模式</h2>
+
+                    <p>Google 将 Agent 的实现模式归纳为 5 种核心工作流，这是从数十个跨行业真实项目中提炼的最佳实践：</p>
+
+                    <div class="pattern-grid">
+                        <div class="pattern-card">
+                            <div class="pattern-card-title">Prompt Chaining</div>
+                            <div class="pattern-card-desc">将复杂任务拆解为顺序执行的多个步骤，每一步的输出作为下一步的输入</div>
+                        </div>
+                        <div class="pattern-card">
+                            <div class="pattern-card-title">Parallelization</div>
+                            <div class="pattern-card-desc">并行执行多个独立子任务，然后汇总结果，提升效率</div>
+                        </div>
+                        <div class="pattern-card">
+                            <div class="pattern-card-title">Routing</div>
+                            <div class="pattern-card-desc">根据输入类型或特征，路由到不同的专用处理流程</div>
+                        </div>
+                        <div class="pattern-card">
+                            <div class="pattern-card-title">Orchestrator-Workers</div>
+                            <div class="pattern-card-desc">中心协调者动态规划任务分配，多个工作单元并行执行</div>
+                        </div>
+                        <div class="pattern-card">
+                            <div class="pattern-card-title">Evaluator-Optimizer</div>
+                            <div class="pattern-card-desc">迭代评估与优化，直到结果达到预期标准</div>
+                        </div>
+                    </div>
+
+                    <h2 id="prompt-chaining">模式一：Prompt Chaining（提示链）</h2>
+
+                    <h3>核心理念</h3>
+
+                    <p>将复杂任务拆解为一系列顺序执行的子任务，每个子任务由一个专门的 LLM 处理。前一个子任务的输出作为下一个子任务的输入，形成流水线式的处理流程。</p>
+
+                    <div class="flowchart">
+                        <div class="flow-column">
+                            <div class="flow-row">
+                                <div class="flow-node flow-data">用户输入</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-llm">LLM 1</div>
+                                <span class="flow-arrow">→</span>
+                                <div class="flow-node flow-data">提取关键信息</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-llm">LLM 2</div>
+                                <span class="flow-arrow">→</span>
+                                <div class="flow-node flow-data">情感分析</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-llm">LLM 3</div>
+                                <span class="flow-arrow">→</span>
+                                <div class="flow-node flow-data">生成摘要</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-data">最终输出</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>适用场景</h3>
+
+                    <ul>
+                        <li><strong>多步骤处理流程</strong>：如内容审核、报告生成、数据转换</li>
+                        <li><strong>需要结构化输出</strong>：每一步需要严格的 JSON/Schema 输出</li>
+                        <li><strong>任务可分解</strong>：每个子任务可以独立处理</li>
+                    </ul>
+
+                    <h3>工程实践</h3>
+
+                    <div class="code-block">
+<pre><span class="comment"># Prompt Chaining 示例：文章分析流水线</span>
+<span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> StateGraph
+<span class="keyword">from</span> typing <span class="keyword">import</span> TypedDict
+
+<span class="keyword">class</span> <span class="function">ArticleState</span>(TypedDict):
+    raw_text: <span class="keyword">str</span>
+    key_info: <span class="keyword">dict</span>
+    sentiment: <span class="keyword">str</span>
+    summary: <span class="keyword">str</span>
+
+<span class="comment"># Step 1: 提取关键信息</span>
+<span class="keyword">def</span> <span class="function">extract_info</span>(state: ArticleState) -> ArticleState:
+    prompt = <span class="string">f"从以下文章中提取关键信息：{state['raw_text']}"</span>
+    state[<span class="property">'key_info'</span>] = llm.invoke(prompt)
+    <span class="keyword">return</span> state
+
+<span class="comment"># Step 2: 情感分析</span>
+<span class="keyword">def</span> <span class="function">analyze_sentiment</span>(state: ArticleState) -> ArticleState:
+    prompt = <span class="string">f"分析以下内容的情感：{state['key_info']}"</span>
+    state[<span class="property">'sentiment'</span>] = llm.invoke(prompt)
+    <span class="keyword">return</span> state
+
+<span class="comment"># Step 3: 生成摘要</span>
+<span class="keyword">def</span> <span class="function">generate_summary</span>(state: ArticleState) -> ArticleState:
+    prompt = <span class="string">f"基于以下信息生成摘要：{state['key_info']}, 情感：{state['sentiment']}"</span>
+    state[<span class="property">'summary'</span>] = llm.invoke(prompt)
+    <span class="keyword">return</span> state
+
+<span class="comment"># 构建工作流</span>
+workflow = StateGraph(ArticleState)
+workflow.add_node(<span class="string">"extract"</span>, extract_info)
+workflow.add_node(<span class="string">"analyze"</span>, analyze_sentiment)
+workflow.add_node(<span class="string">"summarize"</span>, generate_summary)
+workflow.set_entry_point(<span class="string">"extract"</span>)
+workflow.add_edge(<span class="string">"extract"</span>, <span class="string">"analyze"</span>)
+workflow.add_edge(<span class="string">"analyze"</span>, <span class="string">"summarize"</span>)</pre>
+                    </div>
+
+                    <div class="text-block">
+                        <div class="text-block-title">💡 最佳实践</div>
+                        <p>每个步骤使用结构化输出（JSON Schema）确保数据在步骤间精确传递。建议为每个步骤添加错误处理和重试逻辑。</p>
+                    </div>
+
+                    <h2 id="parallelization">模式二：Parallelization（并行化）</h2>
+
+                    <h3>核心理念</h3>
+
+                    <p>当任务包含多个相互独立的子任务时，可以同时执行这些子任务，最后汇总结果。这就像从"串行工厂"升级为"并行车间"，大幅提升处理效率。</p>
+
+                    <div class="flowchart">
+                        <div class="flow-column">
+                            <div class="flow-row">
+                                <div class="flow-node flow-data">用户输入</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-llm">LLM 1</div>
+                                <span class="flow-arrow">→</span>
+                                <div class="flow-node flow-data">搜索结果</div>
+                                <span style="margin: 0 0.5em; color: #999;">|</span>
+                                <div class="flow-node flow-llm">LLM 2</div>
+                                <span class="flow-arrow">→</span>
+                                <div class="flow-node flow-data">数据库查询</div>
+                                <span style="margin: 0 0.5em; color: #999;">|</span>
+                                <div class="flow-node flow-llm">LLM 3</div>
+                                <span class="flow-arrow">→</span>
+                                <div class="flow-node flow-data">API 调用</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-tool">结果聚合</div>
+                                <span class="flow-arrow">→</span>
+                                <div class="flow-node flow-data">最终响应</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>适用场景</h3>
+
+                    <ul>
+                        <li><strong>多源信息收集</strong>：如同时查询多个搜索引擎或数据库</li>
+                        <li><strong>批量内容生成</strong>：如同时生成多个产品描述或报告章节</li>
+                        <li><strong>多角度分析</strong>：如同时从不同维度分析同一问题</li>
+                    </ul>
+
+                    <h3>工程实践</h3>
+
+                    <div class="code-block">
+<pre><span class="comment"># Parallelization 示例：并发执行多个任务</span>
+<span class="keyword">import</span> asyncio
+<span class="keyword">from</span> concurrent.futures <span class="keyword">import</span> ThreadPoolExecutor
+
+<span class="keyword">async def</span> <span class="function">parallel_search</span>(query: <span class="keyword">str</span>):
+    <span class="comment"># 并行执行多个搜索</span>
+    tasks = [
+        search_google(query),
+        search_baidu(query),
+        search_github(query),
+    ]
+    results = <span class="keyword">await</span> asyncio.gather(*tasks)
+
+    <span class="comment"># 汇总结果</span>
+    aggregated = aggregate_results(results)
+    <span class="keyword">return</span> aggregated
+
+<span class="comment"># 使用 ThreadPoolExecutor 处理同步任务</span>
+<span class="keyword">def</span> <span class="function">batch_generate</span>(prompts: List[str]):
+    <span class="keyword">with</span> ThreadPoolExecutor(max_workers=10) <span class="keyword">as</span> executor:
+        results = list(executor.map(llm.invoke, prompts))
+    <span class="keyword">return</span> results</pre>
+                    </div>
+
+                    <h2 id="routing">模式三：Routing（路由）</h2>
+
+                    <h3>核心理念</h3>
+
+                    <p>根据输入的特征（意图、复杂度、内容类型），将其分配到不同的处理路径。这不是简单的 if-else，而是基于 LLM 或向量相似度的智能路由。</p>
+
+                    <div class="flowchart">
+                        <div class="flow-column">
+                            <div class="flow-row">
+                                <div class="flow-node flow-data">用户查询</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-decision">意图分类器</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-llm">客服处理</div>
+                                <span style="margin: 0 0.5em; color: #999;">|</span>
+                                <div class="flow-node flow-llm">技术问答</div>
+                                <span style="margin: 0 0.5em; color: #999;">|</span>
+                                <div class="flow-node flow-llm">投诉处理</div>
+                                <span style="margin: 0 0.5em; color: #999;">|</span>
+                                <div class="flow-node flow-llm">转人工</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>路由策略</h3>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>策略</th>
+                                <th>适用场景</th>
+                                <th>优点</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>基于规则</td>
+                                <td>简单分类、明确规则</td>
+                                <td>快速、可控、无需 LLM</td>
+                            </tr>
+                            <tr>
+                                <td>LLM 分类</td>
+                                <td>复杂意图、多样化表达</td>
+                                <td>灵活、适应性强</td>
+                            </tr>
+                            <tr>
+                                <td>向量相似度</td>
+                                <td>知识库匹配、FAQ 路由</td>
+                                <td>语义匹配、零样本</td>
+                            </tr>
+                            <tr>
+                                <td>成本路由</td>
+                                <td>资源优化场景</td>
+                                <td>成本控制、效率优化</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>工程实践</h3>
+
+                    <div class="code-block">
+<pre><span class="comment"># Routing 示例：智能路由</span>
+<span class="keyword">class</span> <span class="function">SmartRouter</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(self):
+        self.routes = {
+            <span class="string">"technical"</span>: technical_agent,
+            <span class="string">"sales"</span>: sales_agent,
+            <span class="string">"support"</span>: support_agent,
+        }
+
+    <span class="keyword">def</span> <span class="function">route</span>(self, query: <span class="keyword">str</span>) -> Agent:
+        <span class="comment"># 使用 LLM 进行意图分类</span>
+        intent = llm.invoke(
+            <span class="string">f"分类以下查询的技术类型：{query}"</span>
+            + <span class="string">"返回：technical/sales/support"</span>
+        )
+
+        <span class="comment"># 成本感知路由：简单问题用小模型</span>
+        <span class="keyword">if</span> is_simple_query(query):
+            <span class="keyword">return</span> cheap_agent  <span class="comment"># 如 GPT-4o-mini</span>
+
+        <span class="keyword">return</span> self.routes.get(intent, default_agent)</pre>
+                    </div>
+
+                    <h2 id="orchestrator-workers">模式四：Orchestrator-Workers（编排器-工作器）</h2>
+
+                    <h3>核心理念</h3>
+
+                    <p>这是最灵活的模式。一个中心"编排器"负责理解任务、规划步骤、动态分配子任务；多个"工作器"各自执行具体任务，最后由编排器汇总结果。</p>
+
+                    <div class="flowchart">
+                        <div class="flow-column">
+                            <div class="flow-row">
+                                <div class="flow-node flow-data">复杂任务</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-llm">编排器</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-tool">规划步骤</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-llm">工作器 A</div>
+                                <span style="margin: 0 0.5em; color: #999;">||</span>
+                                <div class="flow-node flow-llm">工作器 B</div>
+                                <span style="margin: 0 0.5em; color: #999;">||</span>
+                                <div class="flow-node flow-llm">工作器 C</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-tool">结果聚合</div>
+                                <span class="flow-arrow">→</span>
+                                <div class="flow-node flow-data">最终输出</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>适用场景</h3>
+
+                    <ul>
+                        <li><strong>复杂多步骤任务</strong>：如旅行规划、代码审查、多维度报告生成</li>
+                        <li><strong>动态任务分配</strong>：任务步骤事前无法完全确定</li>
+                        <li><strong>需要适应性</strong>：根据中间结果调整后续计划</li>
+                    </ul>
+
+                    <div class="callout">
+                        <div class="callout-title">与 Prompt Chaining 的区别</div>
+                        <p class="mb-0">Prompt Chaining 是<strong>静态</strong>的，步骤顺序在运行前就已确定；Orchestrator-Workers 是<strong>动态</strong>的，编排器会根据任务进展实时决定下一步调用哪个工作器。</p>
+                    </div>
+
+                    <h2 id="evaluator-evaluator">模式五：Evaluator-Optimizer（评估-优化）</h2>
+
+                    <h3>核心理念</h3>
+
+                    <p>让 LLM 生成初始结果，然后让另一个 LLM（或同一 LLM 的不同实例）评估结果质量，如果不满意则进行优化，形成迭代循环。</p>
+
+                    <div class="flowchart">
+                        <div class="flow-column">
+                            <div class="flow-row">
+                                <div class="flow-node flow-data">初始输入</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-llm">生成器</div>
+                                <span class="flow-arrow">→</span>
+                                <div class="flow-node flow-data">候选输出</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-decision">评估器</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-tool">质量判断</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div style="padding: 0.5em 1em; border: 2px dashed #999; border-radius: 8px; color: #666; font-size: 0.9rem;">满意？</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row" style="gap: 1em;">
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <span style="color: #11998e; font-size: 1.2rem;">✓</span>
+                                    <span style="font-size: 0.8rem; color: #666;">是</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <span style="color: #f5576c; font-size: 1.2rem;">✗</span>
+                                    <span style="font-size: 0.8rem; color: #666;">否 → 优化</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>适用场景</h3>
+
+                    <ul>
+                        <li><strong>需要高质量输出</strong>：如代码生成、内容创作、报告撰写</li>
+                        <li><strong>有明确的评估标准</strong>：如格式要求、完整性检查</li>
+                        <li><strong>迭代优化有价值</strong>：如翻译润色、创意写作</li>
+                    </ul>
+
+                    <div class="code-block">
+<pre><span class="comment"># Evaluator-Optimizer 示例：代码生成与优化</span>
+<span class="keyword">async def</span> <span class="function">generate_and_optimize</span>(task: <span class="keyword">str</span>, criteria: <span class="keyword">str</span>):
+    max_iterations = 3
+
+    <span class="keyword">for</span> i <span class="keyword">in</span> range(max_iterations):
+        <span class="comment"># Step 1: 生成</span>
+        code = llm.generate(task)
+
+        <span class="comment"># Step 2: 评估</span>
+        evaluation = llm.evaluate(
+            f<span class="string">"检查以下代码是否符合标准：{criteria}\n\n{code}"</span>
+        )
+
+        <span class="comment"># Step 3: 检查是否通过</span>
+        <span class="keyword">if</span> evaluation.passed:
+            <span class="keyword">return</span> code
+
+        <span class="comment"># Step 4: 优化（提供反馈）</span>
+        feedback = evaluation.feedback
+        task = f<span class="string">"基于以下反馈优化代码：{feedback}\n\n{task}"</span>
+
+    <span class="keyword">return</span> code  <span class="comment"># 返回最后一次生成的结果</span></pre>
+                    </div>
+
+                    <h2 id="decision">决策框架：何时用 Workflow？何时用 Agent？</h2>
+
+                    <p>这是产品设计中最关键的问题。Google 给出了一个清晰的决策框架：</p>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>维度</th>
+                                <th>Workflow（工作流）</th>
+                                <th>Agent（自主智能体）</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>任务复杂度</td>
+                                <td>可预先定义步骤</td>
+                                <td>步骤无法预先确定</td>
+                            </tr>
+                            <tr>
+                                <td>可预测性</td>
+                                <td>需要确定性的输出</td>
+                                <td>可以接受探索性结果</td>
+                            </tr>
+                            <tr>
+                                <td>错误容忍</td>
+                                <td>错误代价高</td>
+                                <td>错误可以接受</td>
+                            </tr>
+                            <tr>
+                                <td>成本控制</td>
+                                <td>需要精确控制成本</td>
+                                <td>可以接受更高 token 消耗</td>
+                            </tr>
+                            <tr>
+                                <td>调试需求</td>
+                                <td>需要可追溯的执行</td>
+                                <td>灵活性优先于可追溯</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="text-block">
+                        <div class="text-block-title">📌 实践建议</div>
+                        <p><strong>从 Workflow 开始</strong>：先尝试用预定义工作流解决问题，只有当任务真正需要动态规划、步骤无法预先定义时，才考虑使用 Agent。大多数场景下，Workflow + 好的 Prompt 就足够了。</p>
+                    </div>
+
+                    <h2 id="rag">进阶模式：Agentic RAG</h2>
+
+                    <p>RAG（检索增强生成）是让 LLM 接入私有知识库的核心技术。但基础 RAG 有局限性——Agentic RAG 引入了智能体思维，让检索变得更智能。</p>
+
+                    <h3>基础 RAG vs Agentic RAG</h3>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>特性</th>
+                                <th>基础 RAG</th>
+                                <th>Agentic RAG</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>检索策略</td>
+                                <td>一次性向量检索</td>
+                                <td>动态决定检索策略</td>
+                            </tr>
+                            <tr>
+                                <td>结果评估</td>
+                                <td>被动接收结果</td>
+                                <td>主动评估相关性</td>
+                            </tr                            <tr>
+                                <td>错误处理</td>
+                                <td>无法处理检索失败</td>
+                                <td>可以尝试替代方案</td>
+                            </tr>
+                            <tr>
+                                <td>多步推理</td>
+                                <td>单次检索</td>
+                                <td>多步迭代检索</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Agentic RAG 工作流</h3>
+
+                    <div class="flowchart">
+                        <div class="flow-column">
+                            <div class="flow-row">
+                                <div class="flow-node flow-data">用户问题</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-decision">理解问题</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-tool">生成检索查询</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-llm">向量检索</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row">
+                                <div class="flow-node flow-decision">评估相关性</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row" style="gap: 1em;">
+                                <div style="padding: 0.5em 1em; border: 2px dashed #999; border-radius: 8px; color: #666; font-size: 0.9rem;">足够？</div>
+                            </div>
+                            <span class="flow-arrow-down">↓</span>
+                            <div class="flow-row" style="gap: 1em;">
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <span style="color: #11998e; font-size: 1.2rem;">✓</span>
+                                    <span style="font-size: 0.8rem; color: #666;">生成答案</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <span style="color: #f5576c; font-size: 1.2rem;">✗</span>
+                                    <span style="font-size: 0.8rem; color: #666;">再次检索</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+<pre><span class="comment"># Agentic RAG 示例</span>
+<span class="keyword">async def</span> <span class="function">agentic_rag</span>(query: <span class="keyword">str</span>, max_retries: int = 3):
+    <span class="comment"># Step 1: 理解问题，制定检索策略</span>
+    search_plan = llm.plan_search(query)
+
+    <span class="keyword">for</span> attempt <span class="keyword">in</span> range(max_retries):
+        <span class="comment"># Step 2: 执行检索</span>
+        results = await search_with_plan(search_plan, query)
+
+        <span class="comment"># Step 3: 评估结果质量</span>
+        relevance = llm.evaluate(
+            f<span class="string">"评估以下结果与问题的相关性：\n问题：{query}\n结果：{results}"</span>
+        )
+
+        <span class="keyword">if</span> relevance.score > 0.8:
+            <span class="keyword">break</span>
+
+        <span class="comment"># Step 4: 如果不相关，改进检索策略</span>
+        search_plan = llm.refine_search(query, relevance.feedback)
+
+    <span class="comment"># Step 5: 生成答案</span>
+    answer = llm.generate(query, results)
+    <span class="keyword">return</span> answer</pre>
+                    </div>
+
+                    <h2 id="tool-use">Tool Use：赋予 Agent 行动能力</h2>
+
+                    <p>Tool Use（工具使用）是 Agent 与外部世界交互的基础。LLM 通过生成结构化调用（如 JSON），让智能体执行搜索、计算、API 调用等操作。</p>
+
+                    <h3>Tool Use 架构</h3>
+
+                    <div class="arch-diagram">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="arch-box">
+                                <div class="arch-label">User Query</div>
+                                <div class="font-medium">"帮我查下北京天气"</div>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: center; color: #999;">→</div>
+                            <div class="arch-box arch-box-highlight">
+                                <div class="arch-label">LLM</div>
+                                <div class="font-medium">推理 + 生成调用</div>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: center; color: #999;">→</div>
+                            <div class="arch-box arch-box-highlight">
+                                <div class="arch-label">Tool Call</div>
+                                <div class="font-medium">{"tool": "weather", "args": {"city": "北京"}}</div>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: center; color: #999;">→</div>
+                            <div class="arch-box">
+                                <div class="arch-label">Execution</div>
+                                <div class="font-medium">API 返回天气数据</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Tool 定义的最佳实践</h3>
+
+                    <div class="code-block">
+<pre><span class="comment"># 好的 Tool 定义示例</span>
+weather_tool = {
+    <span class="property">"name"</span>: <span class="string">"get_weather"</span>,
+    <span class="property">"description"</span>: <span class="string">"获取指定城市的天气信息"</span>,
+    <span class="property">"parameters"</span>: {
+        <span class="property">"type"</span>: <span class="string">"object"</span>,
+        <span class="property">"properties"</span>: {
+            <span class="property">"city"</span>: {
+                <span class="property">"type"</span>: <span class="string">"string"</span>,
+                <span class="property">"description"</span>: <span class="string">"城市名称，如北京、上海"</span>,
+            },
+            <span class="property">"date"</span>: {
+                <span class="property">"type"</span>: <span class="string">"string"</span>,
+                <span class="property">"description"</span>: <span class="string">"日期，格式YYYY-MM-DD，默认今天"</span>,
+            }
+        },
+        <span class="property">"required"</span>: [<span class="string">"city"</span>]
+    }
+}</pre>
+                    </div>
+
+                    <div class="highlight-box">
+                        <div class="highlight-box-title">Tool 定义要点</div>
+                        <ul class="mb-0">
+                            <li><strong>description</strong> 要清晰描述工具用途，帮助 LLM 理解何时该调用</li>
+                            <li><strong>parameters</strong> 要有明确的类型和描述</li>
+                            <li><strong>必填参数</strong> 要在 required 中声明</li>
+                        </ul>
+                    </div>
+
+                    <h2 id="evaluation">Evaluation：构建可量化的 Agent 系统</h2>
+
+                    <p>传统软件开发中的"测试"概念在 Agent 场景下不再适用——LLM 的输出是概率性的，需要新的评估范式。</p>
+
+                    <h3>评估维度</h3>
+
+                    <div class="pattern-grid">
+                        <div class="pattern-card">
+                            <div class="pattern-card-title">准确性</div>
+                            <div class="pattern-card-desc">回答是否正确？事实是否有误？</div>
+                        </div>
+                        <div class="pattern-card">
+                            <div class="pattern-card-title">指令遵循</div>
+                            <div class="pattern-card-desc">是否按照用户要求的方式回答？</div>
+                        </div>
+                        <div class="pattern-card">
+                            <div class="pattern-card-title">相关性</div>
+                            <div class="pattern-card-desc">回答是否切中问题要点？</div>
+                        </div>
+                        <div class="pattern-card">
+                            <div class="pattern-card-title">安全性</div>
+                            <div class="pattern-card-desc">是否有有害内容？是否越界？</div>
+                        </div>
+                    </div>
+
+                    <h3>LLM-as-a-Judge 模式</h3>
+
+                    <p>使用 LLM 来评估 LLM 的输出，这是一种成本效益较高的自动化评估方式。</p>
+
+                    <div class="code-block">
+<pre><span class="comment"># LLM-as-a-Judge 示例</span>
+<span class="keyword">def</span> <span class="function">evaluate_response</span>(question: <span class="keyword">str</span>, response: <span class="keyword">str</span>, criteria: <span class="keyword">str</span>):
+    judge_prompt = <span class="string">f"""评估以下回答的质量。
+
+问题：{question}
+回答：{response}
+
+评估标准：{criteria}
+
+请给出：
+1. 得分 (0-10)
+2. 具体反馈
+3. 改进建议
+"""</span>
+
+    evaluation = llm.invoke(judge_prompt)
+    <span class="keyword">return</span> evaluation</pre>
+                    </div>
+
+                    <h3>可观测性：追踪 Agent 轨迹</h3>
+
+                    <div class="text-block">
+                        <div class="text-block-title">🔍 需要追踪的关键指标</div>
+                        <ul class="mb-0">
+                            <li><strong>执行轨迹</strong>：完整的思考-行动-观察日志</li>
+                            <li><strong>Token 消耗</strong>：每个请求的输入/输出 token 数</li>
+                            <li><strong>延迟分布</strong>：P50/P95/P99 响应时间</li>
+                            <li><strong>工具调用</strong>：工具使用成功率、错误类型分布</li>
+                        </ul>
+                    </div>
+
+                    <h2 id="guardrails">Guardrails：守护 Agent 的安全边界</h2>
+
+                    <p>Guardrails（护栏）是防止 Agent 出错、越界或被攻击的多层防御机制。</p>
+
+                    <h3>多层防御架构</h3>
+
+                    <div class="arch-diagram">
+                        <div class="flex flex-col gap-3">
+                            <div class="arch-box arch-box-highlight" style="border-left: 4px solid #f5576c;">
+                                <div class="arch-label" style="color: #f5576c;">输入层</div>
+                                <p class="text-sm mb-0">输入清洗 · 恶意检测 · 格式验证</p>
+                            </div>
+                            <div style="text-align: center; color: #ccc;">↓</div>
+                            <div class="arch-box arch-box-highlight" style="border-left: 4px solid #f093fb;">
+                                <div class="arch-label" style="color: #f093fb;">处理层</div>
+                                <p class="text-sm mb-0">Prompt 注入检测 · 内容过滤</p>
+                            </div>
+                            <div style="text-align: center; color: #ccc;">↓</div>
+                            <div class="arch-box arch-box-highlight" style="border-left: 4px solid #11998e;">
+                                <div class="arch-label" style="color: #11998e;">输出层</div>
+                                <p class="text-sm mb-0">有害内容拦截 · 敏感信息脱敏</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Guardrails 实践</h3>
+
+                    <div class="code-block">
+<pre><span class="comment"># Guardrails 示例：输入验证</span>
+<span class="keyword">from</span> guardrails <span class="keyword">import</span> Guard
+
+guard = Guard().from_string(
+    <span class="string">"""## 输入验证
+    - 输入长度不能超过 2000 字符
+    - 禁止包含恶意代码或脚本
+    - 禁止政治敏感内容
+    ## 输出格式
+    - 回答必须是有效的 JSON 或纯文本
+    - 禁止泄露敏感信息
+    """</span>
+)
+
+<span class="comment"># 使用 Guardrails</span>
+validated_input = guard.validate(user_input)</pre>
+                    </div>
+
+                    <h2 id="conclusion">结语：从模式到实践</h2>
+
+                    <p>Google 的《Building Effective Agents》给了我们最重要的启示：<strong>构建高效的 Agent 系统，关键不在于使用最先进的模型，而在于正确选择和组合设计模式</strong>。</p>
+
+                    <div class="step-list">
+                        <div class="step-item">
+                            <div class="step-title">从简单开始</div>
+                            <div class="step-desc">先用 Prompt Chaining 和 Routing 解决问题，只有必要时才引入更复杂的模式。</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-title">重视评估和护栏</div>
+                            <div class="step-desc">在构建之初就考虑可观测性和安全边界，这是生产环境的基础。</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-title">持续迭代</div>
+                            <div class="step-desc">基于实际运行数据不断优化，Agent 系统是"炼"出来的，不是"设计"出来的。</div>
+                        </div>
+                    </div>
+
+                    <div class="callout">
+                        <div class="callout-title">推荐资源</div>
+                        <p class="mb-0">Google《Building Effective Agents》白皮书 · Anthropic Claude 文档 · LangGraph 官方教程</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="py-8 px-6 md:px-12 border-t border-[#e5e5e5]">
+        <div class="max-w-5xl mx-auto text-center">
+            <p class="text-sm text-[#999999]">© 2024 Qianmei's Agent Lab</p>
+        </div>
+    </footer>
+</body>
+</html>
