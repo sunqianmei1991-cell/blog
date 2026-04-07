@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workflow vs Agent：什么时候该用什么 - Qianmei's Agent Lab</title>
+    <title>Workflow vs Agent：该用什么 - Qianmei's Agent Lab</title>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-J95ZCBCXP7"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -179,13 +179,14 @@
                         <nav class="toc">
                             <ul>
                                 <li><a href="#intro">开篇</a></li>
-                                <li><a href="#misunderstanding">复杂度崇拜</a></li>
-                                <li><a href="#core">核心区别：决策权</a></li>
-                                <li><a href="#when">判断标准</a></li>
+                                <li><a href="#definition">定义区分</a></li>
+                                <li><a href="#comparison">核心区别</a></li>
+                                <li><a href="#choice">如何抉择</a></li>
                                 <li><a href="#path">最佳路径</a></li>
                                 <li><a href="#enhanced-llm">增强型 LLM</a></li>
                                 <li><a href="#workflow">Workflow 详解</a></li>
                                 <li><a href="#agent">Agent</a></li>
+                                <li><a href="#principles">三大核心原则</a></li>
                                 <li><a href="#summary">总结</a></li>
                             </ul>
                         </nav>
@@ -198,17 +199,25 @@
                     <h2 id="intro">开篇</h2>
                     <p>Workflow 算不算 Agent？Agent 能自主规划是不是就更先进？多 Agent 系统是不是更高级？</p>
                     <p>很多人陷进了一个误区——<strong>复杂度崇拜</strong>。觉得越复杂的系统越厉害，越多的 Agent 越智能。</p>
-                    <p>但 Anthropic 的这篇《Building Effective AI Agents》讲得非常清楚：Workflow 和 Agent，本质上都属于智能体系统。真正的区别，不在有没有大模型——而在<strong>决策权归谁</strong>。</p>
+                    <p>但 Anthropic 的这篇《Building Effective AI Agents》讲得非常清楚。真正的区别，不在有没有大模型——而在<strong>决策权归谁</strong>。</p>
 
-                    <h2 id="misunderstanding">复杂度崇拜的误区</h2>
-                    <p>在 Agent 热潮中，很多人都有一个隐含的假设：Agent 比 Workflow 高级，Workflow 只是 Agent 的低配版。</p>
-                    <p>但这种认知是错误的。</p>
-                    <div class="callout">
-                        <div class="callout-title">核心观点</div>
-                        <p style="margin-bottom: 0;"><strong>Workflow 不是低级方案，Agent 也不是高级标签。</strong>不管黑猫白猫，能抓老鼠的就是好猫。</p>
+                    <h2 id="definition">定义区分</h2>
+                    <p>行业内对"智能体（Agent）"的定义众说纷纭。Anthropic 将所有结合了大模型和工具的系统统称为<strong>"智能体系统（Agentic Systems）"</strong>，并在架构上做出了一个至关重要的区分：</p>
+
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-3">Workflow（工作流）</h4>
+                                <p class="text-base text-[#666666] leading-relaxed mb-0">通过<strong>预先定义的代码路径</strong>来编排 LLM 和工具的系统。它的执行路径是<strong>确定性</strong>的。</p>
+                            </div>
+                            <div>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-3">Agent（智能体）</h4>
+                                <p class="text-base text-[#666666] leading-relaxed mb-0">由 LLM <strong>动态自主</strong>地指挥整个流程和工具使用，系统本身保持对任务达成方式的<strong>控制权</strong>。</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <h2 id="core">核心区别：决策权归谁</h2>
+                    <h2 id="comparison">核心区别：决策权归谁</h2>
                     <p>Workflow 和 Agent 的本质区别，在于<strong>谁拥有决策权</strong>。</p>
 
                     <table class="comparison-table">
@@ -223,7 +232,7 @@
                             <tr>
                                 <td><strong>路径</strong></td>
                                 <td>人写死的</td>
-                                <td>模型决定的</td>
+                                <td>模型决定</td>
                             </tr>
                             <tr>
                                 <td><strong>步骤</strong></td>
@@ -238,22 +247,18 @@
                             <tr>
                                 <td><strong>特点</strong></td>
                                 <td>可控、可复现、好调试</td>
-                                <td>自主性强，但不确定性也来了</td>
+                                <td>自主性强，不确定也强</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <p><strong>Workflow：</strong>路径是人写死的，步骤是提前设计好的，模型只是执行。决策权在人手里。它可控、可复现、好调试。</p>
-                    <p><strong>Agent：</strong>路径由模型决定，过程可以动态调整。它会规划、会选择工具、会根据结果改变策略。决策权在模型手里。但自主性一上来，不确定性也上来了。</p>
-
                     <div class="callout">
-                        <div class="callout-title">关键问题</div>
+                        <div class="callout-title">关键洞察</div>
                         <p style="margin-bottom: 0;">同样的问题，今天一个答案，明天一个逻辑。企业怎么用？业务怎么验收？</p>
                     </div>
 
-                    <h2 id="when">什么时候该用什么？</h2>
-                    <p>所以关键问题是：什么时候该用 Workflow？什么时候才需要 Agent？</p>
-                    <p>我总结了<strong>三个判断标准</strong>：</p>
+                    <h2 id="choice">如何抉择</h2>
+                    <p>Anthropic 强烈建议：<strong>从最简单的方案开始，只有在确实需要时才增加复杂度</strong>。</p>
 
                     <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
                         <div class="space-y-4">
@@ -261,7 +266,7 @@
                                 <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base flex-shrink-0">1</div>
                                 <div class="flex-1">
                                     <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">路径明确、步骤固定 → 流程问题</h4>
-                                    <p class="text-base text-[#666666] leading-relaxed mb-0">如果任务有明确的执行路径，每一步都是固定的，那就是流程问题，用 Workflow。</p>
+                                    <p class="text-base text-[#666666] leading-relaxed mb-0">如果任务有明确的执行路径，每一步都是固定的，用 Workflow。</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-4">
@@ -286,8 +291,8 @@
                         <p style="margin-bottom: 0;"><strong>不要把流程问题做成模型问题。</strong></p>
                     </div>
 
-                    <h2 id="path">最佳实现路径</h2>
-                    <p>那最佳路径是什么？Anthropic 给了我们一个清晰的演进路线：</p>
+                    <h2 id="path">最佳路径是什么？</h2>
+                    <p>Anthropic 给了我们一个清晰的演进路线：</p>
 
                     <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
                         <div class="flex items-start gap-4">
@@ -318,113 +323,114 @@
                     <p><strong>复杂系统，不是设计出来的。是从简单系统一步一步迭代出来的。</strong></p>
 
                     <h2 id="enhanced-llm">增强型 LLM</h2>
-                    <p>什么是增强型的 LLM？</p>
-                    <p>提示词写清楚，能检索，能调用基础工具，能记住上下文。很多场景，到这一步已经够了。</p>
+                    <p>LLM 已经可以通过获取检索（RAG）、工具（Tools）和记忆（Memory）的增强，<strong>主动</strong>生成搜索查询、选择工具并决定保留哪些信息。</p>
 
                     <div class="diagram-container">
                         <img src="../images/augmented-llm.png" alt="增强型 LLM 架构图" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">增强型 LLM：基础构建块，具备检索、工具和记忆能力</p>
                     </div>
 
-                    <p>实现这些增强功能的关键在于两个方面：根据你的具体用例定制这些能力，确保它们为 LLM 提供简单、文档完善的接口。</p>
-                    <p>Anthropic 最近发布的 <strong>Model Context Protocol (MCP)</strong> 就是一种实现方式，它允许开发者通过简单的客户端实现与不断增长的第三方工具生态系统集成。</p>
-
                     <h2 id="workflow">Workflow 详解</h2>
                     <p>当任务有明确步骤时用 Workflow。根据任务特点，有 5 种常见的 Workflow 模式：</p>
 
                     <h3>1. Prompt Chaining（提示链）</h3>
-                    <p>如果任务可以被拆成顺序执行的子任务——那就用提示链。每个 LLM 调用处理前一个调用的输出。</p>
+                    <p><strong>运行逻辑：</strong>将复杂任务拆解为序列化的独立步骤，上一个 LLM 调用的输出直接作为下一个 LLM 调用的输入。开发者可以在中间步骤加入程序化的逻辑检查（Gate）以确保流程未跑偏。</p>
+                    <p><strong>适用场景：</strong>任务可以被干净利落地拆分为固定子任务的场景。目的是通过降低单次 LLM 调用的难度来换取更高的准确率。</p>
+                    <p><strong>案例：</strong>先生成营销文案，再将其翻译为其他语言；或者先让模型写提纲，程序检查提纲合规后，再让模型根据提纲写正文。</p>
 
                     <div class="diagram-container">
                         <img src="../images/prompt-chaining.png" alt="提示链工作流" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">提示链工作流：将任务分解为顺序步骤</p>
                     </div>
 
-                    <p><strong>应用示例：</strong></p>
-                    <ul>
-                        <li>写营销方案：先出大纲，再写内容</li>
-                        <li>生成文案，然后翻译成不同语言</li>
-                    </ul>
-
                     <h3>2. Routing（路由）</h3>
-                    <p>如果任务有多个处理路径，那就用路由。对输入进行分类，并引导至专门的后续任务。</p>
+                    <p><strong>运行逻辑：</strong>接收输入后，通过分类机制将其导向专门的后续任务、提示词或工具。</p>
+                    <p><strong>适用场景：</strong>当任务存在明显的类别区分，且不同类别需要不同的处理逻辑时。</p>
+                    <p><strong>案例：</strong>智能客服，根据用户的意图不同，是售前咨询、售后反馈，进入下游不同的路径</p>
 
                     <div class="diagram-container">
                         <img src="../images/routing.png" alt="路由工作流" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">路由工作流：将输入分类并引导至专门处理流程</p>
                     </div>
 
-                    <p><strong>应用示例：</strong></p>
-                    <ul>
-                        <li>智能客服：根据用户意图不同，是售前咨询、售后反馈，进入下游不同的路径</li>
-                        <li>简单问题用小模型，困难问题用大模型</li>
-                    </ul>
-
                     <h3>3. Parallelization（并行化）</h3>
-                    <p>如果子任务彼此独立，或者希望从多个视角分析问题，提高结果的置信度，那就并行。一起跑，最后再汇总。</p>
+                    <p><strong>运行逻辑：</strong>如果子任务彼此独立，或者希望从多个视角分析问题，提高结果的置信度，那就并行。一起跑，最后再汇总。</p>
+                    <p><strong>适用场景：</strong>需要极高运行速度，或者需要多视角交叉验证的高置信度场景。</p>
+                    <p><strong>案例：</strong>并发执行护栏（一个模型正常回答，另一个模型并行审查是否违规）；或者代码审查时，多线程并发检查以寻找漏洞</p>
 
                     <div class="diagram-container">
                         <img src="../images/parallelization.png" alt="并行化工作流" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">并行化工作流：同时处理任务并聚合结果</p>
                     </div>
 
-                    <p><strong>应用示例：</strong></p>
-                    <ul>
-                        <li>审查代码漏洞，多个提示审查代码并在发现问题时标记</li>
-                        <li>评估内容是否不当，多个提示评估不同方面</li>
-                    </ul>
-
                     <h3>4. Orchestrator-Workers（编排器-工作者）</h3>
-                    <p>如果任务变复杂，没办法提前写好所有子步骤，那就需要一个协调器。由一个中央模型动态拆解任务，分配给不同节点，再整合结果。</p>
+                    <p><strong>运行逻辑：</strong>一个中央 LLM（编排者）动态地将大任务拆解，分配给多个 LLM（工作者），最后汇总它们的结果。</p>
+                    <p><strong>适用场景：</strong>与并行处理类似，但子任务是无法预先定义的。它依赖编排者根据具体的输入，动态决定需要拆出多少个子任务。</p>
+                    <p><strong>案例：</strong>编写涉及多个文件复杂修改的代码产品；或需要从多个来源持续收集和分析信息的复杂搜索任务。</p>
 
                     <div class="diagram-container">
                         <img src="../images/orchestrator-workers.png" alt="编排器-工作者工作流" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">编排器-工作者工作流：中心节点动态分解和委派任务</p>
                     </div>
 
-                    <p><strong>应用示例：</strong></p>
-                    <ul>
-                        <li>AI Coding：改哪些文件，要根据具体需求现场决定</li>
-                        <li>搜索任务，涉及从多个来源收集和分析信息</li>
-                    </ul>
-
                     <h3>5. Evaluator-Optimizer（评估器-优化器）</h3>
-                    <p>如果任务需要反复优化，那就加一个评估优化器。一个模型负责生成，一个模型负责评估。</p>
+                    <p><strong>运行逻辑：</strong>在一个循环中，一个 LLM 生成响应，另一个 LLM 充当评估者提供反馈，前者根据反馈不断修改优化。</p>
+                    <p><strong>适用场景：</strong>具备明确的评估标准，且迭代修改能带来显著价值的场景。</p>
+                    <p><strong>案例：</strong>文学翻译（评估者可以捕捉初始翻译中遗漏的细微语境并提出修改意见）；做 Deep Research。要不要继续检索？信息够不够？需要一个评估节点来判断</p>
 
                     <div class="diagram-container">
                         <img src="../images/evaluator-optimizer.png" alt="评估器-优化器工作流" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">评估器-优化器工作流：迭代改进响应质量</p>
                     </div>
 
-                    <p><strong>应用示例：</strong></p>
-                    <ul>
-                        <li>做 Deep Research：要要不要继续检索？信息够不够？需要一个评估节点来判断</li>
-                        <li>文学翻译，评估器可以提供有用的批评</li>
-                    </ul>
-
                     <h2 id="agent">Agent</h2>
-                    <p>当出现探索型任务，任务路径无法通过硬编码实现，或者需要多轮操作时，才引入 Agent。</p>
-                    <p>但是要注意：</p>
-
-                    <ul>
-                        <li>在执行过程中，要有环境数据反馈，比如工具的调用结果、上一步执行的结果等</li>
-                        <li>敏感问题需要引入检查点，引入人类反馈来监督执行</li>
-                        <li>设置最大迭代次数，避免系统无限循环</li>
-                    </ul>
+                    <p>出现探索型任务，任务路径无法通过硬编码实现，或者需要多轮操作时，再引入智能体。</p>
+                    <p><strong>运作机制：</strong>接收用户的指令或对话后，智能体在一个持续的循环中自主规划步骤、调用工具，并在每一步执行后从环境（如工具返回结果、代码执行报错）中获取"事实真相（Ground truth）"以评估进度，直到满足停止条件或完成任务。</p>
 
                     <div class="diagram-container">
                         <img src="../images/autonomous-agent.png" alt="自主 Agent 架构" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">自主 Agent：基于环境反馈循环使用工具</p>
                     </div>
 
-                    <div class="callout">
-                        <div class="callout-title">注意事项</div>
-                        <p style="margin-bottom: 0;">Agent 的自主性意味着更高的成本和潜在的复合错误。建议在沙盒环境中进行广泛测试，并设置适当的防护栏。</p>
+                    <p><strong>风险与约束：</strong>自主性意味着高成本和错误累积的风险。因此必须在沙盒环境中进行极其详尽的测试，并设置妥善的护栏（如最大迭代次数限制）。</p>
+
+                    <h2 id="principles">构建生产级智能体的三大核心原则</h2>
+
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base flex-shrink-0">1</div>
+                                <div class="flex-1">
+                                    <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">保持极简（Simplicity）</h4>
+                                    <p class="text-base text-[#666666] leading-relaxed mb-0">架构设计越简单越好。</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base flex-shrink-0">2</div>
+                                <div class="flex-1">
+                                    <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">强制透明（Transparency）</h4>
+                                    <p class="text-base text-[#666666] leading-relaxed mb-0">在应用中显式地展示智能体的规划和思考步骤。</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base flex-shrink-0">3</div>
+                                <div class="flex-1">
+                                    <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">完善文档与测试（Documentation and testing）</h4>
+                                    <p class="text-base text-[#666666] leading-relaxed mb-0">精心打磨你的"智能体-计算机接口 ACI（Agent-Computer Interface）"</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <h2 id="summary">总结</h2>
+                    <p>在 LLM 领域取得成功，并不是去比拼谁建的系统最复杂、最炫酷，而是为业务需求找到<strong>最匹配</strong>的系统。</p>
+
+                    <div class="callout">
+                        <div class="callout-title">工程化思维</div>
+                        <p style="margin-bottom: 0;">从简单的提示词做起，建立完善的评估机制，只有在基础方案碰壁时，才去组合上述的路由、并行或反思模式，最后再去触碰高成本、高自治的完全体 Agent。</p>
+                    </div>
+
                     <p>Workflow 不是低级方案。Agent 也不是高级标签。不管黑猫白猫，能抓老鼠的就是好猫。</p>
-                    <p>复杂系统，不是设计出来的。是从简单系统一步一步迭代出来的。</p>
                     <p>真正拉开差距的——不是你堆了多少 Agent。而是<strong>你能不能设计好决策权的边界</strong>。</p>
 
                     <div class="callout">
