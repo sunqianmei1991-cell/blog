@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow vs Agent：什么时候该用什么 - Qianmei's Agent Lab</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J95ZCBCXP7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J95ZCBCXP7');
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --bg-primary: #FAF9F6;
+                --text-primary: #1a1a1a;
+                --accent: #D4A574;
+                --text-secondary: #666666;
+                --border: #e5e5e5;
+            }
+            body {
+                font-family: 'Source Serif Pro', serif;
+                background-color: var(--bg-primary);
+                color: var(--text-primary);
+                line-height: 1.8;
+            }
+            h1, h2, h3, h4, .font-display {
+                font-family: 'Playfair Display', serif;
+                line-height: 1.3;
+            }
+            p { margin-bottom: 1.5em; }
+        }
+        @layer components {
+            .grain-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                opacity: 0.03;
+                z-index: 0;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            }
+            .article-content h2 {
+                font-size: 1.6rem;
+                font-weight: 600;
+                margin-top: 2.5em;
+                margin-bottom: 0.8em;
+                color: var(--text-primary);
+            }
+            .article-content h3 {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-top: 2em;
+                margin-bottom: 0.7em;
+                color: var(--text-primary);
+            }
+            .article-content p {
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .article-content ul, .article-content ol {
+                margin-bottom: 1.5em;
+                padding-left: 1.5em;
+            }
+            .article-content li {
+                margin-bottom: 0.5em;
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .article-content strong {
+                color: var(--text-primary);
+                font-weight: 600;
+            }
+            .toc {
+                border-left: 1px solid var(--border);
+                padding-left: 1.25em;
+            }
+            .toc ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            .toc li { margin-bottom: 0.4em; }
+            .toc a {
+                color: #999;
+                text-decoration: none;
+                font-size: 0.85rem;
+            }
+            .toc a:hover { color: var(--text-primary); }
+            .callout {
+                border-left: 3px solid var(--accent);
+                background: linear-gradient(90deg, rgba(212, 165, 116, 0.08) 0%, transparent 100%);
+                padding: 1.25em 1.5em;
+                margin: 2em 0;
+                border-radius: 0 8px 8px 0;
+            }
+            .callout-title {
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 0.5em;
+            }
+            .diagram-container {
+                margin: 2em 0;
+                text-align: center;
+            }
+            .diagram-container img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 8px;
+                border: 1px solid var(--border);
+            }
+            .comparison-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 2em 0;
+            }
+            .comparison-table th, .comparison-table td {
+                padding: 16px;
+                text-align: left;
+                border-bottom: 1px solid var(--border);
+            }
+            .comparison-table th {
+                font-weight: 600;
+                background: rgba(212, 165, 116, 0.05);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="grain-overlay"></div>
+
+    <!-- Header -->
+    <header class="py-6 px-6 md:px-12 border-b border-[#e5e5e5] relative z-10">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <a href="../index.html" class="text-[#666666] text-sm hover:text-[#1a1a1a] transition-colors flex items-center gap-1">
+                <span>←</span>
+                <span>返回</span>
+            </a>
+            <nav class="flex gap-6 text-sm text-[#666666]">
+                <a href="../index.html" class="hover:text-[#1a1a1a]">文章</a>
+                <a href="#" class="hover:text-[#1a1a1a]">关于</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Title -->
+    <article class="pt-16 pb-12 px-6 md:px-12 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid lg:grid-cols-[200px_1fr] gap-12">
+                <div class="hidden lg:block"></div>
+                <div class="max-w-2xl">
+                    <p class="text-[#D4A574] text-sm tracking-[0.2em] uppercase mb-4">产品知识</p>
+                    <h1 class="font-display text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight mb-6">Workflow vs Agent：什么时候该用什么</h1>
+                    <p class="text-lg text-[#666666] leading-relaxed mb-8">Anthropic 实战总结：不是越复杂的 Agent 越高级，决策权的边界才是关键</p>
+                    <div class="flex items-center gap-4 text-sm text-[#999999]">
+                        <span>2026年4月</span>
+                        <span class="w-1 h-1 rounded-full bg-[#D4A574]"></span>
+                        <span>15 min read</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- Content -->
+    <div class="pb-20 px-6 md:px-12 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid lg:grid-cols-[200px_1fr] gap-12">
+                <!-- TOC -->
+                <aside class="hidden lg:block">
+                    <div class="sticky top-24">
+                        <p class="text-xs text-[#999999] mb-3 uppercase tracking-wider">目录</p>
+                        <nav class="toc">
+                            <ul>
+                                <li><a href="#intro">开篇</a></li>
+                                <li><a href="#misunderstanding">复杂度崇拜</a></li>
+                                <li><a href="#core">核心区别：决策权</a></li>
+                                <li><a href="#when">判断标准</a></li>
+                                <li><a href="#path">最佳路径</a></li>
+                                <li><a href="#enhanced-llm">增强型 LLM</a></li>
+                                <li><a href="#workflow">Workflow 详解</a></li>
+                                <li><a href="#agent">Agent</a></li>
+                                <li><a href="#summary">总结</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- Article -->
+                <div class="article-content max-w-2xl mx-auto lg:mx-0">
+
+                    <h2 id="intro">开篇</h2>
+                    <p>Workflow 算不算 Agent？Agent 能自主规划是不是就更先进？多 Agent 系统是不是更高级？</p>
+                    <p>很多人陷进了一个误区——<strong>复杂度崇拜</strong>。觉得越复杂的系统越厉害，越多的 Agent 越智能。</p>
+                    <p>但 Anthropic 的这篇《Building Effective AI Agents》讲得非常清楚：Workflow 和 Agent，本质上都属于智能体系统。真正的区别，不在有没有大模型——而在<strong>决策权归谁</strong>。</p>
+
+                    <h2 id="misunderstanding">复杂度崇拜的误区</h2>
+                    <p>在 Agent 热潮中，很多人都有一个隐含的假设：Agent 比 Workflow 高级，Workflow 只是 Agent 的低配版。</p>
+                    <p>但这种认知是错误的。</p>
+                    <div class="callout">
+                        <div class="callout-title">核心观点</div>
+                        <p style="margin-bottom: 0;"><strong>Workflow 不是低级方案，Agent 也不是高级标签。</strong>不管黑猫白猫，能抓老鼠的就是好猫。</p>
+                    </div>
+
+                    <h2 id="core">核心区别：决策权归谁</h2>
+                    <p>Workflow 和 Agent 的本质区别，在于<strong>谁拥有决策权</strong>。</p>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Workflow</th>
+                                <th>Agent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>路径</strong></td>
+                                <td>人写死的</td>
+                                <td>模型决定的</td>
+                            </tr>
+                            <tr>
+                                <td><strong>步骤</strong></td>
+                                <td>提前设计好的</td>
+                                <td>可以动态调整</td>
+                            </tr>
+                            <tr>
+                                <td><strong>模型角色</strong></td>
+                                <td>执行者</td>
+                                <td>决策者</td>
+                            </tr>
+                            <tr>
+                                <td><strong>特点</strong></td>
+                                <td>可控、可复现、好调试</td>
+                                <td>自主性强，但不确定性也来了</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p><strong>Workflow：</strong>路径是人写死的，步骤是提前设计好的，模型只是执行。决策权在人手里。它可控、可复现、好调试。</p>
+                    <p><strong>Agent：</strong>路径由模型决定，过程可以动态调整。它会规划、会选择工具、会根据结果改变策略。决策权在模型手里。但自主性一上来，不确定性也上来了。</p>
+
+                    <div class="callout">
+                        <div class="callout-title">关键问题</div>
+                        <p style="margin-bottom: 0;">同样的问题，今天一个答案，明天一个逻辑。企业怎么用？业务怎么验收？</p>
+                    </div>
+
+                    <h2 id="when">什么时候该用什么？</h2>
+                    <p>所以关键问题是：什么时候该用 Workflow？什么时候才需要 Agent？</p>
+                    <p>我总结了<strong>三个判断标准</strong>：</p>
+
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base flex-shrink-0">1</div>
+                                <div class="flex-1">
+                                    <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">路径明确、步骤固定 → 流程问题</h4>
+                                    <p class="text-base text-[#666666] leading-relaxed mb-0">如果任务有明确的执行路径，每一步都是固定的，那就是流程问题，用 Workflow。</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base flex-shrink-0">2</div>
+                                <div class="flex-1">
+                                    <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">目标稳定、可枚举 → 流程问题</h4>
+                                    <p class="text-base text-[#666666] leading-relaxed mb-0">如果目标是稳定的、清晰的、可枚举的，不需要动态策略，就不要引入 Planning。</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base flex-shrink-0">3</div>
+                                <div class="flex-1">
+                                    <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">以上都不是 → 才考虑 Agent</h4>
+                                    <p class="text-base text-[#666666] leading-relaxed mb-0">只有当任务路径无法通过硬编码实现，或者需要多轮操作时，才轮到 Agent。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="callout">
+                        <div class="callout-title">核心原则</div>
+                        <p style="margin-bottom: 0;"><strong>不要把流程问题做成模型问题。</strong></p>
+                    </div>
+
+                    <h2 id="path">最佳实现路径</h2>
+                    <p>那最佳路径是什么？Anthropic 给了我们一个清晰的演进路线：</p>
+
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
+                        <div class="flex items-start gap-4">
+                            <div class="flex flex-col items-center">
+                                <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base">1</div>
+                                <div class="w-0.5 h-16 bg-[#e5e5e5] mt-2"></div>
+                                <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base">2</div>
+                                <div class="w-0.5 h-16 bg-[#e5e5e5] mt-2"></div>
+                                <div class="w-10 h-10 rounded-full bg-[#1a1a1a] text-white flex items-center justify-center font-bold text-base">3</div>
+                            </div>
+                            <div class="flex-1 space-y-4">
+                                <div>
+                                    <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">增强型 LLM</h4>
+                                    <p class="text-base text-[#666666] leading-relaxed mb-0">提示词写清楚，能检索，能调用基础工具，能记住上下文。很多场景，到这一步已经够了。</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">Workflow</h4>
+                                    <p class="text-base text-[#666666] leading-relaxed mb-0">当任务有明确步骤时用 Workflow。路径明确、目标稳定、可枚举。</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">Agent</h4>
+                                    <p class="text-base text-[#666666] leading-relaxed mb-0">出现探索型任务，任务路径无法通过硬编码实现，或者需要多轮操作时，再引入 Agent。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p><strong>复杂系统，不是设计出来的。是从简单系统一步一步迭代出来的。</strong></p>
+
+                    <h2 id="enhanced-llm">增强型 LLM</h2>
+                    <p>什么是增强型的 LLM？</p>
+                    <p>提示词写清楚，能检索，能调用基础工具，能记住上下文。很多场景，到这一步已经够了。</p>
+
+                    <div class="diagram-container">
+                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F21ee0d36b99aa4f944b8e9e66bd6c1e4de6b6069.png&w=3840&q=75" alt="增强型 LLM 架构图" />
+                        <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">增强型 LLM：基础构建块，具备检索、工具和记忆能力</p>
+                    </div>
+
+                    <p>实现这些增强功能的关键在于两个方面：根据你的具体用例定制这些能力，确保它们为 LLM 提供简单、文档完善的接口。</p>
+                    <p>Anthropic 最近发布的 <strong>Model Context Protocol (MCP)</strong> 就是一种实现方式，它允许开发者通过简单的客户端实现与不断增长的第三方工具生态系统集成。</p>
+
+                    <h2 id="workflow">Workflow 详解</h2>
+                    <p>当任务有明确步骤时用 Workflow。根据任务特点，有 5 种常见的 Workflow 模式：</p>
+
+                    <h3>1. Prompt Chaining（提示链）</h3>
+                    <p>如果任务可以被拆成顺序执行的子任务——那就用提示链。每个 LLM 调用处理前一个调用的输出。</p>
+
+                    <div class="diagram-container">
+                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F406e26d9972a1146954917303698c9e3a9d6a66c.png&w=3840&q=75" alt="提示链工作流" />
+                        <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">提示链工作流：将任务分解为顺序步骤</p>
+                    </div>
+
+                    <p><strong>应用示例：</strong></p>
+                    <ul>
+                        <li>写营销方案：先出大纲，再写内容</li>
+                        <li>生成文案，然后翻译成不同语言</li>
+                    </ul>
+
+                    <h3>2. Routing（路由）</h3>
+                    <p>如果任务有多个处理路径，那就用路由。对输入进行分类，并引导至专门的后续任务。</p>
+
+                    <div class="diagram-container">
+                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F1f8d7d1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e.png&w=3840&q=75" alt="路由工作流" />
+                        <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">路由工作流：将输入分类并引导至专门处理流程</p>
+                    </div>
+
+                    <p><strong>应用示例：</strong></p>
+                    <ul>
+                        <li>智能客服：根据用户意图不同，是售前咨询、售后反馈，进入下游不同的路径</li>
+                        <li>简单问题用小模型，困难问题用大模型</li>
+                    </ul>
+
+                    <h3>3. Parallelization（并行化）</h3>
+                    <p>如果子任务彼此独立，或者希望从多个视角分析问题，提高结果的置信度，那就并行。一起跑，最后再汇总。</p>
+
+                    <div class="diagram-container">
+                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F2g8g8g8g8g8g8g8g8g8g8g8g8g8g8g8g8g8g8g8g8g.png&w=3840&q=75" alt="并行化工作流" />
+                        <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">并行化工作流：同时处理任务并聚合结果</p>
+                    </div>
+
+                    <p><strong>应用示例：</strong></p>
+                    <ul>
+                        <li>审查代码漏洞，多个提示审查代码并在发现问题时标记</li>
+                        <li>评估内容是否不当，多个提示评估不同方面</li>
+                    </ul>
+
+                    <h3>4. Orchestrator-Workers（编排器-工作者）</h3>
+                    <p>如果任务变复杂，没办法提前写好所有子步骤，那就需要一个协调器。由一个中央模型动态拆解任务，分配给不同节点，再整合结果。</p>
+
+                    <div class="diagram-container">
+                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F3h3h3h3h3h3h3h3h3h3h3h3h3h3h3h3h3h3h3h3h.png&w=3840&q=75" alt="编排器-工作者工作流" />
+                        <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">编排器-工作者工作流：中心节点动态分解和委派任务</p>
+                    </div>
+
+                    <p><strong>应用示例：</strong></p>
+                    <ul>
+                        <li>AI Coding：改哪些文件，要根据具体需求现场决定</li>
+                        <li>搜索任务，涉及从多个来源收集和分析信息</li>
+                    </ul>
+
+                    <h3>5. Evaluator-Optimizer（评估器-优化器）</h3>
+                    <p>如果任务需要反复优化，那就加一个评估优化器。一个模型负责生成，一个模型负责评估。</p>
+
+                    <div class="diagram-container">
+                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i.png&w=3840&q=75" alt="评估器-优化器工作流" />
+                        <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">评估器-优化器工作流：迭代改进响应质量</p>
+                    </div>
+
+                    <p><strong>应用示例：</strong></p>
+                    <ul>
+                        <li>做 Deep Research：要要不要继续检索？信息够不够？需要一个评估节点来判断</li>
+                        <li>文学翻译，评估器可以提供有用的批评</li>
+                    </ul>
+
+                    <h2 id="agent">Agent</h2>
+                    <p>当出现探索型任务，任务路径无法通过硬编码实现，或者需要多轮操作时，才引入 Agent。</p>
+                    <p>但是要注意：</p>
+
+                    <ul>
+                        <li>在执行过程中，要有环境数据反馈，比如工具的调用结果、上一步执行的结果等</li>
+                        <li>敏感问题需要引入检查点，引入人类反馈来监督执行</li>
+                        <li>设置最大迭代次数，避免系统无限循环</li>
+                    </ul>
+
+                    <div class="diagram-container">
+                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j.png&w=3840&q=75" alt="自主 Agent 架构" />
+                        <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">自主 Agent：基于环境反馈循环使用工具</p>
+                    </div>
+
+                    <div class="callout">
+                        <div class="callout-title">注意事项</div>
+                        <p style="margin-bottom: 0;">Agent 的自主性意味着更高的成本和潜在的复合错误。建议在沙盒环境中进行广泛测试，并设置适当的防护栏。</p>
+                    </div>
+
+                    <h2 id="summary">总结</h2>
+                    <p>Workflow 不是低级方案。Agent 也不是高级标签。不管黑猫白猫，能抓老鼠的就是好猫。</p>
+                    <p>复杂系统，不是设计出来的。是从简单系统一步一步迭代出来的。</p>
+                    <p>真正拉开差距的——不是你堆了多少 Agent。而是<strong>你能不能设计好决策权的边界</strong>。</p>
+
+                    <div class="callout">
+                        <div class="callout-title">参考</div>
+                        <p style="margin-bottom: 0;">Anthropic《Building Effective AI Agents》</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6 md:px-12 border-t border-[#e5e5e5] relative z-10">
+        <div class="max-w-5xl mx-auto text-center">
+            <p class="text-sm text-[#999999]">© 2024 Qianmei's Agent Lab</p>
+        </div>
+    </footer>
+</body>
+</html>
