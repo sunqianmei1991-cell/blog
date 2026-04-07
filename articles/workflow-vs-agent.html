@@ -322,7 +322,7 @@
                     <p>提示词写清楚，能检索，能调用基础工具，能记住上下文。很多场景，到这一步已经够了。</p>
 
                     <div class="diagram-container">
-                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F21ee0d36b99aa4f944b8e9e66bd6c1e4de6b6069.png&w=3840&q=75" alt="增强型 LLM 架构图" />
+                        <img src="../images/augmented-llm.png" alt="增强型 LLM 架构图" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">增强型 LLM：基础构建块，具备检索、工具和记忆能力</p>
                     </div>
 
@@ -336,7 +336,7 @@
                     <p>如果任务可以被拆成顺序执行的子任务——那就用提示链。每个 LLM 调用处理前一个调用的输出。</p>
 
                     <div class="diagram-container">
-                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F406e26d9972a1146954917303698c9e3a9d6a66c.png&w=3840&q=75" alt="提示链工作流" />
+                        <img src="../images/prompt-chaining.png" alt="提示链工作流" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">提示链工作流：将任务分解为顺序步骤</p>
                     </div>
 
@@ -350,7 +350,7 @@
                     <p>如果任务有多个处理路径，那就用路由。对输入进行分类，并引导至专门的后续任务。</p>
 
                     <div class="diagram-container">
-                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F1f8d7d1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e.png&w=3840&q=75" alt="路由工作流" />
+                        <img src="../images/routing.png" alt="路由工作流" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">路由工作流：将输入分类并引导至专门处理流程</p>
                     </div>
 
@@ -364,7 +364,7 @@
                     <p>如果子任务彼此独立，或者希望从多个视角分析问题，提高结果的置信度，那就并行。一起跑，最后再汇总。</p>
 
                     <div class="diagram-container">
-                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F2g8g8g8g8g8g8g8g8g8g8g8g8g8g8g8g8g8g8g8g8g.png&w=3840&q=75" alt="并行化工作流" />
+                        <img src="../images/parallelization.png" alt="并行化工作流" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">并行化工作流：同时处理任务并聚合结果</p>
                     </div>
 
@@ -378,7 +378,7 @@
                     <p>如果任务变复杂，没办法提前写好所有子步骤，那就需要一个协调器。由一个中央模型动态拆解任务，分配给不同节点，再整合结果。</p>
 
                     <div class="diagram-container">
-                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F3h3h3h3h3h3h3h3h3h3h3h3h3h3h3h3h3h3h3h3h.png&w=3840&q=75" alt="编排器-工作者工作流" />
+                        <img src="../images/orchestrator-workers.png" alt="编排器-工作者工作流" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">编排器-工作者工作流：中心节点动态分解和委派任务</p>
                     </div>
 
@@ -392,7 +392,7 @@
                     <p>如果任务需要反复优化，那就加一个评估优化器。一个模型负责生成，一个模型负责评估。</p>
 
                     <div class="diagram-container">
-                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i4i.png&w=3840&q=75" alt="评估器-优化器工作流" />
+                        <img src="../images/evaluator-optimizer.png" alt="评估器-优化器工作流" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">评估器-优化器工作流：迭代改进响应质量</p>
                     </div>
 
@@ -413,7 +413,7 @@
                     </ul>
 
                     <div class="diagram-container">
-                        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j5j.png&w=3840&q=75" alt="自主 Agent 架构" />
+                        <img src="../images/autonomous-agent.png" alt="自主 Agent 架构" />
                         <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">自主 Agent：基于环境反馈循环使用工具</p>
                     </div>
 
