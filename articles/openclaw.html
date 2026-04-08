@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw爆火背后:拆解一个让AI"长出手脚"的开源项目 - Qianmei's Agent Lab</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J95ZCBCXP7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J95ZCBCXP7');
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --bg-primary: #FAF9F6;
+                --text-primary: #1a1a1a;
+                --accent: #D4A574;
+                --accent-light: #E8DFD3;
+                --text-secondary: #666666;
+                --text-muted: #999999;
+                --border: #e5e5e5;
+                --code-bg: #1e1e2e;
+            }
+            body {
+                font-family: 'Source Serif Pro', serif;
+                background-color: var(--bg-primary);
+                color: var(--text-primary);
+                line-height: 1.8;
+            }
+            h1, h2, h3, h4, .font-display {
+                font-family: 'Playfair Display', serif;
+                line-height: 1.3;
+            }
+            code, pre {
+                font-family: 'JetBrains Mono', monospace;
+            }
+            p { margin-bottom: 1.5em; }
+        }
+        @layer components {
+            .grain-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                opacity: 0.03;
+                z-index: 0;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            }
+            /* Info Card */
+            .info-card {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.5rem;
+                transition: all 0.3s ease;
+            }
+            .info-card:hover {
+                border-color: var(--accent);
+                box-shadow: 0 4px 20px rgba(212, 165, 116, 0.15);
+            }
+            .info-card-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1rem;
+            }
+            .info-card-title {
+                font-weight: 600;
+                font-size: 1.125rem;
+                margin-bottom: 0.5rem;
+            }
+            /* Grid Card */
+            .grid-card {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.25rem;
+                transition: all 0.3s ease;
+            }
+            .grid-card:hover {
+                border-color: var(--accent);
+                box-shadow: 0 4px 12px rgba(212, 165, 116, 0.1);
+            }
+            /* Vertical List Card */
+            .vertical-list-card {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.25rem;
+                display: flex;
+                align-items: flex-start;
+                gap: 1rem;
+                transition: all 0.3s ease;
+            }
+            .vertical-list-card:hover {
+                border-color: var(--accent);
+                box-shadow: 0 4px 12px rgba(212, 165, 116, 0.1);
+            }
+            .vertical-list-number {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: var(--accent);
+                color: white;
+                font-size: 0.875rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            /* Reference Block */
+            .reference-block {
+                background: linear-gradient(135deg, #f8f6f3 0%, var(--bg-primary) 100%);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.5rem;
+            }
+            .reference-title {
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                color: var(--text-muted);
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .reference-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 12px 0;
+                border-bottom: 1px solid var(--border);
+            }
+            .reference-item:last-child { border-bottom: none; }
+            .reference-number {
+                width: 24px;
+                height: 24px;
+                border-radius: 6px;
+                background: var(--accent);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            /* Callout */
+            .callout {
+                border-left: 3px solid var(--accent);
+                background: linear-gradient(90deg, rgba(212, 165, 116, 0.08) 0%, transparent 100%);
+                padding: 1.25rem 1.5rem;
+                border-radius: 0 8px 8px 0;
+            }
+            .callout-title {
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+            }
+            /* Timeline */
+            .timeline {
+                position: relative;
+                padding-left: 32px;
+            }
+            .timeline::before {
+                content: '';
+                position: absolute;
+                left: 8px;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                background: var(--border);
+            }
+            .timeline-item {
+                position: relative;
+                padding-bottom: 2rem;
+            }
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                left: -28px;
+                top: 4px;
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                background: var(--accent);
+            }
+            .timeline-item:last-child { padding-bottom: 0; }
+            /* Styled List */
+            .styled-list {
+                list-style: none;
+                padding: 0;
+                margin-bottom: 1.5em;
+            }
+            .styled-list li {
+                padding: 12px 0;
+                padding-left: 24px;
+                position: relative;
+                border-bottom: 1px solid var(--border);
+            }
+            .styled-list li:last-child { border-bottom: none; }
+            .styled-list li::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--accent);
+            }
+            /* Ordered List */
+            .ordered-list {
+                list-style: none;
+                padding: 0;
+                counter-reset: item;
+                margin-bottom: 1.5em;
+            }
+            .ordered-list li {
+                padding: 12px 0;
+                padding-left: 40px;
+                position: relative;
+                border-bottom: 1px solid var(--border);
+            }
+            .ordered-list li:last-child { border-bottom: none; }
+            .ordered-list li::before {
+                counter-increment: item;
+                content: counter(item);
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 24px;
+                height: 24px;
+                border-radius: 6px;
+                background: var(--accent);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            /* Article Content */
+            .article-content h2 {
+                font-size: 1.6rem;
+                font-weight: 600;
+                margin-top: 2.5em;
+                margin-bottom: 0.8em;
+                color: var(--text-primary);
+            }
+            .article-content h3 {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-top: 2em;
+                margin-bottom: 0.7em;
+                color: var(--text-primary);
+            }
+            .article-content p {
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .article-content ul {
+                margin-bottom: 1.5em;
+                padding-left: 1.5em;
+            }
+            .article-content li {
+                margin-bottom: 0.5em;
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .article-content strong {
+                color: var(--text-primary);
+                font-weight: 600;
+            }
+            .toc {
+                border-left: 1px solid var(--border);
+                padding-left: 1.25em;
+            }
+            .toc ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            .toc li { margin-bottom: 0.4em; }
+            .toc a {
+                color: #999;
+                text-decoration: none;
+                font-size: 0.85rem;
+            }
+            .toc a:hover { color: var(--text-primary); }
+            /* Code Block */
+            .code-block {
+                background: var(--code-bg);
+                border-radius: 12px;
+                overflow: hidden;
+                margin: 1.5em 0;
+            }
+            .code-header {
+                background: rgba(22, 22, 30, 0.8);
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                padding: 12px 16px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .code-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+            }
+            .code-body {
+                padding: 20px;
+                overflow-x: auto;
+            }
+            .code-body pre {
+                margin: 0;
+                font-size: 0.875rem;
+                color: #cdd6f4;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="grain-overlay"></div>
+
+    <!-- Header -->
+    <header class="py-6 px-6 md:px-12 border-b border-[#e5e5e5] relative z-10">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <a href="../index.html" class="text-[#666666] text-sm hover:text-[#1a1a1a] transition-colors flex items-center gap-1">
+                <span>←</span>
+                <span>返回</span>
+            </a>
+            <nav class="flex gap-6 text-sm text-[#666666]">
+                <a href="../index.html" class="hover:text-[#1a1a1a]">文章</a>
+                <a href="#" class="hover:text-[#1a1a1a]">关于</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Title -->
+    <article class="pt-16 pb-12 px-6 md:px-12 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid lg:grid-cols-[200px_1fr] gap-12">
+                <div class="hidden lg:block"></div>
+                <div class="max-w-2xl">
+                    <p class="text-[#D4A574] text-sm tracking-[0.2em] uppercase mb-4">技术解读</p>
+                    <h1 class="font-display text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight mb-6">OpenClaw爆火背后:拆解一个让AI"长出手脚"的开源项目</h1>
+                    <p class="text-lg text-[#666666] leading-relaxed mb-8">深度解析 OpenClaw 架构设计，还原一个让 AI Agent "可落地"的本地网关方案</p>
+                    <div class="flex items-center gap-4 text-sm text-[#999999]">
+                        <span>2026年3月12日</span>
+                        <span class="w-1 h-1 rounded-full bg-[#D4A574]"></span>
+                        <span>15 min read</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- Content -->
+    <div class="pb-20 px-6 md:px-12 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid lg:grid-cols-[200px_1fr] gap-12">
+                <!-- TOC -->
+                <aside class="hidden lg:block">
+                    <div class="sticky top-24">
+                        <p class="text-xs text-[#999999] mb-3 uppercase tracking-wider">目录</p>
+                        <nav class="toc">
+                            <ul>
+                                <li><a href="#intro">引言</a></li>
+                                <li><a href="#what-is">OpenClaw 是什么</a></li>
+                                <li><a href="#gateway">网关层</a></li>
+                                <li><a href="#input">输入标准化</a></li>
+                                <li><a href="#routing">路由和会话</a></li>
+                                <li><a href="#agentic-loop">核心：Agentic Loop</a></li>
+                                <li><a href="#skills">技能系统</a></li>
+                                <li><a href="#mcp">MCP</a></li>
+                                <li><a href="#memory">记忆系统</a></li>
+                                <li><a href="#heartbeat">心跳机制</a></li>
+                                <li><a href="#flow">完整流程</a></li>
+                                <li><a href="#lessons">这告诉我们什么</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- Article -->
+                <div class="article-content max-w-2xl mx-auto lg:mx-0">
+
+                    <h2 id="intro">一个在 GitHub 上疯传的 AI 助手</h2>
+                    <p>2026年初，OpenClaw 在 GitHub 狂揽 10万+ Star 彻底出圈。</p>
+                    <p>你可能在朋友圈、技术群、或者各种社交媒体上见过它。有人说它是"长了手的 Claude"，有人用它处理保险理赔纠纷，有人让它代替自己谈判、安排日程，甚至全权处理一些日常事务。</p>
+                    <p>今天不谈安装，只谈架构。仔细研究 OpenClaw 的架构，你会发现 OpenClaw 其实是个绝佳的"教科书"——它把当下所有主流 AI Agent 的核心设计模式，都用最直白的方式展现了出来。<strong>看懂了 OpenClaw，你就看懂了 AI Agent 的底层逻辑。</strong></p>
+
+                    <h2 id="what-is">先说清楚：OpenClaw 到底是个啥？</h2>
+                    <p>很多人第一次听说 OpenClaw，以为它是个聊天机器人。<strong>错了。</strong></p>
+                    <p>OpenClaw 本质上是一个<strong>运行在你本地电脑（或服务器）上的网关程序</strong>。它连接你日常用的各种聊天工具——微信、飞书、Telegram、Slack——然后把每一条发给它的消息，都交给一个 AI 大模型来处理。</p>
+                    <p>大模型你可以用 Claude、GPT、Gemini，甚至完全本地运行的开源模型。OpenClaw 不挑模型，你用什么都行。</p>
+                    <p>关键是，这个 AI 不只会回复文字，<strong>它还能真的去做事</strong>：读写文件、执行命令、发邮件、浏览网页、管理日历……</p>
+                    <p>表面上看，它像个智能助手。</p>
+                    <p>往深了看，它其实是一个 <strong>AI Agent 的本地编排平台</strong>。</p>
+
+                    <div class="callout">
+                        <div class="callout-title">核心区别</div>
+                        <p style="margin-bottom: 0;">这个区别很重要——智能助手是"你问我答"，而 Agent 编排平台是"你让我做事，我想办法搞定"。这也是我们接下来要拆解的核心。</p>
+                    </div>
+
+                    <h2 id="gateway">第一层：网关——整个系统的"神经中枢"</h2>
+                    <p>OpenClaw 的所有操作，都要经过一个叫 <strong>Gateway（网关）</strong>的进程。Gateway 简单的说就是个调度器，负责路由和分发。比如你做公交车，人很多，车很多，你就需要一个调度中心去管理那些人做什么车去什么方向。官方文档把它称为"唯一的真相来源"，负责会话管理、消息路由、渠道连接。</p>
+                    <p>这个网关通常作为后台服务常驻运行。</p>
+
+                    <!-- 网关架构图 -->
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
+                        <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
+                            <!-- 左侧：通讯工具 -->
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="w-16 h-16 rounded-xl bg-[#E8DFD3] flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-[#D4A574]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                                </div>
+                                <span class="text-xs text-[#666]">通讯工具</span>
+                                <span class="text-xs text-[#999]">微信/飞书/Slack</span>
+                            </div>
+                            <div class="text-[#D4A574] text-xl">→</div>
+                            <!-- 中间：网关 -->
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="w-20 h-20 rounded-xl bg-gradient-to-br from-[#D4A574] to-[#c49563] flex items-center justify-center">
+                                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
+                                </div>
+                                <span class="text-xs font-medium text-[#1a1a1a]">Gateway</span>
+                                <span class="text-xs text-[#999]">唯一的真相来源</span>
+                            </div>
+                            <div class="text-[#D4A574] text-xl">→</div>
+                            <!-- 右侧：Agent Runtime -->
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="w-16 h-16 rounded-xl bg-[#E8DFD3] flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-[#D4A574]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                                </div>
+                                <span class="text-xs text-[#666]">Agent Runtime</span>
+                                <span class="text-xs text-[#999]">大模型 + 工具</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p>它一头连接你日常用的各种聊天工具——微信、飞书、Telegram、Slack——然后把每一条发给它的消息，统一格式。</p>
+                    <p>一头连着 Agent Runtime，把各个渠道收到的消息发送给 Agent，如果消息非常多，它会建一个消息队列，排好队一个一个处理。</p>
+
+                    <div class="callout">
+                        <div class="callout-title">架构原则 #1</div>
+                        <p style="margin-bottom: 0;"><strong>真正的 AI Agent 部署，永远不会把大模型 API 直接暴露给用户输入。</strong>你得在中间放一个受控的编排层，负责路由、排队、状态管理。OpenClaw 把这个模式做得清清楚楚。</p>
+                    </div>
+
+                    <h2 id="input">第二层：输入标准化——让不同平台"说同一种话"</h2>
+                    <p>当你在微信上给 OpenClaw 发条消息，第一件事不是调用 AI，而是先经过一个<strong>渠道适配器（Channel Adapter）</strong>。</p>
+                    <p>OpenClaw 支持十几种聊天平台，每个平台的协议和消息格式都不一样。微信的语音消息和 Slack 的文本消息，数据结构完全不同。</p>
+
+                    <!-- 渠道适配器 -->
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <div class="info-card">
+                            <div class="info-card-icon" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);">
+                                <svg class="w-5 h-5 text-[#92400e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                            </div>
+                            <h3 class="info-card-title">微信/飞书</h3>
+                            <p class="text-sm text-[#666666]">语音消息转文字、群聊/私聊区分、消息类型统一</p>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-icon" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);">
+                                <svg class="w-5 h-5 text-[#1e40af]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                            </div>
+                            <h3 class="info-card-title">Telegram/Slack</h3>
+                            <p class="text-sm text-[#666666]">Markdown 解析、Bot 指令识别、频道上下文</p>
+                        </div>
+                    </div>
+
+                    <p>渠道适配器的工作，就是把这些五花八门的输入，统一转换成一个标准的消息对象：发送者、内容、附件、渠道信息。<strong>如果你发的是语音，它会先转成文字，再往下传。</strong></p>
+
+                    <div class="callout">
+                        <div class="callout-title">架构原则 #2</div>
+                        <p style="margin-bottom: 0;"><strong>在大模型看到输入之前，先把它标准化。</strong>为什么？因为你喂给大模型的上下文，决定了它的输出质量。输入乱七八糟，输出就会一塌糊涂。</p>
+                    </div>
+
+                    <h2 id="routing">第三层：路由和会话——谁来处理？处理到哪一步了？</h2>
+                    <p>网关拿到标准化的消息后，要决定两件事：</p>
+                    <ol>
+                        <li><strong>交给哪个 Agent 处理？</strong></li>
+                        <li><strong>这条消息属于哪个对话？</strong></li>
+                    </ol>
+                    <p>OpenClaw 支持<strong>多 Agent 路由</strong>。你可以给不同的渠道、联系人、群组配置不同的 Agent。比如：</p>
+                    <ul class="styled-list">
+                        <li>私聊用一个 Agent，语气随意，能访问你的日历</li>
+                        <li>工作群用另一个 Agent，正式一点，能查产品文档</li>
+                    </ul>
+                    <p>所有这些，都通过同一个网关进程管理。</p>
+                    <p>每个 Agent 维护自己的<strong>会话（Session）</strong>：一个有状态的对话记录。会话有 ID，记录历史，而且——注意这个细节——<strong>同一个会话的消息是串行处理的，不是并发的</strong>。</p>
+
+                    <div class="callout">
+                        <div class="callout-title">架构原则 #3</div>
+                        <p style="margin-bottom: 0;"><strong>当 Agent 共享状态时，并发是危险的。</strong>按会话串行执行，是个深思熟虑的设计决策，不是性能妥协。官方文档说得很明白：串行化可以防止工具冲突，保持会话历史一致。</p>
+                    </div>
+
+                    <h2 id="agentic-loop">核心：Agentic Loop</h2>
+                    <p>这是 OpenClaw 的核心，也是所有 AI Agent 的核心概念。官方文档这样描述：</p>
+                    <blockquote>Agentic Loop 是 Agent 的完整运行周期：接收输入 → 组装上下文 → 模型推理 → 执行工具 → 流式回复 → 持久化</blockquote>
+                    <p>我们一步步拆解。</p>
+
+                    <h3>1. 上下文组装</h3>
+                    <p>在大模型看到你的消息之前，Agent 运行时会组装一个"上下文包"。系统提示词由四部分构成：</p>
+
+                    <!-- 上下文组装 -->
+                    <div class="vertical-list-card" style="margin-bottom: 1rem;">
+                        <div class="vertical-list-number">1</div>
+                        <div>
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">OpenClaw 的基础提示词</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">Agent 始终遵循的核心指令</p>
+                        </div>
+                    </div>
+                    <div class="vertical-list-card" style="margin-bottom: 1rem;">
+                        <div class="vertical-list-number">2</div>
+                        <div>
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">技能提示词</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">可用技能的简明列表（名称、描述、路径）</p>
+                        </div>
+                    </div>
+                    <div class="vertical-list-card" style="margin-bottom: 1rem;">
+                        <div class="vertical-list-number">3</div>
+                        <div>
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">启动上下文文件</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">提供环境级别的上下文</p>
+                        </div>
+                    </div>
+                    <div class="vertical-list-card">
+                        <div class="vertical-list-number">4</div>
+                        <div>
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">单次运行覆盖</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">针对特定任务的额外指令</p>
+                        </div>
+                    </div>
+
+                    <div class="callout">
+                        <div class="callout-title">关键洞察</div>
+                        <p style="margin-bottom: 0;"><strong>大模型没有眼睛，它只能看到你放进上下文窗口的东西。</strong>上下文组装不是可以跳过的预处理步骤，它是整个 Agent 系统中最重要的工程决策。模型知道什么、相信什么、能做什么，全都取决于这一步。</p>
+                    </div>
+
+                    <h3>2. 模型推理</h3>
+                    <p>组装好的上下文被发送给你配置的模型提供商（Anthropic、OpenAI、Google、Ollama 等）。OpenClaw 会处理几个重要细节：</p>
+                    <ul class="styled-list">
+                        <li>强制执行模型特定的上下文限制</li>
+                        <li>保留<strong>压缩预留空间</strong>（一个 token 缓冲区），确保模型有足够空间回复</li>
+                    </ul>
+
+                    <h3>3. 工具执行——Agent"长出手脚"的地方</h3>
+                    <p>这是最有意思的部分。当大模型响应时，它会做两件事之一：</p>
+                    <ol>
+                        <li><strong>输出文本回复</strong>（这一轮结束）</li>
+                        <li><strong>请求工具调用（Tool Call）</strong></li>
+                    </ol>
+                    <p>工具调用是什么？就是模型用结构化格式输出："我想运行这个特定工具，用这些特定参数。"比如"我需要读这个文件"或"我需要搜索网页"或"我需要发这封邮件"。</p>
+                    <p>OpenClaw 的 Agent 运行时会拦截这个请求，执行工具，捕获结果，然后把结果作为新消息反馈回对话。模型看到结果后，决定下一步做什么——可能是再调用一个工具，也可能是最终写出回复。</p>
+                    <p>这个循环叫 <strong>ReAct 循环</strong>（Reason 推理 + Act 行动）。<strong>这是 Agent 和聊天机器人的本质区别。</strong></p>
+
+                    <!-- ReAct 伪代码 -->
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot" style="background: #ff5f56;"></div>
+                            <div class="code-dot" style="background: #ffbd2e;"></div>
+                            <div class="code-dot" style="background: #27c93f;"></div>
+                            <span class="filename" style="color: #6c7086; margin-left: 8px; font-size: 0.75rem;">ReAct 循环伪代码</span>
+                        </div>
+                        <div class="code-body">
+                            <pre>while True:
+    回复 = 大模型.调用(上下文)
+
+    if 回复.是文本():
+        发送回复(回复.文本)
+        break
+
+    if 回复.是工具调用():
+        结果 = 执行工具(回复.工具名, 回复.工具参数)
+        上下文.添加消息("工具结果", 结果)</pre>
+                        </div>
+                    </div>
+
+                    <p>OpenClaw 实现了同样的循环模式，而且是实时流式返回的。你能看到工具被调用，看到结果返回，看到模型基于结果进行推理，然后给出回复。</p>
+
+                    <h2 id="skills">技能系统：按需加载的"专业知识"</h2>
+                    <p>OpenClaw 的<strong>技能（Skills）</strong>设计非常优雅，也是一个很好的提示词工程实践案例。</p>
+                    <p>一个技能就是一个文件夹，里面有个 <code>SKILL.md</code> 文件。这个 Markdown 文件用自然语言写着指令、示例，有时还包括工具配置，告诉 Agent 怎么处理特定领域的任务——比如管理 GitHub 仓库、审查 PR、或者调用某个 API。</p>
+
+                    <!-- 技能文件示例 -->
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot" style="background: #ff5f56;"></div>
+                            <div class="code-dot" style="background: #ffbd2e;"></div>
+                            <div class="code-dot" style="background: #27c93f;"></div>
+                            <span class="filename" style="color: #6c7086; margin-left: 8px; font-size: 0.75rem;">SKILL.md 示例</span>
+                        </div>
+                        <div class="code-body">
+                            <pre>---
+name: github-pr-reviewer
+description: 审查GitHub拉取请求并发布反馈
+---
+
+# GitHub PR审查员
+
+当被要求审查拉取请求时:
+1. 使用web_fetch工具从GitHub URL获取PR差异
+2. 分析差异,检查正确性、安全问题和代码风格
+3. 将审查结构化为:摘要、发现的问题、建议
+4. 如果被要求发布审查,使用GitHub API工具提交
+
+始终保持建设性。将阻塞性问题与建议分开标记。</pre>
+                        </div>
+                    </div>
+
+                    <p><strong>关键来了：</strong>OpenClaw 不会把所有技能的完整文本都塞进系统提示词。相反，上下文组装步骤只注入一个简洁的技能列表——基本上就是名称、描述和文件路径。模型读到这个列表，当它判断某个技能与当前任务相关时，才会按需读取那个技能的 <code>SKILL.md</code>。</p>
+
+                    <div class="callout">
+                        <div class="callout-title">架构精髓</div>
+                        <p style="margin-bottom: 0;"><strong>模型不是被动接收指令，而是主动决定查阅哪些技能，按需加载。</strong>上下文窗口是有限的，这种设计让基础提示词保持精简，无论你安装了多少技能。</p>
+                    </div>
+
+                    <p>技能可以从 <strong>ClawHub</strong>(OpenClaw 的社区注册表）安装，也可以自己写。</p>
+
+                    <div class="callout" style="border-left-color: #DC2626;">
+                        <div class="callout-title" style="color: #DC2626;">⚠️ 安全提醒</div>
+                        <p style="margin-bottom: 0;">社区技能可能导致静默数据泄露和提示词注入式攻击。<strong>安装任何第三方技能前，务必审查代码</strong>，尤其是那些能访问邮件或浏览器自动化的技能。</p>
+                    </div>
+
+                    <h2 id="mcp">MCP：标准化的工具层</h2>
+                    <p>一些 OpenClaw 部署集成了 MCP 服务器作为标准化工具层，把 Agent 连接到外部服务，比如 Google 日历、Notion、智能家居、或自定义 API。MCP 的原生支持在项目中还在积极演进，但社区适配器已经让它成为可能。</p>
+
+                    <!-- MCP 架构 -->
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <div class="info-card">
+                            <div class="info-card-icon" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);">
+                                <svg class="w-5 h-5 text-[#065f46]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4H4a1 1 0 01-1-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
+                            </div>
+                            <h3 class="info-card-title">工具可移植性</h3>
+                            <p class="text-sm text-[#666666]">为一个兼容 MCP 的 Agent 构建的工具，可以在其他说同样协议的系统中复用。</p>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-icon" style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);">
+                                <svg class="w-5 h-5 text-[#4338ca]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <h3 class="info-card-title">标准接口</h3>
+                            <p class="text-sm text-[#666666]">Agent 永远不直接接触底层服务。它调用一个标准接口，MCP 服务器处理剩下的事。</p>
+                        </div>
+                    </div>
+
+                    <h2 id="memory">记忆系统：让 AI 记住你是谁</h2>
+                    <p>问任何一个 AI 工程师，Agent 系统中最难的问题是什么，记忆肯定排在前几位。大模型本质上是无状态的，每次对话都从白纸开始。那怎么构建一个能记住你的偏好、正在进行的项目、沟通风格的 Agent，而且能跨越几天、几周？</p>
+                    <p>OpenClaw 的答案刻意保持简单，我认为这是整个项目中最好的设计决策之一。</p>
+                    <p><strong>记忆就存在普通的 Markdown 文件里</strong>，放在 Agent 工作区，默认是 <code>~/.openclaw/workspace</code>。OpenClaw 的配置和状态（凭证、会话、日志、已安装技能）存在 <code>~/.openclaw/</code> 下。</p>
+
+                    <!-- 记忆文件结构 -->
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot" style="background: #ff5f56;"></div>
+                            <div class="code-dot" style="background: #ffbd2e;"></div>
+                            <div class="code-dot" style="background: #27c93f;"></div>
+                            <span class="filename" style="color: #6c7086; margin-left: 8px; font-size: 0.75rem;">记忆文件结构</span>
+                        </div>
+                        <div class="code-body">
+                            <pre>~/.openclaw/workspace/
++-- AGENTS.md      &lt;-- Agent配置和指令
++-- SOUL.md        &lt;-- 性格、偏好、语气
++-- MEMORY.md      &lt;-- 长期事实和摘要
++-- HEARTBEAT.md   &lt;-- 主动任务清单
++-- memory/
+    +-- 2026-02-15.md  &lt;-- 每日临时日志
+    +-- 2026-02-16.md  &lt;-- 每日临时日志</pre>
+                        </div>
+                    </div>
+
+                    <p><strong>每日日志</strong>（<code>memory/YYYY-MM-DD.md</code>）是持久化的、只追加的文件，记录每天发生了什么。重要的是，<strong>这些不会</strong>在每一轮对话时自动注入上下文。Agent 通过记忆工具按需检索它们，只在与当前任务相关时才读取。这让日常对话保持精简，避免不必要的上下文膨胀。</p>
+
+                    <ul class="styled-list">
+                        <li><strong>MEMORY.md</strong> 存储 Agent 了解到的关于你的长期事实：比如"用户喜欢简洁的回复"、"用户的技术栈是 Next.js 和 Supabase"，或者"周五永远不要安排会议"。</li>
+                        <li><strong>SOUL.md</strong> 定义 Agent 的性格、名字和沟通风格。这让它感觉像你的助手，而不是一个通用机器人。</li>
+                    </ul>
+
+                    <p>当加载所有这些历史会超出上下文窗口时，OpenClaw 会运行<strong>压缩（Compaction）</strong>流程。它把较旧的对话轮次总结成压缩条目，保留语义内容的同时减少 token 数量。这是解决基于大模型系统中长上下文问题的实用方案。</p>
+                    <p>对于记忆检索，OpenClaw 支持基于嵌入的搜索，可选地通过 <code>sqlite-vec</code> SQLite 扩展加速。根据配置，一些部署会将其与基于关键词的搜索配对，既能概念匹配，又能精确 token 匹配。</p>
+
+                    <div class="callout">
+                        <div class="callout-title">简洁的设计</div>
+                        <p style="margin-bottom: 0;">没有外部数据库。没有 Redis。没有 Pinecone。<strong>就是 SQLite 和 Markdown 文件。</strong>这很好地提醒我们：在工程中，能真正解决问题的最简单方案，通常就是正确的方案。</p>
+                    </div>
+
+                    <h2 id="heartbeat">心跳机制：让 AI 主动干活</h2>
+                    <p>OpenClaw 有个很有意思的特性：它不只是坐在那儿等你发消息。它有个<strong>心跳（Heartbeat）</strong>机制：一个定时触发器，默认每 30 分钟触发一次。</p>
+                    <p>每次心跳时，Agent 读取 <code>HEARTBEAT.md</code>，这是一个它应该主动检查的任务清单。它决定现在是否有事情需要注意。如果有，就采取行动，可能给你发条消息。如果没事，它回复 <code>HEARTBEAT_OK</code>，网关会抑制这个回复，不会发给你。</p>
+
+                    <div class="callout">
+                        <div class="callout-title">架构概念</div>
+                        <p style="margin-bottom: 0;"><strong>定时触发的 Agent 循环</strong>——不只是响应人类输入，Agent 会定期被唤醒，被要求评估它的任务列表。你可以用它每天给自己发简报、监控网站变化、或者在你注意到之前就发现日历冲突。</p>
+                    </div>
+
+                    <h2 id="flow">完整流程：一条消息的旅程</h2>
+                    <p>把所有这些拼起来，一条消息在 OpenClaw 中的完整流程是这样的：</p>
+
+                    <!-- 消息流程 -->
+                    <ol class="ordered-list">
+                        <li><strong>消息到达</strong> → 渠道适配器标准化</li>
+                        <li><strong>路由</strong> → 网关决定哪个 Agent、哪个会话</li>
+                        <li><strong>排队</strong> → 命令队列串行化执行</li>
+                        <li><strong>上下文组装</strong> → 系统提示词 + 技能列表 + 记忆 + 历史</li>
+                        <li><strong>模型推理</strong> → 调用大模型 API</li>
+                        <li><strong>工具执行</strong> → ReAct 循环（可能多轮）</li>
+                        <li><strong>流式回复</strong> → 实时返回给用户</li>
+                        <li><strong>持久化</strong> → 更新会话历史和记忆文件</li>
+                    </ol>
+
+                    <!-- 图片: 完整流程图 -->
+                    <div class="my-8">
+                        <img src="https://minimax-algeng-chat-tts.oss-cn-wulanchabu.aliyuncs.com/ccv2%2F2026-04-08%2FMiniMax-M2.5%2F2030821106625028577%2Fcbe19b811c3cc73868139ed7c81246d7802d3d69f1aad86e265c76729ccbf6db..png?Expires=1775710591&OSSAccessKeyId=LTAI5tGLnRTkBjLuYPjNcKQ8&Signature=xSoY57A%2BmVcXHmeeQO%2FDcawCrbU%3D" alt="OpenClaw 完整流程图" class="w-full rounded-xl shadow-sm cursor-pointer hover:opacity-90 transition-opacity" onclick="this.style.maxWidth = this.style.maxWidth === '90vw' ? '' : '90vw'">
+                    </div>
+
+                    <h2 id="lessons">这告诉我们什么？</h2>
+                    <p>大多数现代 Agent 框架在不同的 API 和抽象下，共享着相同的核心模式。看 OpenClaw，你能清楚地看到它们：</p>
+
+                    <!-- 图片: 核心模式 -->
+                    <div class="my-8">
+                        <img src="https://minimax-algeng-chat-tts.oss-cn-wulanchabu.aliyuncs.com/ccv2%2F2026-04-08%2FMiniMax-M2.5%2F2030821106625028577%2F8a0630e49e1db0fee504b9fcbf0658e882b3e38cecfb804810bfef1be56af874..png?Expires=1775710592&OSSAccessKeyId=LTAI5tGLnRTkBjLuYPjNcKQ8&Signature=URU3gjmtJH4bafix7gKw2Hbglg4%3D" alt="OpenClaw 核心模式" class="w-full rounded-xl shadow-sm cursor-pointer hover:opacity-90 transition-opacity" onclick="this.style.maxWidth = this.style.maxWidth === '90vw' ? '' : '90vw'">
+                    </div>
+
+                    <p>OpenClaw 的价值不在于它独创了这些模式，而在于<strong>它让这些模式变得具体、基于文件、可读</strong>。你可以打开 <code>SOUL.md</code> 看到 Agent 遵循的确切指令。你可以读任何 <code>SKILL.md</code> 理解一个能力是怎么添加的。你可以检查 <code>MEMORY.md</code> 审计 Agent 知道的关于你的一切。</p>
+
+                    <div class="callout" style="border-left-color: #DC2626;">
+                        <div class="callout-title" style="color: #DC2626;">⚠️ 安全警示</div>
+                        <p style="margin-bottom: 0;">这种透明性既是它最大的工程优点，也是最大的安全攻击面。一个能访问你的文件、浏览器、邮件和聊天工具的 Agent 是强大的。一个恶意技能或者通过 Agent 访问的网页发起的提示词注入攻击，理论上可以危及所有这些。<strong>在把网关暴露到网络之前，务必运行安全审计工具，安装任何第三方技能前都要审查代码。</strong></p>
+                    </div>
+
+                    <h2>写在最后</h2>
+                    <p>OpenClaw 在 2026 年初成为 GitHub 上增长最快的仓库之一。开发者社区不只是在认可一个有用的工具，他们在认可一种<strong>架构模式</strong>。</p>
+                    <p>本地网关 + Agent 循环 + 技能系统 + 持久化记忆——这个模式会在很长时间内成为个人 AI Agent 的蓝图。</p>
+                    <p>如果你想真正理解 AI Agent 是怎么工作的，OpenClaw 是你能研究的最好的真实案例之一。代码是 MIT 开源的，架构是可读的，它实现的概念和严肃 AI 公司生产环境中的 Agent 系统是一样的。</p>
+                    <p>去读源码。打开一个 <code>SKILL.md</code>。编辑你的 <code>SOUL.md</code>。搞坏点东西。<strong>这才是真正学习的方式。</strong></p>
+
+                    <!-- 参考资料 -->
+                    <div class="reference-block" style="margin-top: 2rem;">
+                        <div class="reference-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                            </svg>
+                            参考资料
+                        </div>
+                        <div class="reference-item">
+                            <div class="reference-number">1</div>
+                            <div>
+                                <p class="text-sm text-[#666666] mb-0"><a href="https://github.com/claude-developer/claude-code" target="_blank" style="color: var(--accent);">OpenClaw GitHub 仓库</a> - MIT 开源项目</p>
+                            </div>
+                        </div>
+                        <div class="reference-item">
+                            <div class="reference-number">2</div>
+                            <div>
+                                <p class="text-sm text-[#666666] mb-0"><a href="https://docs.openclaw.ai" target="_blank" style="color: var(--accent);">OpenClaw 官方文档</a></p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6 md:px-12 border-t border-[#e5e5e5] relative z-10">
+        <div class="max-w-5xl mx-auto text-center">
+            <p class="text-sm text-[#999999]">© 2024 Qianmei's Agent Lab</p>
+        </div>
+    </footer>
+</body>
+</html>
