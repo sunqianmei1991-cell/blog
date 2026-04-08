@@ -259,17 +259,14 @@
     <!-- Article Header -->
     <article class="pt-16 pb-12 px-6 md:px-12 relative z-10">
         <div class="max-w-5xl mx-auto">
-            <div class="grid lg:grid-cols-[200px_1fr] gap-12">
-                <div class="hidden lg:block"></div>
-                <div class="max-w-2xl">
-                    <p class="text-[#D4A574] text-sm tracking-[0.2em] uppercase mb-4">产品知识</p>
-                    <h1 class="font-display text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight mb-6">从 LLM 到 Agent：建立 AI Agent 认知框架</h1>
-                    <p class="text-lg text-[#666666] leading-relaxed mb-8">给 AI 初学者的系统性指南：用一个客服助手的故事，看懂从 LLM 到 Agent 的完整进化</p>
-                    <div class="flex items-center gap-4 text-sm text-[#999999]">
-                        <span>2026年2月28日</span>
-                        <span class="w-1 h-1 rounded-full bg-[#D4A574]"></span>
-                        <span>15 min read</span>
-                    </div>
+            <div class="max-w-2xl">
+                <p class="text-[#D4A574] text-sm tracking-[0.2em] uppercase mb-4">产品知识</p>
+                <h1 class="font-display text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight mb-6">从 LLM 到 Agent：建立 AI Agent 认知框架</h1>
+                <p class="text-lg text-[#666666] leading-relaxed mb-8">给 AI 初学者的系统性指南：用一个客服助手的故事，看懂从 LLM 到 Agent 的完整进化</p>
+                <div class="flex items-center gap-4 text-sm text-[#999999]">
+                    <span>2026年2月28日</span>
+                    <span class="w-1 h-1 rounded-full bg-[#D4A574]"></span>
+                    <span>15 min read</span>
                 </div>
             </div>
         </div>
@@ -278,8 +275,23 @@
     <!-- Article Content -->
     <div class="pb-20 px-6 md:px-12 relative z-10">
         <div class="max-w-5xl mx-auto">
-            <div class="grid lg:grid-cols-[200px_1fr] gap-12">
-                <!-- TOC Sidebar -->
+            <div class="lg:grid lg:grid-cols-[200px_1fr] lg:gap-12">
+                <!-- TOC Sidebar - Mobile: show before content -->
+                <aside class="lg:hidden mb-8">
+                    <details class="border border-[#e5e5e5] rounded-lg p-4">
+                        <summary class="text-sm text-[#666666] cursor-pointer font-medium">📑 目录</summary>
+                        <nav class="toc mt-4">
+                            <ul class="space-y-2 text-sm">
+                                <li><a href="#intro" class="text-[#999] hover:text-[#D4A574]">写在前面</a></li>
+                                <li><a href="#llm" class="text-[#999] hover:text-[#D4A574]">一、只会说话的新员工</a></li>
+                                <li><a href="#agent" class="text-[#999] hover:text-[#D4A574]">二、能真的帮你办事的员工</a></li>
+                                <li><a href="#levels" class="text-[#999] hover:text-[#D4A574]">三、从新手到专家的能力分级</a></li>
+                                <li><a href="#roadmap" class="text-[#999] hover:text-[#D4A574]">四、技术演进路径</a></li>
+                                <li><a href="#conclusion" class="text-[#999] hover:text-[#D4A574]">写在最后</a></li>
+                            </ul>
+                        </nav>
+                    </details>
+                </aside>
                 <aside class="hidden lg:block">
                     <div class="sticky top-24">
                         <p class="text-xs text-[#999999] mb-3 uppercase tracking-wider">目录</p>
