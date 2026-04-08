@@ -722,8 +722,17 @@ description: 审查GitHub拉取请求并发布反馈
                     </ol>
 
                     <!-- 图片: 完整流程图 -->
-                    <div class="my-8" style="cursor: pointer; border: 2px solid red;" onclick="alert('clicked'); var img=this.querySelector('img');img.style.maxWidth=img.style.maxWidth==='90vw'?'100%':'90vw';">
-                        <img src="https://minimax-algeng-chat-tts.oss-cn-wulanchabu.aliyuncs.com/ccv2%2F2026-04-08%2FMiniMax-M2.5%2F2030821106625028577%2Fcbe19b811c3cc73868139ed7c81246d7802d3d69f1aad86e265c76729ccbf6db..png?Expires=1775710591&OSSAccessKeyId=LTAI5tGLnRTkBjLuYPjNcKQ8&Signature=xSoY57A%2BmVcXHmeeQO%2FDcawCrbU%3D" alt="OpenClaw 完整流程图" class="w-full rounded-xl shadow-sm" style="max-width: 100%;">
+                    <div class="my-8" style="cursor: pointer;" onclick="this.classList.toggle('img-expanded')">
+                        <img src="https://minimax-algeng-chat-tts.oss-cn-wulanchabu.aliyuncs.com/ccv2%2F2026-04-08%2FMiniMax-M2.5%2F2030821106625028577%2Fcbe19b811c3cc73868139ed7c81246d7802d3d69f1aad86e265c76729ccbf6db..png?Expires=1775710591&OSSAccessKeyId=LTAI5tGLnRTkBjLuYPjNcKQ8&Signature=xSoY57A%2BmVcXHmeeQO%2FDcawCrbU%3D" alt="OpenClaw 完整流程图" class="w-full rounded-xl shadow-sm">
+                    </div>
+                    <style>.my-8.img-expanded img{max-width:90vw !important;}</style>
+
+                    <h2 id="lessons">这告诉我们什么？</h2>
+                    <p>大多数现代 Agent 框架在不同的 API 和抽象下，共享着相同的核心模式。看 OpenClaw，你能清楚地看到它们：</p>
+
+                    <!-- 图片: 核心模式 -->
+                    <div class="my-8" style="cursor: pointer;" onclick="this.classList.toggle('img-expanded')">
+                        <img src="https://minimax-algeng-chat-tts.oss-cn-wulanchabu.aliyuncs.com/ccv2%2F2026-04-08%2FMiniMax-M2.5%2F2030821106625028577%2F8a0630e49e1db0fee504b9fcbf0658e882b3e38cecfb804810bfef1be56af874..png?Expires=1775710592&OSSAccessKeyId=LTAI5tGLnRTkBjLuYPjNcKQ8&Signature=URU3gjmtJH4bafix7gKw2Hbglg4%3D" alt="OpenClaw 核心模式" class="w-full rounded-xl shadow-sm">
                     </div>
 
                     <h2 id="lessons">这告诉我们什么？</h2>
