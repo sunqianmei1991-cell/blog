@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG 进化史 - Qianmei's Agent Lab</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J95ZCBCXP7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J95ZCBCXP7');
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --bg-primary: #FAF9F6;
+                --text-primary: #1a1a1a;
+                --accent: #D4A574;
+                --text-secondary: #666666;
+                --border: #e5e5e5;
+            }
+            body {
+                font-family: 'Source Serif Pro', serif;
+                background-color: var(--bg-primary);
+                color: var(--text-primary);
+                line-height: 1.8;
+            }
+            h1, h2, h3, h4, .font-display {
+                font-family: 'Playfair Display', serif;
+                line-height: 1.3;
+            }
+            p { margin-bottom: 1.5em; }
+        }
+        @layer components {
+            .grain-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                opacity: 0.03;
+                z-index: 0;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            }
+            .article-content h2 {
+                font-size: 1.6rem;
+                font-weight: 600;
+                margin-top: 2.5em;
+                margin-bottom: 0.8em;
+                color: var(--text-primary);
+            }
+            .article-content h3 {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-top: 2em;
+                margin-bottom: 0.7em;
+                color: var(--text-primary);
+            }
+            .article-content p {
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .article-content ul, .article-content ol {
+                margin-bottom: 1.5em;
+                padding-left: 1.5em;
+            }
+            .article-content li {
+                margin-bottom: 0.5em;
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .article-content strong {
+                color: var(--text-primary);
+                font-weight: 600;
+            }
+            .toc {
+                border-left: 1px solid var(--border);
+                padding-left: 1.25em;
+            }
+            .toc ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            .toc li { margin-bottom: 0.4em; }
+            .toc a {
+                color: #999;
+                text-decoration: none;
+                font-size: 0.85rem;
+            }
+            .toc a:hover { color: var(--text-primary); }
+            .callout {
+                border-left: 3px solid var(--accent);
+                background: linear-gradient(90deg, rgba(212, 165, 116, 0.08) 0%, transparent 100%);
+                padding: 1.25em 1.5em;
+                margin: 2em 0;
+                border-radius: 0 8px 8px 0;
+            }
+            .callout-title {
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 0.5em;
+            }
+            .diagram-container {
+                margin: 2em 0;
+                text-align: center;
+            }
+            .diagram-container img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 8px;
+                border: 1px solid var(--border);
+            }
+            .version-badge {
+                display: inline-block;
+                padding: 0.25rem 0.75rem;
+                border-radius: 9999px;
+                font-weight: 600;
+                font-size: 0.875rem;
+            }
+            .version-1 { background: #fef3c7; color: #92400e; }
+            .version-2 { background: #dbeafe; color: #1e40af; }
+            .version-3 { background: #d1fae5; color: #065f46; }
+            .version-4 { background: #ede9fe; color: #5b21b6; }
+            .version-graph { background: #fce7f3; color: #9d174d; }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="grain-overlay"></div>
+
+    <!-- Header -->
+    <header class="py-6 px-6 md:px-12 border-b border-[#e5e5e5] relative z-10">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <a href="../index.html" class="text-[#666666] text-sm hover:text-[#1a1a1a] transition-colors flex items-center gap-1">
+                <span>←</span>
+                <span>返回</span>
+            </a>
+            <nav class="flex gap-6 text-sm text-[#666666]">
+                <a href="../index.html" class="hover:text-[#1a1a1a]">文章</a>
+                <a href="#" class="hover:text-[#1a1a1a]">关于</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Title -->
+    <article class="pt-16 pb-12 px-6 md:px-12 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid lg:grid-cols-[200px_1fr] gap-12">
+                <div class="hidden lg:block"></div>
+                <div class="max-w-2xl">
+                    <p class="text-[#D4A574] text-sm tracking-[0.2em] uppercase mb-4">产品知识</p>
+                    <h1 class="font-display text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight mb-6">RAG 进化史：从"答非所问"到"有问必答"</h1>
+                    <p class="text-lg text-[#666666] leading-relaxed mb-8">从 Naive RAG 到 Agentic RAG，智能客服的 4 代演进史</p>
+                    <div class="flex items-center gap-4 text-sm text-[#999999]">
+                        <span>2026年4月</span>
+                        <span class="w-1 h-1 rounded-full bg-[#D4A574]"></span>
+                        <span>20 min read</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- Content -->
+    <div class="pb-20 px-6 md:px-12 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid lg:grid-cols-[200px_1fr] gap-12">
+                <!-- TOC -->
+                <aside class="hidden lg:block">
+                    <div class="sticky top-24">
+                        <p class="text-xs text-[#999999] mb-3 uppercase tracking-wider">目录</p>
+                        <nav class="toc">
+                            <ul>
+                                <li><a href="#intro">开篇</a></li>
+                                <li><a href="#v1">第一代：Naive RAG</a></li>
+                                <li><a href="#v2">第二代：Advanced RAG</a></li>
+                                <li><a href="#v3">第三代：Modular RAG</a></li>
+                                <li><a href="#graph">GraphRAG</a></li>
+                                <li><a href="#v4">第四代：Agentic RAG</a></li>
+                                <li><a href="#comparison">演进对比</a></li>
+                                <li><a href="#choice">如何选择</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- Article -->
+                <div class="article-content max-w-2xl mx-auto lg:mx-0">
+
+                    <h2 id="intro">开篇</h2>
+                    <p>如果你对 RAG 的认知还停留在"向量检索"，那你的 RAG 架构可能已经落后了整整两个代际。</p>
+                    <p>我最近看了两篇 RAG 领域教科书级的论文：</p>
+                    <ul>
+                        <li>《Retrieval-Augmented Generation for Large Language Models: A Survey》——RAG 领域的开山综述，首次系统性地提出了 RAG 的三个演进范式</li>
+                        <li>《AGENTIC RETRIEVAL-AUGMENTED GENERATION: A SURVEY ON AGENTIC RAG》——RAG 向 Agent 时代跨越的标志</li>
+                    </ul>
+                    <p>结合这两篇论文，我给大家梳理 RAG 从 1.0 到 4.0 的演进史，还是通过一个<strong>智能客服</strong>的例子，说清楚这四个版本的迭代本质。</p>
+
+                    <div class="callout">
+                        <div class="callout-title">核心观点</div>
+                        <p style="margin-bottom: 0;">技术没有绝对的好坏，只有适不适合。要结合用户等待时间、问题复杂度分布以及团队内部的技术能力和预算综合评估。</p>
+                    </div>
+
+                    <h2 id="v1">一、第一代：Naive RAG（基础版）</h2>
+                    <p>现在时间回到 2020 年，你上线了第一代智能客服。它使用了第一代 RAG 技术，是典型的<strong>三段式架构</strong>：</p>
+
+                    <!-- 流程图 -->
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="px-4 py-2 bg-[#fef3c7] border border-[#92400e] rounded-lg text-base font-medium">建索引</div>
+                            <span class="text-[#D4A574] text-xl">→</span>
+                            <div class="px-4 py-2 bg-[#fef3c7] border border-[#92400e] rounded-lg text-base font-medium">检索</div>
+                            <span class="text-[#D4A574] text-xl">→</span>
+                            <div class="px-4 py-2 bg-[#fef3c7] border border-[#92400e] rounded-lg text-base font-medium">生成</div>
+                        </div>
+                    </div>
+
+                    <p>第一步：<strong>建索引</strong>（把所有的 QA 文档、商品说明、售后政策进行切块，转化向量，存进数据库）</p>
+                    <p>第二步：<strong>检索</strong>（当用户提问："我买的手机支持以旧换新吗？"系统把用户的问题向量化，去数据库里找跟这个问题最相关的 5 段内容）</p>
+                    <p>第三步：<strong>生成</strong>（把这 5 段内容和用户问题一起给到智能客服，让它生成回答）</p>
+
+                    <h3>问题来了</h3>
+
+                    <div class="space-y-4 my-6">
+                        <div class="bg-white rounded-xl border-l-4 border-l-red-400 p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">问题 1：检索不精准</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">用户问"换新"，系统可能会检索到"回收政策"这些看似相关、但其实无关的内容。因为向量检索是基于语义相似度——"换新"和"回收"在语义空间里是比较接近的。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border-l-4 border-l-red-400 p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">问题 2：信息不完整</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">完整的"以旧换新"政策往往分散在多份文档里：一份讲适用机型，一份讲折扣规则，一份讲操作流程。一次检索只找到其中一份，答案自然就不完整。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border-l-4 border-l-red-400 p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">问题 3：信息拼接混乱</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">不同时间的文档存在矛盾的信息：有的写"支持 iPhone 12 以上机型"，有的写"限 iPhone 13 以上"。AI 把这些互相矛盾的信息硬拼在一起，最后用户看到的就是前后矛盾的答案。</p>
+                        </div>
+                    </div>
+
+                    <div class="callout">
+                        <div class="callout-title">第一代问题总结</div>
+                        <p style="margin-bottom: 0;">问题主要出在两端：<strong>检索前</strong>问题不够清晰，<strong>检索后</strong>结果不精准。准确率约 60%。</p>
+                    </div>
+
+                    <h2 id="v2">二、第二代：Advanced RAG（高级版）</h2>
+                    <p>你发现第一代的问题主要出在两端：检索前问题不够清晰，检索结果不精准。于是你开始着手对系统进行升级改造。</p>
+
+                    <h3>检索前优化</h3>
+
+                    <div class="space-y-4 my-6">
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">查询改写</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-2">用户的提问往往很随意。"能换吗"、"支持吗"、"可以吗"——同一个问题问的五花八门。在检索之前，先让 AI 把用户的问题扩写、澄清，生成多个表述。</p>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">用这改写后的问题同时去检索，覆盖面一下子扩大了。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">假设答案法（HyDE）</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-2">先让 AI 根据问题生成一段"假设性答案"："本平台支持以旧换新服务，符合条件的旧机型 blabla"</p>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">然后用这段假设答案去检索——因为答案的语义比问题更接近真实文档，检索效果往往更好。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">更精细的索引策略</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">更精细的文档切块策略，切块后的数据添加元数据标签。</p>
+                        </div>
+                    </div>
+
+                    <h3>检索后优化</h3>
+
+                    <div class="space-y-4 my-6">
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">重排序（Reranking）</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-2">初步检索可能找到 50 个候选段落，但只有 top 5 个会被送给 AI。怎么确保这 5 个是最有用的？</p>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">用一个专门的"重排序模型"，对这 50 个候选做精细打分，把最关键的排到最前面。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">混合检索</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-2">向量检索擅长理解语义，但对专有名词不敏感。"iPhone 14 Pro Max"和"iPhone 14 Pro"在向量空间里很接近，但用户问的是 Pro Max，你给 Pro 的答案就是错的。</p>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">把向量检索和关键词检索结合起来。向量检索负责找"语义相关"的内容，关键词检索负责精准匹配专有名词，两者结果合并、去重、重排序。</p>
+                        </div>
+                    </div>
+
+                    <div class="callout">
+                        <div class="callout-title">第二代成果</div>
+                        <p style="margin-bottom: 0;">经过这轮优化，智能客服的准确率从 60% 提升到了 <strong>80%</strong>。用户投诉明显减少。</p>
+                    </div>
+
+                    <h2 id="v3">三、第三代：Modular RAG（模块化版）</h2>
+                    <p>但新的问题又来了——用户问了一个<strong>多步骤、跨领域</strong>的复杂问题：</p>
+
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 my-6 shadow-sm">
+                        <p class="text-lg text-[#1a1a1a] mb-0">"我在北京，想给在上海的朋友买个手机当生日礼物，能直接发到上海吗？如果他不喜欢能退吗？退货运费谁出？"</p>
+                    </div>
+
+                    <p>这涉及：</p>
+                    <ul>
+                        <li>异地配送政策</li>
+                        <li>退货政策</li>
+                        <li>运费承担规则</li>
+                    </ul>
+
+                    <p>第二代 RAG 的固定流程傻眼了——一次检索，找什么？找配送？找退货？还是找运费？</p>
+
+                    <h3>模块化架构</h3>
+                    <p>第三代 Modular RAG 打破了固定流程，把 RAG 拆成一堆可以自由组合的功能模块：</p>
+
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">路由模块</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">根据问题类型，智能决定查哪个数据源。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">记忆模块</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">记住对话历史，理解"他"、"这个"这类指代词。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">融合模块</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">对多个来源的结果去重、合并，避免重复信息。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">检索模块</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">支持迭代检索、递归检索、自适应检索等多种方式。</p>
+                        </div>
+                    </div>
+
+                    <h3>灵活的检索方式</h3>
+
+                    <div class="space-y-4 my-6">
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">迭代检索</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">不是一次性检索，而是交替进行"检索→生成→再检索→再生成"。比如刚才那个问题：三个问题进行三轮检索。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">递归检索</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">先检索目录，再检索内容。这个在电商场景用的不多，一些论文著作的检索用的比较多。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">自适应检索</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">根据当前结果质量，动态决定是否继续检索。如果第一轮检索的结果已经足够回答问题，就直接生成答案，不浪费时间；如果不够，就继续查。</p>
+                        </div>
+                    </div>
+
+                    <div class="callout">
+                        <div class="callout-title">第三代成果</div>
+                        <p style="margin-bottom: 0;">第三代 RAG 让智能客服真正具备了应对复杂咨询的能力。准确率提升到 <strong>85%</strong>，复杂问题的解决率翻倍。</p>
+                    </div>
+
+                    <h2 id="graph">四、GraphRAG：知识图谱增强</h2>
+                    <p>在讲第四代 RAG 还需要介绍一个概念——GraphRAG。</p>
+
+                    <p>用户问："我上个月买的那款你们跟某品牌联名的限量版手机，它的设计师之前还设计过哪些产品？"</p>
+
+                    <p>这个问题需要理解多层关系：</p>
+
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 my-6 shadow-sm">
+                        <p class="text-center text-lg mb-0">商品 → 联名品牌 → 设计师 → 其他作品</p>
+                    </div>
+
+                    <p>传统向量检索完全懵了——它处理的是孤立的文本片段，不理解实体之间的关系。</p>
+
+                    <h3>微软的革命性方案</h3>
+                    <p>微软提出了一个革命性方案：用知识图谱重构 RAG。</p>
+
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 my-6 shadow-sm">
+                        <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-3">建库阶段</h4>
+                        <p class="text-base text-[#666666] leading-relaxed mb-3">不只是把文档切块存向量，而是：提取实体，以及实体的关系，把这些实体和关系连成一张网，建立图谱，再进行聚类索引。</p>
+                        <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-3">查询阶段</h4>
+                        <p class="text-base text-[#666666] leading-relaxed mb-0">不是在图谱上做推理：定位到商品 → 找到联名品牌 → 找到设计师 → 遍历设计师的所有作品。</p>
+                    </div>
+
+                    <div class="callout">
+                        <div class="callout-title">GraphRAG 定位</div>
+                        <p style="margin-bottom: 0;">GraphRAG 不算是第三代的升级，它补充了普通向量检索覆盖不到的<strong>多跳推理</strong>和<strong>全局分析</strong>的场景。但 GraphRAG 建图成本高，查询慢，考虑到成本问题，使用的公司不多。</p>
+                    </div>
+
+                    <h2 id="v4">五、第四代：Agentic RAG（智能体版）</h2>
+                    <p>Modular RAG 和 GraphRAG 分别从"管道灵活性"和"知识表示结构"两个维度大幅提升了 RAG 的能力，但它们都有一个共同的根本性限制：<strong>被动响应</strong>。</p>
+
+                    <p>用户提问，系统响应，没有主动规划，没有自我反思，不会在发现答案不够好时主动补充检索，更不会把复杂任务拆解成多步执行计划。</p>
+
+                    <h3>Agentic RAG 的突破</h3>
+                    <p>这个限制催生了 RAG 的第四代演进：<strong>Agentic RAG</strong>。</p>
+
+                    <p>用户问："我想买个手机送给妈妈，她不太会用智能手机，你帮我推荐一下，顺便告诉我怎么教她用。"</p>
+
+                    <p>这不是一个简单的 FAQ 查询，而是一个<strong>需要主动规划，多步执行，综合决策</strong>的复杂任务。</p>
+
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 my-6 shadow-sm">
+                        <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-3">第四代的突破</h4>
+                        <p class="text-base text-[#666666] leading-relaxed mb-3">将自主 AI 智能体（Agent）嵌入 RAG 管道。智能体不只是被动地执行检索-生成的固定步骤，而是能够<strong>规划任务，使用工具、评估结果、迭代优化</strong>，在整个回答生成过程中扮演主动决策者的角色。</p>
+                        <p class="text-base text-[#666666] leading-relaxed mb-0">比如刚才给母亲买手机的问题，客服会先制定方案：</p>
+                    </div>
+
+                    <div class="space-y-4 my-6">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base flex-shrink-0">1</div>
+                            <div class="flex-1">
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">分析需求</h4>
+                                <p class="text-base text-[#666666] leading-relaxed mb-0">老年人，不太会用，需要推荐 + 教程</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base flex-shrink-0">2</div>
+                            <div class="flex-1">
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">拆解任务</h4>
+                                <ul class="text-base text-[#666666] mb-0">
+                                    <li>子任务 1：检索"适合老年人的手机"</li>
+                                    <li>子任务 2：检索"老年人手机使用教程"</li>
+                                    <li>子任务 3：整合推荐 + 教程</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base flex-shrink-0">3</div>
+                            <div class="flex-1">
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">工具箱 + 评估迭代</h4>
+                                <p class="text-base text-[#666666] leading-relaxed mb-0">智能客服能评估自己的输出：检索到的内容够好吗？生成的推荐真的符合需求吗？教程是否足够详细？不满意就自动重来，直到满意为止。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="callout">
+                        <div class="callout-title">第四代成果</div>
+                        <p style="margin-bottom: 0;">准确率提升到 <strong>90%+</strong>。真正具备了<strong>主动规划、多步执行、综合决策</strong>的能力，像人类顾问一样工作。</p>
+                    </div>
+
+                    <h2 id="comparison">六、一张图看懂 RAG 的进化</h2>
+
+                    <!-- 演进对比表 -->
+                    <div class="overflow-x-auto my-6">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr>
+                                    <th class="border border-[#e5e5e5] bg-[#FAF9F6] p-3 text-left font-semibold">代际</th>
+                                    <th class="border border-[#e5e5e5] bg-[#FAF9F6] p-3 text-left font-semibold">核心特征</th>
+                                    <th class="border border-[#e5e5e5] bg-[#FAF9F6] p-3 text-left font-semibold">客服能力</th>
+                                    <th class="border border-[#e5e5e5] bg-[#FAF9F6] p-3 text-left font-semibold">准确率</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-[#e5e5e5] p-3"><span class="version-badge version-1">1.0</span> Naive RAG</td>
+                                    <td class="border border-[#e5e5e5] p-3">固定流程：切块→检索→生成</td>
+                                    <td class="border border-[#e5e5e5] p-3">只能回答简单 FAQ</td>
+                                    <td class="border border-[#e5e5e5] p-3 font-semibold">60%</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-[#e5e5e5] p-3"><span class="version-badge version-2">2.0</span> Advanced RAG</td>
+                                    <td class="border border-[#e5e5e5] p-3">精细化优化：问题改写+重排序+混合检索</td>
+                                    <td class="border border-[#e5e5e5] p-3">能回答大部分标准问题</td>
+                                    <td class="border border-[#e5e5e5] p-3 font-semibold">80%</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-[#e5e5e5] p-3"><span class="version-badge version-3">3.0</span> Modular RAG</td>
+                                    <td class="border border-[#e5e5e5] p-3">模块化+自适应：灵活组合，迭代检索</td>
+                                    <td class="border border-[#e5e5e5] p-3">能处理复杂多步骤咨询</td>
+                                    <td class="border border-[#e5e5e5] p-3 font-semibold">85%</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-[#e5e5e5] p-3"><span class="version-badge version-graph">Graph</span> GraphRAG</td>
+                                    <td class="border border-[#e5e5e5] p-3">知识图谱+关系推理</td>
+                                    <td class="border border-[#e5e5e5] p-3">能理解实体关系，做多跳推理</td>
+                                    <td class="border border-[#e5e5e5] p-3 font-semibold">特定场景 90%+</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-[#e5e5e5] p-3"><span class="version-badge version-4">4.0</span> Agentic RAG</td>
+                                    <td class="border border-[#e5e5e5] p-3">Agent 加持：规划+工具+反思+协作</td>
+                                    <td class="border border-[#e5e5e5] p-3">主动解决问题，像人类顾问</td>
+                                    <td class="border border-[#e5e5e5] p-3 font-semibold">90%+</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h2 id="choice">七、如何选择适合你的 RAG 版本？</h2>
+                    <p>讲了这么多代际演进，你可能会问：<strong>是不是应该直接上最先进的 Agentic RAG？</strong></p>
+
+                    <div class="callout">
+                        <div class="callout-title">答案</div>
+                        <p style="margin-bottom: 0;"><strong>不一定。</strong>技术没有绝对的好坏，只有适不适合。</p>
+                    </div>
+
+                    <div class="space-y-4 my-6">
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">成本考量</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">GraphRAG 成本是普通 RAG 的 10-20 倍，Agentic RAG 多轮检索延时也会影响用户体验。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">场景适配</h4>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">常规的电商客服能做到第二代就已经能解决 80% 的问题了。</p>
+                        </div>
+                    </div>
+
+                    <p>要结合你的<strong>用户等待时间</strong>、<strong>问题复杂度的分布</strong>以及<strong>团队内部的技术能力和预算</strong>综合评估。</p>
+
+                    <div class="callout">
+                        <div class="callout-title">建议</div>
+                        <p style="margin-bottom: 0;">从简单的方案开始，只有在确实需要时才增加复杂度。</p>
+                    </div>
+
+                    <div class="callout">
+                        <div class="callout-title">参考来源</div>
+                        <ul style="margin-bottom: 0;">
+                            <li>《Retrieval-Augmented Generation for Large Language Models: A Survey》</li>
+                            <li>《Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG》</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6 md:px-12 border-t border-[#e5e5e5] relative z-10">
+        <div class="max-w-5xl mx-auto text-center">
+            <p class="text-sm text-[#999999]">© 2024 Qianmei's Agent Lab</p>
+        </div>
+    </footer>
+</body>
+</html>
