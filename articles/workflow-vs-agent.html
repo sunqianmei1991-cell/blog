@@ -20,6 +20,7 @@
                 --text-primary: #1a1a1a;
                 --accent: #D4A574;
                 --text-secondary: #666666;
+                --text-muted: #999999;
                 --border: #e5e5e5;
             }
             body {
@@ -27,6 +28,18 @@
                 background-color: var(--bg-primary);
                 color: var(--text-primary);
                 line-height: 1.8;
+            }
+            /* Grid Cards */
+            .grid-card {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.25rem;
+                transition: all 0.3s ease;
+            }
+            .grid-card:hover {
+                border-color: var(--accent);
+                box-shadow: 0 4px 12px rgba(212, 165, 116, 0.1);
             }
             h1, h2, h3, h4, .font-display {
                 font-family: 'Playfair Display', serif;
@@ -204,7 +217,7 @@
                     <h2 id="definition">定义区分</h2>
                     <p>行业内对"智能体（Agent）"的定义众说纷纭。Anthropic 将所有结合了大模型和工具的系统统称为<strong>"智能体系统（Agentic Systems）"</strong>，并在架构上做出了一个至关重要的区分：</p>
 
-                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
+                    <div class="grid-card">
                         <div class="grid md:grid-cols-2 gap-6">
                             <div>
                                 <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-3">Workflow（工作流）</h4>
@@ -258,7 +271,7 @@
                     <p>对于定义清晰的任务，工作流（Workflows）能提供极佳的<strong>可预测性</strong>和<strong>一致性</strong>；</p>
                     <p>而当面对需要规模化处理、且高度依赖模型灵活决策的<strong>开放性问题</strong>时，才应该使用真正的智能体（Agents）。</p>
 
-                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
+                    <div class="grid-card">
                         <div class="space-y-4">
                             <div class="flex items-start gap-4">
                                 <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base flex-shrink-0">1</div>
@@ -292,7 +305,7 @@
                     <h2 id="path">最佳路径是什么？</h2>
                     <p>Anthropic 给了我们一个清晰的演进路线：</p>
 
-                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
+                    <div class="grid-card">
                         <div class="flex items-start gap-4">
                             <div class="flex flex-col items-center">
                                 <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base">1</div>
@@ -394,7 +407,7 @@
 
                     <h2 id="principles">构建生产级智能体的三大核心原则</h2>
 
-                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
+                    <div class="grid-card">
                         <div class="space-y-4">
                             <div class="flex items-start gap-4">
                                 <div class="w-10 h-10 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold text-base flex-shrink-0">1</div>

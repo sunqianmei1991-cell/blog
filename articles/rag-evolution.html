@@ -20,6 +20,7 @@
                 --text-primary: #1a1a1a;
                 --accent: #D4A574;
                 --text-secondary: #666666;
+                --text-muted: #999999;
                 --border: #e5e5e5;
             }
             body {
@@ -93,6 +94,115 @@
                 font-size: 0.85rem;
             }
             .toc a:hover { color: var(--text-primary); }
+            /* Styled Lists */
+            .styled-list {
+                list-style: none;
+                padding: 0;
+            }
+            .styled-list li {
+                padding: 12px 0;
+                padding-left: 24px;
+                position: relative;
+                border-bottom: 1px solid var(--border);
+            }
+            .styled-list li:last-child {
+                border-bottom: none;
+            }
+            .styled-list li::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--accent);
+            }
+            .ordered-list {
+                list-style: none;
+                padding: 0;
+                counter-reset: item;
+            }
+            .ordered-list li {
+                padding: 12px 0;
+                padding-left: 40px;
+                position: relative;
+                border-bottom: 1px solid var(--border);
+            }
+            .ordered-list li:last-child {
+                border-bottom: none;
+            }
+            .ordered-list li::before {
+                counter-increment: item;
+                content: counter(item);
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 24px;
+                height: 24px;
+                border-radius: 6px;
+                background: var(--accent);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            /* Reference Block */
+            .reference-block {
+                background: linear-gradient(135deg, #f8f6f3 0%, var(--bg-primary) 100%);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.5rem;
+            }
+            .reference-title {
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                color: var(--text-muted);
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .reference-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 12px 0;
+                border-bottom: 1px solid var(--border);
+            }
+            .reference-item:last-child {
+                border-bottom: none;
+            }
+            .reference-number {
+                width: 24px;
+                height: 24px;
+                border-radius: 6px;
+                background: var(--accent);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            /* Grid Cards */
+            .grid-card {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.25rem;
+                transition: all 0.3s ease;
+            }
+            .grid-card:hover {
+                border-color: var(--accent);
+                box-shadow: 0 4px 12px rgba(212, 165, 116, 0.1);
+            }
             .callout {
                 border-left: 3px solid var(--accent);
                 background: linear-gradient(90deg, rgba(212, 165, 116, 0.08) 0%, transparent 100%);
@@ -209,7 +319,7 @@
                     <h2 id="intro">开篇</h2>
                     <p>如果你对 RAG 的认知还停留在"向量检索"，那你的 RAG 架构可能已经落后了整整两个代际。</p>
                     <p>我最近看了两篇 RAG 领域教科书级的论文：</p>
-                    <ul>
+                    <ul class="styled-list">
                         <li>《Retrieval-Augmented Generation for Large Language Models: A Survey》——RAG 领域的开山综述，首次系统性地提出了 RAG 的三个演进范式</li>
                         <li>《AGENTIC RETRIEVAL-AUGMENTED GENERATION: A SURVEY ON AGENTIC RAG》——RAG 向 Agent 时代跨越的标志</li>
                     </ul>
@@ -223,14 +333,14 @@
                     <h2 id="v1">一、第一代：Naive RAG（基础版）</h2>
                     <p>现在时间回到 2020 年，你上线了第一代智能客服。它使用了第一代 RAG 技术，是典型的<strong>三段式架构</strong>：</p>
 
-                    <!-- 流程图 -->
-                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
-                        <div class="flex flex-row items-center justify-center gap-2 md:gap-4">
-                            <div class="px-4 py-2 bg-[#fef3c7] border border-[#92400e] rounded-lg text-base font-medium">建索引</div>
-                            <span class="text-[#D4A574] text-xl">→</span>
-                            <div class="px-4 py-2 bg-[#fef3c7] border border-[#92400e] rounded-lg text-base font-medium">检索</div>
-                            <span class="text-[#D4A574] text-xl">→</span>
-                            <div class="px-4 py-2 bg-[#fef3c7] border border-[#92400e] rounded-lg text-base font-medium">生成</div>
+                    <!-- 横向流程图 -->
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6">
+                        <div class="flex items-center justify-center flex-wrap gap-3">
+                            <div class="px-4 py-2 bg-[#f5f5f5] rounded-lg text-sm text-[#666]">建索引</div>
+                            <svg class="w-5 h-5 text-[#D4A574]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"></path></svg>
+                            <div class="px-4 py-2 bg-[#FAF9F6] border border-[#D4A574] rounded-lg text-sm font-medium text-[#1a1a1a]">检索</div>
+                            <svg class="w-5 h-5 text-[#D4A574]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"></path></svg>
+                            <div class="px-4 py-2 bg-gradient-to-r from-[#D4A574] to-[#c49563] rounded-lg text-sm font-medium text-white">生成</div>
                         </div>
                     </div>
 
@@ -310,7 +420,7 @@
                     </div>
 
                     <p>这涉及：</p>
-                    <ul>
+                    <ul class="styled-list">
                         <li>异地配送政策</li>
                         <li>退货政策</li>
                         <li>运费承担规则</li>
@@ -322,19 +432,19 @@
                     <p>第三代 Modular RAG 打破了固定流程，把 RAG 拆成一堆可以自由组合的功能模块：</p>
 
                     <div class="grid md:grid-cols-2 gap-4 my-6">
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">路由模块</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">根据问题类型，智能决定查哪个数据源。</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">记忆模块</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">记住对话历史，理解"他"、"这个"这类指代词。</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">融合模块</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">对多个来源的结果去重、合并，避免重复信息。</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">检索模块</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">支持迭代检索、递归检索、自适应检索等多种方式。</p>
                         </div>
@@ -515,12 +625,25 @@
                         <p style="margin-bottom: 0;">从简单的方案开始，只有在确实需要时才增加复杂度。</p>
                     </div>
 
-                    <div class="callout">
-                        <div class="callout-title">参考来源</div>
-                        <ul style="margin-bottom: 0;">
-                            <li>《Retrieval-Augmented Generation for Large Language Models: A Survey》</li>
-                            <li>《Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG》</li>
-                        </ul>
+                    <div class="reference-block">
+                        <div class="reference-title">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                            参考来源
+                        </div>
+                        <div class="reference-item">
+                            <span class="reference-number">1</span>
+                            <div>
+                                <p class="font-medium text-sm">Retrieval-Augmented Generation for Large Language Models: A Survey</p>
+                                <p class="text-xs text-[#999999]">Gao et al., 2023</p>
+                            </div>
+                        </div>
+                        <div class="reference-item">
+                            <span class="reference-number">2</span>
+                            <div>
+                                <p class="font-medium text-sm">Agentic Retrieval-Augmented Generation: A Survey</p>
+                                <p class="text-xs text-[#999999]">Zheng et al., 2024</p>
+                            </div>
+                        </div>
                     </div>
 
                 </div>

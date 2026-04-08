@@ -20,6 +20,7 @@
                 --text-primary: #1a1a1a;
                 --accent: #D4A574;
                 --text-secondary: #666666;
+                --text-muted: #999999;
                 --border: #e5e5e5;
             }
             body {
@@ -104,6 +105,83 @@
                 font-weight: 600;
                 color: var(--text-primary);
                 margin-bottom: 0.5em;
+            }
+            /* Styled Lists */
+            .styled-list {
+                list-style: none;
+                padding: 0;
+            }
+            .styled-list li {
+                padding: 12px 0;
+                padding-left: 24px;
+                position: relative;
+                border-bottom: 1px solid var(--border);
+            }
+            .styled-list li:last-child {
+                border-bottom: none;
+            }
+            .styled-list li::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--accent);
+            }
+            /* Reference Block */
+            .reference-block {
+                background: linear-gradient(135deg, #f8f6f3 0%, var(--bg-primary) 100%);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.5rem;
+            }
+            .reference-title {
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                color: var(--text-muted);
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .reference-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 12px 0;
+                border-bottom: 1px solid var(--border);
+            }
+            .reference-item:last-child {
+                border-bottom: none;
+            }
+            .reference-number {
+                width: 24px;
+                height: 24px;
+                border-radius: 6px;
+                background: var(--accent);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            /* Grid Cards */
+            .grid-card {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.25rem;
+                transition: all 0.3s ease;
+            }
+            .grid-card:hover {
+                border-color: var(--accent);
+                box-shadow: 0 4px 12px rgba(212, 165, 116, 0.1);
             }
             .diagram-container {
                 margin: 2em 0;
@@ -252,17 +330,21 @@
 
                     <!-- 角色卡片 -->
                     <div class="grid md:grid-cols-2 gap-4 my-6">
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="text-2xl">👔</span>
+                                <div class="w-8 h-8 rounded-lg bg-[#D4A574] flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                                </div>
                                 <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-0">Orchestrator（老板）</h4>
                             </div>
                             <p class="text-base text-[#666666] leading-relaxed mb-3">大脑，负责战略决策</p>
                             <p class="text-sm text-[#666666] leading-relaxed mb-0">老板不亲自去读网页、翻文档。它的工作是<strong>统筹全局、分配任务</strong>，维护一张全局的"项目进度表"。</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="text-2xl">👷</span>
+                                <div class="w-8 h-8 rounded-lg bg-[#E8DFD3] flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-[#D4A574]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                </div>
                                 <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-0">Sub-agents（员工）</h4>
                             </div>
                             <p class="text-base text-[#666666] leading-relaxed mb-3">手脚，负责具体执行</p>
@@ -494,9 +576,18 @@
                     <p>如果你正在构建 AI Agent 系统，不妨问问自己：<strong>我是在招一个"万能超人"，还是在搭建一个"高效团队"？</strong></p>
                     <p>答案可能决定了你的系统上限。</p>
 
-                    <div class="callout">
-                        <div class="callout-title">参考来源</div>
-                        <p style="margin-bottom: 0;">Anthropic 官方技术博客《How we built our multi-agent research system》</p>
+                    <div class="reference-block">
+                        <div class="reference-title">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                            参考来源
+                        </div>
+                        <div class="reference-item">
+                            <span class="reference-number">1</span>
+                            <div>
+                                <p class="font-medium text-sm">How we built our multi-agent research system</p>
+                                <p class="text-xs text-[#999999]">Anthropic 官方技术博客</p>
+                            </div>
+                        </div>
                     </div>
 
                 </div>

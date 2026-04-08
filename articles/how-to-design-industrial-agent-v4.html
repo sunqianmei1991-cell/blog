@@ -20,6 +20,7 @@
                 --text-primary: #1a1a1a;
                 --accent: #D4A574;
                 --text-secondary: #666666;
+                --text-muted: #999999;
                 --border: #e5e5e5;
             }
             body {
@@ -27,6 +28,18 @@
                 background-color: var(--bg-primary);
                 color: var(--text-primary);
                 line-height: 1.8;
+            }
+            /* Grid Cards */
+            .grid-card {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.25rem;
+                transition: all 0.3s ease;
+            }
+            .grid-card:hover {
+                border-color: var(--accent);
+                box-shadow: 0 4px 12px rgba(212, 165, 116, 0.1);
             }
             h1, h2, h3, h4, .font-display {
                 font-family: 'Playfair Display', serif;
@@ -312,22 +325,22 @@
 
                     <!-- 推理模式卡片 -->
                     <div class="grid md:grid-cols-2 gap-4 my-6">
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <div class="text-xs text-[#999999] uppercase tracking-wider mb-2">前置思考</div>
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">思维链 CoT</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">模型在生成最终答案之前，会先将问题拆解，逐步推导出中间步骤。通过显式推理，提升模型多步推理任务的表现。</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <div class="text-xs text-[#999999] uppercase tracking-wider mb-2">前置思考</div>
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">思维树 ToT</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">比思维链更进一步，探索多个分支，评估每个分支，选择最优解。</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <div class="text-xs text-[#999999] uppercase tracking-wider mb-2">过程中思考</div>
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">ReAct</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">推理与行动交替进行。边想边做，循环进行：思考-行动-观察。根据结果调整思路。</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <div class="text-xs text-[#999999] uppercase tracking-wider mb-2">后置思考</div>
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">反思 Reflection</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">智能体具备自省能力，生成结果后自我反思。两种方式：自我回顾 或 创建独立"批评者"。</p>
@@ -343,12 +356,12 @@
                     <p>人类有短期记忆和长期记忆，智能体也需要。智能体的记忆管理让它能够提供更个性化、更连贯的服务。</p>
 
                     <div class="grid md:grid-cols-2 gap-4 my-6">
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <div class="text-xs text-[#999999] uppercase tracking-wider mb-2">短期记忆</div>
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">上下文记忆</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">类似于工作记忆，保存当前正在处理或最近访问的信息。但这些上下文是临时的，会在会话结束后丢失。</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <div class="text-xs text-[#999999] uppercase tracking-wider mb-2">长期记忆</div>
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">持久记忆</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">智能体需要在多次交互、任务或较长周期内保留信息的仓库。智能体需要时，会查询外部存储，检索相关数据并整合到上下文中。</p>
@@ -359,15 +372,15 @@
                     <p>智能体不能只活在"文字世界"里，它需要连接真实世界。</p>
 
                     <div class="grid md:grid-cols-2 gap-4 my-6">
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">Tool Use 工具调用</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">赋予智能体"手和脚"。它可以调用搜索引擎、计算器、数据库、API，从"只会说话"变成"能做事情"。</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">MCP 模型上下文协议</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">标准化的连接协议，就像 USB 接口统一了各种设备。MCP 让智能体能够以标准化方式连接各种外部数据源。</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm md:col-span-2">
+                        <div class="grid-card md:col-span-2">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">RAG 检索增强生成</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-3">让 LLM 在生成响应前，先通过向量检索从外部知识库中提取最相关的片段，从根本上减少幻觉。</p>
                             <p class="text-base text-[#666666] leading-relaxed mb-0"><strong>Agentic RAG</strong>：进阶版本引入推理层，智能体不仅被动接收检索结果，还会主动评估来源质量、调和信息冲突。</p>
@@ -382,27 +395,27 @@
                     <h2 id="collaboration">⑤ 系统协作层</h2>
 
                     <div class="grid md:grid-cols-2 gap-4 my-6">
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">顺序交接</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">一个智能体完成任务后，将输出传递给下一个智能体</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">并行处理</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">多个智能体同时处理问题不同部分，结果后续合并</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">辩论与共识</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">智能体基于不同视角讨论，最终达成共识或更优决策</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">层级结构</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">管理者智能体根据工具能力动态分配任务给工作智能体</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">专家团队</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">不同领域专长智能体协作完成复杂输出</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">批评-审查者</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">一个智能体生成内容，另一个智能体进行安全，合规的审查</p>
                         </div>
@@ -414,19 +427,19 @@
                     <p>一个好用的系统不仅仅是能够满足功能上的需求，它同时需要是稳定的，安全的。</p>
 
                     <div class="grid md:grid-cols-2 gap-4 my-6">
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">评估与监控</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">持续追踪"智能体轨迹"，监控响应延迟与 Token 消耗，并采用"LLM-as-a-Judge"模式自动化评估。</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">护栏与安全</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">防止智能体生成有害内容或遭受提示词注入攻击，实施多层防御：输入清洗、输出拦截、预筛查。</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">异常处理与恢复</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">包括错误日志记录、重试、备用方案，降级、恢复机制。</p>
                         </div>
-                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                        <div class="grid-card">
                             <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">人类参与 HITL</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">在涉及高风险、伦理判断的场景中，HITL 模式将人类作为最终的验证者和纠错者。</p>
                         </div>
