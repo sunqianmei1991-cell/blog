@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多 Agent 研究系统 - Qianmei's Agent Lab</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J95ZCBCXP7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J95ZCBCXP7');
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --bg-primary: #FAF9F6;
+                --text-primary: #1a1a1a;
+                --accent: #D4A574;
+                --text-secondary: #666666;
+                --border: #e5e5e5;
+            }
+            body {
+                font-family: 'Source Serif Pro', serif;
+                background-color: var(--bg-primary);
+                color: var(--text-primary);
+                line-height: 1.8;
+            }
+            h1, h2, h3, h4, .font-display {
+                font-family: 'Playfair Display', serif;
+                line-height: 1.3;
+            }
+            p { margin-bottom: 1.5em; }
+        }
+        @layer components {
+            .grain-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                opacity: 0.03;
+                z-index: 0;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            }
+            .article-content h2 {
+                font-size: 1.6rem;
+                font-weight: 600;
+                margin-top: 2.5em;
+                margin-bottom: 0.8em;
+                color: var(--text-primary);
+            }
+            .article-content h3 {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-top: 2em;
+                margin-bottom: 0.7em;
+                color: var(--text-primary);
+            }
+            .article-content p {
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .article-content ul, .article-content ol {
+                margin-bottom: 1.5em;
+                padding-left: 1.5em;
+            }
+            .article-content li {
+                margin-bottom: 0.5em;
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .article-content strong {
+                color: var(--text-primary);
+                font-weight: 600;
+            }
+            .toc {
+                border-left: 1px solid var(--border);
+                padding-left: 1.25em;
+            }
+            .toc ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            .toc li { margin-bottom: 0.4em; }
+            .toc a {
+                color: #999;
+                text-decoration: none;
+                font-size: 0.85rem;
+            }
+            .toc a:hover { color: var(--text-primary); }
+            .callout {
+                border-left: 3px solid var(--accent);
+                background: linear-gradient(90deg, rgba(212, 165, 116, 0.08) 0%, transparent 100%);
+                padding: 1.25em 1.5em;
+                margin: 2em 0;
+                border-radius: 0 8px 8px 0;
+            }
+            .callout-title {
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 0.5em;
+            }
+            .diagram-container {
+                margin: 2em 0;
+                text-align: center;
+            }
+            .diagram-container img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 8px;
+                border: 1px solid var(--border);
+            }
+            .problem-card {
+                background: linear-gradient(135deg, #fef3e2 0%, #fdf6ed 100%);
+                border: 1px solid #f5deb3;
+            }
+            .solution-card {
+                background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+                border: 1px solid #c8e6c9;
+            }
+            .metric-badge {
+                background: linear-gradient(135deg, #D4A574 0%, #c49a6b 100%);
+                color: white;
+            }
+            .step-number {
+                background: var(--accent);
+                color: white;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="grain-overlay"></div>
+
+    <!-- Header -->
+    <header class="py-6 px-6 md:px-12 border-b border-[#e5e5e5] relative z-10">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <a href="../index.html" class="text-[#666666] text-sm hover:text-[#1a1a1a] transition-colors flex items-center gap-1">
+                <span>←</span>
+                <span>返回</span>
+            </a>
+            <nav class="flex gap-6 text-sm text-[#666666]">
+                <a href="../index.html" class="hover:text-[#1a1a1a]">文章</a>
+                <a href="#" class="hover:text-[#1a1a1a]">关于</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Title -->
+    <article class="pt-16 pb-12 px-6 md:px-12 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid lg:grid-cols-[200px_1fr] gap-12">
+                <div class="hidden lg:block"></div>
+                <div class="max-w-2xl">
+                    <p class="text-[#D4A574] text-sm tracking-[0.2em] uppercase mb-4">产品知识</p>
+                    <h1 class="font-display text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight mb-6">多 Agent 研究系统：性能飙升 90.2% 的秘密</h1>
+                    <p class="text-lg text-[#666666] leading-relaxed mb-8">Anthropic 实战总结：从"一个超级大脑"到"一个高效团队"的架构演进</p>
+                    <div class="flex items-center gap-4 text-sm text-[#999999]">
+                        <span>2026年4月</span>
+                        <span class="w-1 h-1 rounded-full bg-[#D4A574]"></span>
+                        <span>18 min read</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- Content -->
+    <div class="pb-20 px-6 md:px-12 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid lg:grid-cols-[200px_1fr] gap-12">
+                <!-- TOC -->
+                <aside class="hidden lg:block">
+                    <div class="sticky top-24">
+                        <p class="text-xs text-[#999999] mb-3 uppercase tracking-wider">目录</p>
+                        <nav class="toc">
+                            <ul>
+                                <li><a href="#intro">导语</a></li>
+                                <li><a href="#problem">为什么大力出奇迹行不通</a></li>
+                                <li><a href="#solution">性能飙升的秘密</a></li>
+                                <li><a href="#ooda">OODA 循环</a></li>
+                                <li><a href="#workflow">典型工作流程</a></li>
+                                <li><a href="#pits">踩过的 5 个坑</a></li>
+                                <li><a href="#when">三金标准</a></li>
+                                <li><a href="#summary">总结</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- Article -->
+                <div class="article-content max-w-2xl mx-auto lg:mx-0">
+
+                    <h2 id="intro">导语</h2>
+                    <p>当所有人还在卷模型参数、拼上下文长度时，Anthropic 已经悄悄换了一条赛道。他们的最新研究显示：<strong>多 Agent 系统比单 Agent 性能高出 90.2%</strong>。这不是实验室里的玩具，而是 Claude 背后真实的生产系统。</p>
+                    <p>今天，我们揭秘这套"Orchestrator-Subagent"架构是如何工作的。</p>
+
+                    <div class="callout">
+                        <div class="callout-title">核心观点</div>
+                        <p style="margin-bottom: 0;">在 AI 领域，<strong>架构创新有时候比单纯堆模型能力更重要</strong>。</p>
+                    </div>
+
+                    <h2 id="problem">一、为什么"大力出奇迹"行不通了？</h2>
+                    <p>想象一下，你请了一个超级聪明的助手，让他帮你完成一个复杂的市场调研任务。你期待他像诸葛亮一样运筹帷幄，但实际情况往往是这样的：</p>
+
+                    <!-- 问题卡片 -->
+                    <div class="space-y-4 my-6">
+                        <div class="problem-card rounded-xl p-5 shadow-sm">
+                            <div class="flex items-start gap-3">
+                                <div class="text-2xl">⚠️</div>
+                                <div>
+                                    <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">注意力稀释（Attention Loss）</h4>
+                                    <p class="text-base text-[#666666] leading-relaxed mb-0">你把 100 份财报、50 篇行业报告、30 个网页链接都丢给他。虽然他的"记忆力"（上下文窗口）越来越大了，但信息越多，他越容易"丢三落四"。即使是天才也会被海量信息淹没。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="problem-card rounded-xl p-5 shadow-sm">
+                            <div class="flex items-start gap-3">
+                                <div class="text-2xl">⚠️</div>
+                                <div>
+                                    <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">串行效率极低</h4>
+                                    <p class="text-base text-[#666666] leading-relaxed mb-0">这位助手就像一个非常认真的学生：搜一个词→点开链接→读完→再搜下一个。这种"线性思考"在面对复杂课题时，耗时是以小时计的。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="problem-card rounded-xl p-5 shadow-sm">
+                            <div class="flex items-start gap-3">
+                                <div class="text-2xl">⚠️</div>
+                                <div>
+                                    <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">脆弱的规划能力</h4>
+                                    <p class="text-base text-[#666666] leading-relaxed mb-0">最致命的是，你让他同时负责"定计划"和"搬砖"。结果往往是：他在执行细节时忘了最初的目标，产生"路径漂移"。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p>这就是 Anthropic 团队在使用单 Agent 做深度调研时遇到的真实困境。他们发现：<strong>单纯堆模型能力、扩上下文窗口，已经遇到边际效应递减的瓶颈。</strong></p>
+
+                    <h2 id="solution">二、性能飙升 90.2% 的秘密</h2>
+                    <p>面对这些瓶颈，Anthropic 彻底改变架构思路——<strong>从"一个超级大脑"变成"一个高效团队"。</strong></p>
+
+                    <div class="metric-badge inline-block px-4 py-2 rounded-full text-lg font-semibold mb-6">
+                        多 Agent 架构比单 Agent 性能提升 90.2%
+                    </div>
+
+                    <p>Anthropic 将这套架构抽象为两个核心角色：</p>
+
+                    <!-- 角色卡片 -->
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-2xl">👔</span>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-0">Orchestrator（老板）</h4>
+                            </div>
+                            <p class="text-base text-[#666666] leading-relaxed mb-3">大脑，负责战略决策</p>
+                            <p class="text-sm text-[#666666] leading-relaxed mb-0">老板不亲自去读网页、翻文档。它的工作是<strong>统筹全局、分配任务</strong>，维护一张全局的"项目进度表"。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-2xl">👷</span>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-0">Sub-agents（员工）</h4>
+                            </div>
+                            <p class="text-base text-[#666666] leading-relaxed mb-3">手脚，负责具体执行</p>
+                            <p class="text-sm text-[#666666] leading-relaxed mb-0">每个员工只专注一个<strong>极其具体的任务</strong>。他们不需要操心全局，只需要把自己那块工作做好、做快、做准。</p>
+                        </div>
+                    </div>
+
+                    <div class="diagram-container">
+                        <img src="../images/multi-agent-arch.png" alt="多 Agent 架构图" />
+                        <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">Orchestrator-Subagent 架构</p>
+                    </div>
+
+                    <h2 id="ooda">三、OODA 循环：动态管理而非固定流程</h2>
+                    <p>这套架构最精妙的地方在于：它运行的不是预先写好的固定流程，而是 <strong>OODA 循环</strong>——就像老板管理项目时的自然 workflow：</p>
+
+                    <!-- OODA 循环表格 -->
+                    <div class="overflow-x-auto my-6">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr>
+                                    <th class="border border-[#e5e5e5] bg-[#FAF9F6] p-3 text-left font-semibold">阶段</th>
+                                    <th class="border border-[#e5e5e5] bg-[#FAF9F6] p-3 text-left font-semibold">动作</th>
+                                    <th class="border border-[#e5e5e5] bg-[#FAF9F6] p-3 text-left font-semibold">老板在做什么</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-[#e5e5e5] p-3 font-medium">Observe 观察</td>
+                                    <td class="border border-[#e5e5e5] p-3">查看当前项目进度、已收集的资料、员工提交的初步结果</td>
+                                    <td class="border border-[#e5e5e5] p-3 text-[#666666]">"我已经有了美国市场的数据，欧洲市场还是空白"</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-[#e5e5e5] p-3 font-medium">Orient 定位</td>
+                                    <td class="border border-[#e5e5e5] p-3">分析信息是否足够回答问题，识别缺口，评估方向是否正确</td>
+                                    <td class="border border-[#e5e5e5] p-3 text-[#666666]">"欧洲数据缺失是关键瓶颈，需要重点突破"</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-[#e5e5e5] p-3 font-medium">Decide 决策</td>
+                                    <td class="border border-[#e5e5e5] p-3">决定下一步动作：深入挖掘（Depth）还是拓展广度（Breadth）</td>
+                                    <td class="border border-[#e5e5e5] p-3 text-[#666666]">"让 2 个员工分别去查德国和法国市场"</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-[#e5e5e5] p-3 font-medium">Act 执行</td>
+                                    <td class="border border-[#e5e5e5] p-3">将任务分配给专员，调用具体工具获取新数据</td>
+                                    <td class="border border-[#e5e5e5] p-3 text-[#666666]">创建 2 个子 Agent，分配任务</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="callout">
+                        <div class="callout-title">关键洞察</div>
+                        <p style="margin-bottom: 0;">每一次循环，老板都会根据最新进展重新评估项目状态，调整工作重点。这不是机械执行，而是真正的<strong>"动态管理"</strong>。</p>
+                    </div>
+
+                    <h2 id="workflow">四、典型工作流程</h2>
+                    <p>让我们走进 Anthropic 内部的调研系统，看看一次典型的多 Agent 协作是如何展开的：</p>
+
+                    <!-- 工作流程步骤 -->
+                    <div class="space-y-4 my-6">
+                        <div class="flex items-start gap-4">
+                            <div class="step-number w-10 h-10 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0">1</div>
+                            <div class="flex-1">
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">拆解任务</h4>
+                                <p class="text-base text-[#666666] leading-relaxed mb-0">老板不急着动手，而是先拆解成 5 个子任务：美国市场、中国市场、欧洲日韩、技术对比、趋势分析——再把计划写入笔记本<strong>（外部 Memory）防止忘了</strong>。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="step-number w-10 h-10 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0">2</div>
+                            <div class="flex-1">
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">并行派活</h4>
+                                <p class="text-base text-[#666666] leading-relaxed mb-0">瞬间创建 10 个员工，2 人一组并行开工。美国组查 NVIDIA/AMD，中国组查华为/寒武纪……所有人<strong>同时推进</strong>，而不是排队等。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="step-number w-10 h-10 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0">3</div>
+                            <div class="flex-1">
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">自我检查</h4>
+                                <p class="text-base text-[#666666] leading-relaxed mb-0">每个员工交活前必须自检：数据完整吗？来源可靠吗？避免把垃圾数据传给老板。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="step-number w-10 h-10 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0">4</div>
+                            <div class="flex-1">
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">对账审核</h4>
+                                <p class="text-base text-[#666666] leading-relaxed mb-0">老板汇总后，召唤 <strong>CitationAgent（对账员）</strong>：报告里的每句话，能不能在原文找到证据？创作和审核分离，确保<strong>每个结论都有据可查</strong>。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="diagram-container">
+                        <img src="../images/ooda-loop.png" alt="工作流程图" />
+                        <p style="text-align: center; margin-top: 1em; font-size: 0.9rem; color: #999;">多 Agent 协作工作流程</p>
+                    </div>
+
+                    <h2 id="pits">五、Anthropic 踩过的 5 个坑</h2>
+                    <p>多 Agent 系统不是银弹，Anthropic 在建设这套系统时遇到了不少挑战：</p>
+
+                    <!-- 坑与解决方案 -->
+                    <div class="space-y-4 my-6">
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <div class="flex items-start gap-3 mb-3">
+                                <span class="text-lg">🚧</span>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-0">坑 1：上下文截断导致"失忆"</h4>
+                            </div>
+                            <p class="text-base text-[#666666] leading-relaxed mb-3">每个 subagent 上下文是隔离的，调研任务通常涉及海量数据（如阅读数十份长文档），长周期的迭代会导致对话历史超过 20 万个 token 的限制。一旦发生截断，lead research 会产生"人设漂移"，彻底忘记最初的研究计划。</p>
+                            <div class="solution-card rounded-lg p-4">
+                                <p class="text-sm font-medium text-[#1a1a1a] mb-2">解法：</p>
+                                <ul class="text-sm text-[#666666] mb-0">
+                                    <li><strong>外部存储（Memory）：</strong> 系统将核心研究计划存储在外部 Memory 中，保证全局目标在任务中保持一致</li>
+                                    <li><strong>每轮同步：</strong> lead research 在每一轮 OODA 循环开始时，都会从外部存储中读取计划</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <div class="flex items-start gap-3 mb-3">
+                                <span class="text-lg">🚧</span>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-0">坑 2：工具描述不清，AI"瞎用"</h4>
+                            </div>
+                            <p class="text-base text-[#666666] leading-relaxed mb-3">多 agent 系统依赖大量工具（搜索、读取、提取）。工具调用失败往往不是因为模型能力弱，而是因为人类编写的工具描述存在歧义。</p>
+                            <div class="solution-card rounded-lg p-4">
+                                <p class="text-sm font-medium text-[#1a1a1a] mb-2">解法：</p>
+                                <ul class="text-sm text-[#666666] mb-0">
+                                    <li><strong>AI 写说明书：</strong> 开发专门的 tool-testing agent，多次使用某个存在缺陷的工具，在失败中学习，随后重写该工具的描述文档。仅通过优化工具描述，任务处理的整体耗时就降低了 <strong>40%</strong></li>
+                                    <li><strong>交错思考：</strong> 在提示词中强制模型在调用工具前后进行显式思考</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <div class="flex items-start gap-3 mb-3">
+                                <span class="text-lg">🚧</span>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-0">坑 3：路径随机，评估困难</h4>
+                            </div>
+                            <p class="text-base text-[#666666] leading-relaxed mb-3">多 agent 系统的路径是高度随机且发散的。同样的查询，第二次运行可能走完全不同的搜索路径，这让确定性的评估指标变得极难衡量。</p>
+                            <div class="solution-card rounded-lg p-4">
+                                <p class="text-sm font-medium text-[#1a1a1a] mb-2">解法：</p>
+                                <ul class="text-sm text-[#666666] mb-0">
+                                    <li><strong>模型辅助评估：</strong> 引入"裁判模型"，使用更高阶的模型作为自动评分员</li>
+                                    <li><strong>小样本深度调研：</strong> 选取 <strong>20 个</strong> 最具代表性的真实案例进行测试，可揪出架构设计中 80% 的系统性缺陷</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <div class="flex items-start gap-3 mb-3">
+                                <span class="text-lg">🚧</span>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-0">坑 4：成本指数级膨胀</h4>
+                            </div>
+                            <p class="text-base text-[#666666] leading-relaxed mb-3">多 Agent 系统可能为了简单问题盲目开启几十个 subAgent，导致 token 消耗呈指数级增长。</p>
+                            <div class="solution-card rounded-lg p-4">
+                                <p class="text-sm font-medium text-[#1a1a1a] mb-2">解法：</p>
+                                <p class="text-sm text-[#666666] mb-0">在提示词中嵌入<strong>规模自适应规则</strong>：</p>
+                                <ul class="text-sm text-[#666666] mt-2 mb-0">
+                                    <li>简单事实查询：1 个 subAgent，3-10 次工具调用</li>
+                                    <li>直接对比任务：2-4 个 subAgent，各 10-15 次调用</li>
+                                    <li>复杂研究：10+ 个 subAgent，明确划分职责</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
+                            <div class="flex items-start gap-3 mb-3">
+                                <span class="text-lg">🚧</span>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-0">坑 5：信息碎片化，张冠李戴</h4>
+                            </div>
+                            <p class="text-base text-[#666666] leading-relaxed mb-3">多 Agent 并行处理后，信息极其碎片化，容易出现"结论与原始来源无法对应"的问题。</p>
+                            <div class="solution-card rounded-lg p-4">
+                                <p class="text-sm font-medium text-[#1a1a1a] mb-2">解法：</p>
+                                <p class="text-sm text-[#666666] mb-0">前文提到的 <strong>CitationAgent（对账员）</strong>，专职负责引用核查，确保所有主张都有据可查。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 id="when">六、什么时候该用多 Agent？三金标准</h2>
+                    <p>不是所有场景都值得上多 Agent。Anthropic 给出了三个关键判定点：</p>
+
+                    <!-- 三金标准 -->
+                    <div class="space-y-4 my-6">
+                        <div class="bg-white rounded-xl border-l-4 border-l-[#D4A574] p-5 shadow-sm">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-8 h-8 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold">✓</span>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-0">标准 1：任务可并行化</h4>
+                            </div>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">例如：你的任务可以拆成"搜日本市场"、"搜欧洲市场"这种<strong>互不干扰的子块</strong>。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border-l-4 border-l-[#D4A574] p-5 shadow-sm">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-8 h-8 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold">✓</span>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-0">标准 2：超越单次上下文</h4>
+                            </div>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">任务涉及的总信息量<strong>远超 20 万 token</strong>，单模型处理不过来时。</p>
+                        </div>
+                        <div class="bg-white rounded-xl border-l-4 border-l-[#D4A574] p-5 shadow-sm">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-8 h-8 rounded-full bg-[#D4A574] text-white flex items-center justify-center font-bold">✓</span>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-0">标准 3：需要动态闭环</h4>
+                            </div>
+                            <p class="text-base text-[#666666] leading-relaxed mb-0">任务不是一锤子买卖，需要<strong>根据"第一步搜到的结果"来决定"第二步搜什么"</strong>。</p>
+                        </div>
+                    </div>
+
+                    <h2 id="summary">七、总结：从"大力出奇迹"到"巧劲破千斤"</h2>
+                    <p>Anthropic 的多 Agent 研究给我们最大的启发是：<strong>在 AI 领域，架构创新有时候比单纯堆模型能力更重要。</strong></p>
+
+                    <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 my-6 shadow-sm">
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-[#1a1a1a] text-white flex items-center justify-center text-sm">1</span>
+                                <span class="text-[#1a1a1a]">不要期待一个超级大脑做所有事</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-[#1a1a1a] text-white flex items-center justify-center text-sm">2</span>
+                                <span class="text-[#1a1a1a]">让专业的人做专业的事</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-[#1a1a1a] text-white flex items-center justify-center text-sm">3</span>
+                                <span class="text-[#1a1a1a]">用协作代替单打独斗</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="callout">
+                        <div class="callout-title">写在最后</div>
+                        <p style="margin-bottom: 0;">多 Agent 系统带来了更高的复杂度、更多的 token 消耗（约 15 倍于普通对话）、更复杂的调试难度。但对于那些<strong>高价值、可并行、需动态调整</strong>的任务，它可能是目前最优的解法。</p>
+                    </div>
+
+                    <p>如果你正在构建 AI Agent 系统，不妨问问自己：<strong>我是在招一个"万能超人"，还是在搭建一个"高效团队"？</strong></p>
+                    <p>答案可能决定了你的系统上限。</p>
+
+                    <div class="callout">
+                        <div class="callout-title">参考来源</div>
+                        <p style="margin-bottom: 0;">Anthropic 官方技术博客《How we built our multi-agent research system》</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6 md:px-12 border-t border-[#e5e5e5] relative z-10">
+        <div class="max-w-5xl mx-auto text-center">
+            <p class="text-sm text-[#999999]">© 2024 Qianmei's Agent Lab</p>
+        </div>
+    </footer>
+</body>
+</html>
