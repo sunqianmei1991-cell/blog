@@ -127,20 +127,6 @@
             .version-3 { background: #d1fae5; color: #065f46; }
             .version-4 { background: #ede9fe; color: #5b21b6; }
             .version-graph { background: #fce7f3; color: #9d174d; }
-            .section-icon {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 32px;
-                height: 32px;
-                border-radius: 8px;
-                margin-right: 8px;
-            }
-            .icon-orange { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #92400e; }
-            .icon-blue { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #1e40af; }
-            .icon-green { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #065f46; }
-            .icon-purple { background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); color: #5b21b6; }
-            .icon-pink { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); color: #9d174d; }
             .card-accent {
                 position: relative;
                 overflow: hidden;
@@ -154,12 +140,6 @@
                 height: 100%;
                 background: var(--accent);
                 opacity: 0.6;
-            }
-            .decorative-line {
-                width: 40px;
-                height: 2px;
-                background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
-                margin: 1rem 0;
             }
         }
     </style>
@@ -236,11 +216,11 @@
                     <p>结合这两篇论文，我给大家梳理 RAG 从 1.0 到 4.0 的演进史，还是通过一个<strong>智能客服</strong>的例子，说清楚这四个版本的迭代本质。</p>
 
                     <div class="callout">
-                        <div class="callout-title"><span class="text-[#D4A574] mr-2">💡</span>核心观点</div>
+                        <div class="callout-title">核心观点</div>
                         <p style="margin-bottom: 0;">技术没有绝对的好坏，只有适不适合。要结合用户等待时间、问题复杂度分布以及团队内部的技术能力和预算综合评估。</p>
                     </div>
 
-                    <h2 id="v1"><span class="section-icon icon-orange">⚡</span>一、第一代：Naive RAG（基础版）</h2>
+                    <h2 id="v1">一、第一代：Naive RAG（基础版）</h2>
                     <p>现在时间回到 2020 年，你上线了第一代智能客服。它使用了第一代 RAG 技术，是典型的<strong>三段式架构</strong>：</p>
 
                     <!-- 流程图 -->
@@ -258,11 +238,11 @@
                     <p>第二步：<strong>检索</strong>（当用户提问："我买的手机支持以旧换新吗？"系统把用户的问题向量化，去数据库里找跟这个问题最相关的 5 段内容）</p>
                     <p>第三步：<strong>生成</strong>（把这 5 段内容和用户问题一起给到智能客服，让它生成回答）</p>
 
-                    <h3><span class="text-[#D4A574] mr-2">⚠️</span>问题来了</h3>
+                    <h3>问题来了</h3>
 
                     <div class="space-y-4 my-6">
                         <div class="bg-white rounded-xl border-l-4 border-l-red-400 p-5 shadow-sm card-accent">
-                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2"><span class="text-red-400 mr-2">●</span>问题 1：检索不精准</h4>
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">问题 1：检索不精准</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">用户问"换新"，系统可能会检索到"回收政策"这些看似相关、但其实无关的内容。因为向量检索是基于语义相似度——"换新"和"回收"在语义空间里是比较接近的。</p>
                         </div>
                         <div class="bg-white rounded-xl border-l-4 border-l-red-400 p-5 shadow-sm card-accent">
@@ -276,11 +256,11 @@
                     </div>
 
                     <div class="callout">
-                        <div class="callout-title"><span class="text-[#D4A574] mr-2">📌</span>第一代问题总结</div>
+                        <div class="callout-title">第一代问题总结</div>
                         <p style="margin-bottom: 0;">问题主要出在两端：<strong>检索前</strong>问题不够清晰，<strong>检索后</strong>结果不精准。准确率约 60%。</p>
                     </div>
 
-                    <h2 id="v2"><span class="section-icon icon-blue">🔧</span>二、第二代：Advanced RAG（高级版）</h2>
+                    <h2 id="v2">二、第二代：Advanced RAG（高级版）</h2>
                     <p>你发现第一代的问题主要出在两端：检索前问题不够清晰，检索结果不精准。于是你开始着手对系统进行升级改造。</p>
 
                     <h3>检索前优化</h3>
@@ -318,11 +298,11 @@
                     </div>
 
                     <div class="callout">
-                        <div class="callout-title"><span class="text-[#D4A574] mr-2">✅</span>第二代成果</div>
+                        <div class="callout-title">第二代成果</div>
                         <p style="margin-bottom: 0;">经过这轮优化，智能客服的准确率从 60% 提升到了 <strong>80%</strong>。用户投诉明显减少。</p>
                     </div>
 
-                    <h2 id="v3"><span class="section-icon icon-green">🧩</span>三、第三代：Modular RAG（模块化版）</h2>
+                    <h2 id="v3">三、第三代：Modular RAG（模块化版）</h2>
                     <p>但新的问题又来了——用户问了一个<strong>多步骤、跨领域</strong>的复杂问题：</p>
 
                     <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 my-6 shadow-sm">
@@ -338,7 +318,7 @@
 
                     <p>第二代 RAG 的固定流程傻眼了——一次检索，找什么？找配送？找退货？还是找运费？</p>
 
-                    <h3><span class="text-[#D4A574] mr-2">📋</span>模块化架构</h3>
+                    <h3>模块化架构</h3>
                     <p>第三代 Modular RAG 打破了固定流程，把 RAG 拆成一堆可以自由组合的功能模块：</p>
 
                     <div class="grid md:grid-cols-2 gap-4 my-6">
@@ -360,7 +340,7 @@
                         </div>
                     </div>
 
-                    <h3><span class="text-[#D4A574] mr-2">🔄</span>灵活的检索方式</h3>
+                    <h3>灵活的检索方式</h3>
 
                     <div class="space-y-4 my-6">
                         <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
@@ -378,11 +358,11 @@
                     </div>
 
                     <div class="callout">
-                        <div class="callout-title"><span class="text-[#D4A574] mr-2">✅</span>第三代成果</div>
+                        <div class="callout-title">第三代成果</div>
                         <p style="margin-bottom: 0;">第三代 RAG 让智能客服真正具备了应对复杂咨询的能力。准确率提升到 <strong>85%</strong>，复杂问题的解决率翻倍。</p>
                     </div>
 
-                    <h2 id="graph"><span class="section-icon icon-pink">🕸️</span>四、GraphRAG：知识图谱增强</h2>
+                    <h2 id="graph">四、GraphRAG：知识图谱增强</h2>
                     <p>在讲第四代 RAG 还需要介绍一个概念——GraphRAG。</p>
 
                     <p>用户问："我上个月买的那款你们跟某品牌联名的限量版手机，它的设计师之前还设计过哪些产品？"</p>
@@ -395,7 +375,7 @@
 
                     <p>传统向量检索完全懵了——它处理的是孤立的文本片段，不理解实体之间的关系。</p>
 
-                    <h3><span class="text-[#D4A574] mr-2">💡</span>微软的革命性方案</h3>
+                    <h3>微软的革命性方案</h3>
                     <p>微软提出了一个革命性方案：用知识图谱重构 RAG。</p>
 
                     <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 my-6 shadow-sm">
@@ -406,11 +386,11 @@
                     </div>
 
                     <div class="callout">
-                        <div class="callout-title"><span class="text-[#D4A574] mr-2">📍</span>GraphRAG 定位</div>
+                        <div class="callout-title">GraphRAG 定位</div>
                         <p style="margin-bottom: 0;">GraphRAG 不算是第三代的升级，它补充了普通向量检索覆盖不到的<strong>多跳推理</strong>和<strong>全局分析</strong>的场景。但 GraphRAG 建图成本高，查询慢，考虑到成本问题，使用的公司不多。</p>
                     </div>
 
-                    <h2 id="v4"><span class="section-icon icon-purple">🤖</span>五、第四代：Agentic RAG（智能体版）</h2>
+                    <h2 id="v4">五、第四代：Agentic RAG（智能体版）</h2>
                     <p>Modular RAG 和 GraphRAG 分别从"管道灵活性"和"知识表示结构"两个维度大幅提升了 RAG 的能力，但它们都有一个共同的根本性限制：<strong>被动响应</strong>。</p>
 
                     <p>用户提问，系统响应，没有主动规划，没有自我反思，不会在发现答案不够好时主动补充检索，更不会把复杂任务拆解成多步执行计划。</p>
@@ -457,7 +437,7 @@
                     </div>
 
                     <div class="callout">
-                        <div class="callout-title"><span class="text-[#D4A574] mr-2">🚀</span>第四代成果</div>
+                        <div class="callout-title">第四代成果</div>
                         <p style="margin-bottom: 0;">准确率提升到 <strong>90%+</strong>。真正具备了<strong>主动规划、多步执行、综合决策</strong>的能力，像人类顾问一样工作。</p>
                     </div>
 
@@ -513,17 +493,17 @@
                     <p>讲了这么多代际演进，你可能会问：<strong>是不是应该直接上最先进的 Agentic RAG？</strong></p>
 
                     <div class="callout">
-                        <div class="callout-title"><span class="text-[#D4A574] mr-2">💡</span>答案</div>
+                        <div class="callout-title">答案</div>
                         <p style="margin-bottom: 0;"><strong>不一定。</strong>技术没有绝对的好坏，只有适不适合。</p>
                     </div>
 
                     <div class="space-y-4 my-6">
                         <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
-                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2"><span class="text-[#D4A574] mr-2">💰</span>成本考量</h4>
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">成本考量</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">GraphRAG 成本是普通 RAG 的 10-20 倍，Agentic RAG 多轮检索延时也会影响用户体验。</p>
                         </div>
                         <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 shadow-sm">
-                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2"><span class="text-[#D4A574] mr-2">🎯</span>场景适配</h4>
+                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">场景适配</h4>
                             <p class="text-base text-[#666666] leading-relaxed mb-0">常规的电商客服能做到第二代就已经能解决 80% 的问题了。</p>
                         </div>
                     </div>
@@ -531,12 +511,12 @@
                     <p>要结合你的<strong>用户等待时间</strong>、<strong>问题复杂度的分布</strong>以及<strong>团队内部的技术能力和预算</strong>综合评估。</p>
 
                     <div class="callout">
-                        <div class="callout-title"><span class="text-[#D4A574] mr-2">💡</span>建议</div>
+                        <div class="callout-title">建议</div>
                         <p style="margin-bottom: 0;">从简单的方案开始，只有在确实需要时才增加复杂度。</p>
                     </div>
 
                     <div class="callout">
-                        <div class="callout-title"><span class="text-[#D4A574] mr-2">📚</span>参考来源</div>
+                        <div class="callout-title">参考来源</div>
                         <ul style="margin-bottom: 0;">
                             <li>《Retrieval-Augmented Generation for Large Language Models: A Survey》</li>
                             <li>《Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG》</li>
