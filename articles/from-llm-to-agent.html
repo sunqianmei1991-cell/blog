@@ -96,6 +96,70 @@
                 color: var(--text-primary);
                 font-weight: 600;
             }
+            /* Styled List */
+            .styled-list {
+                list-style: none;
+                padding: 0;
+                margin-bottom: 1.5em;
+            }
+            .styled-list li {
+                padding: 12px 0;
+                padding-left: 24px;
+                position: relative;
+                border-bottom: 1px solid var(--border);
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .styled-list li:last-child {
+                border-bottom: none;
+            }
+            .styled-list li::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--accent);
+            }
+            /* Ordered List */
+            .ordered-list {
+                list-style: none;
+                padding: 0;
+                counter-reset: item;
+                margin-bottom: 1.5em;
+            }
+            .ordered-list li {
+                padding: 12px 0;
+                padding-left: 40px;
+                position: relative;
+                border-bottom: 1px solid var(--border);
+                font-size: 1.125rem;
+                color: var(--text-secondary);
+            }
+            .ordered-list li:last-child {
+                border-bottom: none;
+            }
+            .ordered-list li::before {
+                counter-increment: item;
+                content: counter(item);
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 24px;
+                height: 24px;
+                border-radius: 6px;
+                background: var(--accent);
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
             .code-block {
                 background: var(--code-bg);
                 border-radius: 12px;

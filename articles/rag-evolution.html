@@ -203,6 +203,34 @@
                 border-color: var(--accent);
                 box-shadow: 0 4px 12px rgba(212, 165, 116, 0.1);
             }
+            /* Vertical List Card */
+            .vertical-list-card {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.25rem;
+                display: flex;
+                align-items: flex-start;
+                gap: 1rem;
+                transition: all 0.3s ease;
+            }
+            .vertical-list-card:hover {
+                border-color: var(--accent);
+                box-shadow: 0 4px 12px rgba(212, 165, 116, 0.1);
+            }
+            .vertical-list-number {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: var(--accent);
+                color: white;
+                font-size: 0.875rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
             .callout {
                 border-left: 3px solid var(--accent);
                 background: linear-gradient(90deg, rgba(212, 165, 116, 0.08) 0%, transparent 100%);
@@ -351,17 +379,26 @@
                     <h3>问题来了</h3>
 
                     <div class="space-y-4 my-6">
-                        <div class="bg-white rounded-xl border-l-4 border-l-red-400 p-5 shadow-sm card-accent">
-                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">问题 1：检索不精准</h4>
-                            <p class="text-base text-[#666666] leading-relaxed mb-0">用户问"换新"，系统可能会检索到"回收政策"这些看似相关、但其实无关的内容。因为向量检索是基于语义相似度——"换新"和"回收"在语义空间里是比较接近的。</p>
+                        <div class="vertical-list-card">
+                            <div class="vertical-list-number">1</div>
+                            <div>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">检索不精准</h4>
+                                <p class="text-base text-[#666666] leading-relaxed mb-0">用户问"换新"，系统可能会检索到"回收政策"这些看似相关、但其实无关的内容。因为向量检索是基于语义相似度——"换新"和"回收"在语义空间里是比较接近的。</p>
+                            </div>
                         </div>
-                        <div class="bg-white rounded-xl border-l-4 border-l-red-400 p-5 shadow-sm card-accent">
-                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2"><span class="text-red-400 mr-2">●</span>问题 2：信息不完整</h4>
-                            <p class="text-base text-[#666666] leading-relaxed mb-0">完整的"以旧换新"政策往往分散在多份文档里：一份讲适用机型，一份讲折扣规则，一份讲操作流程。一次检索只找到其中一份，答案自然就不完整。</p>
+                        <div class="vertical-list-card">
+                            <div class="vertical-list-number">2</div>
+                            <div>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">信息不完整</h4>
+                                <p class="text-base text-[#666666] leading-relaxed mb-0">完整的"以旧换新"政策往往分散在多份文档里：一份讲适用机型，一份讲折扣规则，一份讲操作流程。一次检索只找到其中一份，答案自然就不完整。</p>
+                            </div>
                         </div>
-                        <div class="bg-white rounded-xl border-l-4 border-l-red-400 p-5 shadow-sm card-accent">
-                            <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2"><span class="text-red-400 mr-2">●</span>问题 3：信息拼接混乱</h4>
-                            <p class="text-base text-[#666666] leading-relaxed mb-0">不同时间的文档存在矛盾的信息：有的写"支持 iPhone 12 以上机型"，有的写"限 iPhone 13 以上"。AI 把这些互相矛盾的信息硬拼在一起，最后用户看到的就是前后矛盾的答案。</p>
+                        <div class="vertical-list-card">
+                            <div class="vertical-list-number">3</div>
+                            <div>
+                                <h4 class="font-display text-lg font-semibold text-[#1a1a1a] mb-2">信息拼接混乱</h4>
+                                <p class="text-base text-[#666666] leading-relaxed mb-0">不同时间的文档存在矛盾的信息：有的写"支持 iPhone 12 以上机型"，有的写"限 iPhone 13 以上"。AI 把这些互相矛盾的信息硬拼在一起，最后用户看到的就是前后矛盾的答案。</p>
+                            </div>
                         </div>
                     </div>
 
