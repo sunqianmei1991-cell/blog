@@ -72,9 +72,9 @@
                 box-shadow: 0 4px 12px rgba(212, 165, 116, 0.1);
             }
             .social-icon {
-                width: 48px;
-                height: 48px;
-                border-radius: 10px;
+                width: 80px;
+                height: 80px;
+                border-radius: 12px;
                 overflow: hidden;
                 flex-shrink: 0;
             }
@@ -139,33 +139,21 @@
                 </p>
             </div>
 
-            <!-- Photo and Content Grid -->
-            <div class="grid md:grid-cols-2 gap-12 mb-16">
-                <!-- Photo -->
-                <div class="animate-slide-up" style="animation-delay: 0.2s;">
-                    <div class="relative">
-                        <div class="absolute inset-0 bg-gradient-to-br from-[#D4A574]/10 to-transparent rounded-2xl"></div>
-                        <img src="d31368400c80eb22d81779953af1756c.jpg" alt="千媚"
-                             class="w-full h-[400px] object-cover object-top rounded-2xl shadow-lg">
-                    </div>
+            <!-- Bio Cards -->
+            <div class="animate-slide-up" style="animation-delay: 0.2s;">
+                <div class="about-card">
+                    <h3 class="font-display text-xl font-semibold mb-3">我的故事</h3>
+                    <p class="text-[#666666] leading-relaxed">
+                        从传统互联网产品转型到 AI Agent 领域，经历了从 0 到 1 的产品搭建过程。关注大模型应用、Agent 架构设计与产品化落地。
+                    </p>
                 </div>
-
-                <!-- Bio Cards -->
-                <div class="space-y-6 animate-slide-up" style="animation-delay: 0.4s;">
-                    <div class="about-card">
-                        <h3 class="font-display text-xl font-semibold mb-3">我的故事</h3>
-                        <p class="text-[#666666] leading-relaxed">
-                            从传统互联网产品转型到 AI Agent 领域，经历了从 0 到 1 的产品搭建过程。关注大模型应用、Agent 架构设计与产品化落地。
-                        </p>
-                    </div>
-                    <div class="about-card">
-                        <h3 class="font-display text-xl font-semibold mb-3">关注方向</h3>
-                        <ul class="space-y-2 text-[#666666]">
-                            <li>• Agent 产品的设计模式</li>
-                            <li>• 大模型与工作流的结合</li>
-                            <li>• 开源 Agent 框架分析</li>
-                        </ul>
-                    </div>
+                <div class="about-card mt-6">
+                    <h3 class="font-display text-xl font-semibold mb-3">关注方向</h3>
+                    <ul class="space-y-2 text-[#666666]">
+                        <li>• Agent 产品的设计模式</li>
+                        <li>• 大模型与工作流的结合</li>
+                        <li>• 开源 Agent 框架分析</li>
+                    </ul>
                 </div>
             </div>
 
@@ -193,14 +181,14 @@
                             <span class="text-sm text-[#999999]">笔记分享</span>
                         </div>
                     </div>
-                    <!-- Wechat -->
+                    <!-- Wechat Video -->
                     <div class="social-link group">
                         <div class="social-icon">
-                            <img src="wechat.jpg" alt="微信">
+                            <img src="wechat.jpg" alt="视频号">
                         </div>
                         <div>
-                            <span class="font-medium text-[#1a1a1a] block">微信</span>
-                            <span class="text-sm text-[#999999]">欢迎交流</span>
+                            <span class="font-medium text-[#1a1a1a] block">视频号</span>
+                            <span class="text-sm text-[#999999]">视频内容</span>
                         </div>
                     </div>
                 </div>
