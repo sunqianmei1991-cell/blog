@@ -728,17 +728,17 @@ description: 审查GitHub拉取请求并发布反馈
                     </ol>
 
                     <!-- 图片: 完整流程图 -->
-                    <img src="1.png" alt="OpenClaw 完整流程图" style="display:block;width:auto;max-width:none;height:auto;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);cursor:pointer" onclick="document.getElementById('lightbox').style.display='flex';document.getElementById('lightbox-img').src=this.src">
+                    <img src="1.png" alt="OpenClaw 完整流程图" style="display:block;width:100%;height:auto;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);cursor:pointer" onclick="document.getElementById('lightbox').style.display='flex';document.getElementById('lightbox-img').src=this.src">
 
                     <h2 id="lessons">这告诉我们什么？</h2>
                     <p>大多数现代 Agent 框架在不同的 API 和抽象下，共享着相同的核心模式。看 OpenClaw，你能清楚地看到它们：</p>
 
                     <!-- 图片: 核心模式 -->
-                    <img src="2.png" alt="OpenClaw 核心模式" style="display:block;width:auto;max-width:none;height:auto;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);cursor:pointer" onclick="document.getElementById('lightbox').style.display='flex';document.getElementById('lightbox-img').src=this.src">
+                    <img src="2.png" alt="OpenClaw 核心模式" style="display:block;width:100%;height:auto;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);cursor:pointer" onclick="document.getElementById('lightbox').style.display='flex';document.getElementById('lightbox-img').src=this.src">
 
                     <!-- Lightbox -->
                     <div id="lightbox" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;align-items:center;justify-content:center;cursor:pointer;" onclick="this.style.display='none'">
-                        <img id="lightbox-img" style="max-width:95%;max-height:95vh;width:auto;height:auto;object-fit:contain;">
+                        <img id="lightbox-img" style="max-width:none;max-height:95vh;width:auto;height:auto;">
                     </div>
 
                     <p>OpenClaw 的价值不在于它独创了这些模式，而在于<strong>它让这些模式变得具体、基于文件、可读</strong>。你可以打开 <code>SOUL.md</code> 看到 Agent 遵循的确切指令。你可以读任何 <code>SKILL.md</code> 理解一个能力是怎么添加的。你可以检查 <code>MEMORY.md</code> 审计 Agent 知道的关于你的一切。</p>
