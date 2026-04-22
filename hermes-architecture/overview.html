@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>整体架构 - Hermes Agent</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles-light.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Hermes Agent</div>
+      <div class="sidebar-subtitle">架构深度拆解</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">快速导航</div>
+      <a href="index.html" class="nav-item">
+        <span style="margin-right: 8px;">首页</span>
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">核心架构</div>
+      <a href="overview.html" class="nav-item active">
+        <span style="margin-right: 8px;">整体架构</span>
+      </a>
+      <a href="layer0-agent-loop.html" class="nav-item">
+        <span class="layer-num">L0</span>Agent Loop
+      </a>
+      <a href="layer1-tools.html" class="nav-item">
+        <span class="layer-num">L1</span>工具系统
+      </a>
+      <a href="layer2-self-improve.html" class="nav-item">
+        <span class="layer-num">L2</span>Self-Improve
+      </a>
+      <a href="layer3-memory.html" class="nav-item">
+        <span class="layer-num">L3</span>三层记忆
+      </a>
+      <a href="layer4-subagent.html" class="nav-item">
+        <span class="layer-num">L4</span>Subagent
+      </a>
+      <a href="layer5-security.html" class="nav-item">
+        <span class="layer-num">L5</span>安全机制
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">对比</div>
+      <a href="comparison.html" class="nav-item">
+        <span style="margin-right: 8px;">与 OpenClaw 对比</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="content-header">
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+        <span class="badge gray">概览</span>
+        <h1 class="content-title">Hermes Agent 整体架构</h1>
+      </div>
+      <p class="content-subtitle">四层架构设计概览：UI / Core / Tools / Infrastructure / Extensions</p>
+    </div>
+
+    <!-- 整体架构图 -->
+    <div class="diagram-title">
+      <span>架构图</span>
+      <span>四层架构与扩展模块</span>
+    </div>
+    <div class="diagram-container">
+      <svg viewBox="0 0 1000 600">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#374151" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E5E2DC" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- UI Layer -->
+        <rect x="50" y="30" width="900" height="80" rx="8" fill="#F8FAFF" stroke="#93C5FD" stroke-width="1"/>
+        <text x="70" y="60" fill="#1e293b" font-size="12" font-weight="700">UI Layer</text>
+        <rect x="100" y="70" width="120" height="30" rx="4" fill="#EDF2FF" stroke="#93C5FD" stroke-width="1"/>
+        <text x="160" y="90" fill="#1e293b" font-size="10" text-anchor="middle">CLI (cli.py)</text>
+        <rect x="240" y="70" width="120" height="30" rx="4" fill="#EDF2FF" stroke="#93C5FD" stroke-width="1"/>
+        <text x="300" y="90" fill="#1e293b" font-size="10" text-anchor="middle">Gateway</text>
+        <rect x="380" y="70" width="120" height="30" rx="4" fill="#EDF2FF" stroke="#93C5FD" stroke-width="1"/>
+        <text x="440" y="90" fill="#1e293b" font-size="10" text-anchor="middle">Batch Runner</text>
+        <rect x="520" y="70" width="120" height="30" rx="4" fill="#EDF2FF" stroke="#93C5FD" stroke-width="1"/>
+        <text x="580" y="90" fill="#1e293b" font-size="10" text-anchor="middle">IDE Bridge</text>
+        <rect x="660" y="70" width="120" height="30" rx="4" fill="#EDF2FF" stroke="#93C5FD" stroke-width="1"/>
+        <text x="720" y="90" fill="#1e293b" font-size="10" text-anchor="middle">7 Platforms</text>
+
+        <!-- Core Layer -->
+        <rect x="50" y="130" width="900" height="120" rx="8" fill="#F0FDFF" stroke="#67E8F9" stroke-width="1"/>
+        <text x="70" y="160" fill="#1e293b" font-size="12" font-weight="700">Core Layer</text>
+        <rect x="100" y="180" width="180" height="50" rx="4" fill="#E0F9FA" stroke="#67E8F9" stroke-width="1"/>
+        <text x="190" y="205" fill="#1e293b" font-size="10" font-weight="600" text-anchor="middle">AIAgent Main Loop</text>
+        <text x="190" y="220" fill="#374151" font-size="8" text-anchor="middle">run_agent.py ~11,650 lines</text>
+        <rect x="300" y="180" width="140" height="50" rx="4" fill="#E0F9FA" stroke="#67E8F9" stroke-width="1"/>
+        <text x="370" y="205" fill="#1e293b" font-size="10" font-weight="600" text-anchor="middle">Prompt Builder</text>
+        <rect x="460" y="180" width="140" height="50" rx="4" fill="#E0F9FA" stroke="#67E8F9" stroke-width="1"/>
+        <text x="530" y="205" fill="#1e293b" font-size="10" font-weight="600" text-anchor="middle">Context Compressor</text>
+        <rect x="620" y="180" width="140" height="50" rx="4" fill="#E0F9FA" stroke="#67E8F9" stroke-width="1"/>
+        <text x="690" y="205" fill="#1e293b" font-size="10" font-weight="600" text-anchor="middle">Auxiliary LLM</text>
+        <rect x="780" y="180" width="140" height="50" rx="4" fill="#E0F9FA" stroke="#67E8F9" stroke-width="1"/>
+        <text x="850" y="205" fill="#1e293b" font-size="10" font-weight="600" text-anchor="middle">Memory Manager</text>
+
+        <!-- Tools Layer -->
+        <rect x="50" y="270" width="900" height="100" rx="8" fill="#F0FDF7" stroke="#6EE7B7" stroke-width="1"/>
+        <text x="70" y="300" fill="#1e293b" font-size="12" font-weight="700">Tools Layer</text>
+        <rect x="100" y="320" width="150" height="35" rx="4" fill="#DCFCE7" stroke="#6EE7B7" stroke-width="1"/>
+        <text x="175" y="342" fill="#1e293b" font-size="10" text-anchor="middle">Tool Registry</text>
+        <rect x="270" y="320" width="150" height="35" rx="4" fill="#DCFCE7" stroke="#6EE7B7" stroke-width="1"/>
+        <text x="345" y="342" fill="#1e293b" font-size="10" text-anchor="middle">Orchestrator</text>
+        <rect x="440" y="320" width="100" height="35" rx="4" fill="#DCFCE7" stroke="#6EE7B7" stroke-width="1"/>
+        <text x="490" y="342" fill="#1e293b" font-size="10" text-anchor="middle">72 Tools</text>
+        <rect x="560" y="320" width="100" height="35" rx="4" fill="#DCFCE7" stroke="#6EE7B7" stroke-width="1"/>
+        <text x="610" y="342" fill="#1e293b" font-size="10" text-anchor="middle">MCP</text>
+        <rect x="680" y="320" width="100" height="35" rx="4" fill="#DCFCE7" stroke="#6EE7B7" stroke-width="1"/>
+        <text x="730" y="342" fill="#1e293b" font-size="10" text-anchor="middle">Plugins</text>
+
+        <!-- Infrastructure Layer -->
+        <rect x="50" y="390" width="440" height="80" rx="8" fill="#FFFCF5" stroke="#FCD34D" stroke-width="1"/>
+        <text x="70" y="420" fill="#1e293b" font-size="12" font-weight="700">Infrastructure</text>
+        <rect x="100" y="435" width="120" height="25" rx="4" fill="#FEF9C3" stroke="#FCD34D" stroke-width="1"/>
+        <text x="160" y="452" fill="#1e293b" font-size="9" text-anchor="middle">Session Persistence</text>
+        <rect x="240" y="435" width="100" height="25" rx="4" fill="#FEF9C3" stroke="#FCD34D" stroke-width="1"/>
+        <text x="290" y="452" fill="#1e293b" font-size="9" text-anchor="middle">Config</text>
+        <rect x="360" y="435" width="100" height="25" rx="4" fill="#FEF9C3" stroke="#FCD34D" stroke-width="1"/>
+        <text x="410" y="452" fill="#1e293b" font-size="9" text-anchor="middle">SQLite + FTS5</text>
+
+        <!-- Extensions -->
+        <rect x="510" y="390" width="440" height="80" rx="8" fill="#FCF9FF" stroke="#C4B5FD" stroke-width="1"/>
+        <text x="530" y="420" fill="#1e293b" font-size="12" font-weight="700">Extensions</text>
+        <rect x="560" y="435" width="120" height="25" rx="4" fill="#F5E8FF" stroke="#C4B5FD" stroke-width="1"/>
+        <text x="620" y="452" fill="#1e293b" font-size="9" text-anchor="middle">Skills Hub</text>
+        <rect x="700" y="435" width="100" height="25" rx="4" fill="#F5E8FF" stroke="#C4B5FD" stroke-width="1"/>
+        <text x="750" y="452" fill="#1e293b" font-size="9" text-anchor="middle">IDE Bridge</text>
+        <rect x="820" y="435" width="100" height="25" rx="4" fill="#F5E8FF" stroke="#C4B5FD" stroke-width="1"/>
+        <text x="870" y="452" fill="#1e293b" font-size="9" text-anchor="middle">Platforms</text>
+
+        <!-- 统计数据 -->
+        <rect x="50" y="490" width="900" height="80" rx="8" fill="#F8FAFC" stroke="#D1D5DB" stroke-width="1"/>
+        <text x="500" y="520" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">统计数据</text>
+        <text x="150" y="550" fill="#374151" font-size="11" text-anchor="middle">~15K lines Python</text>
+        <text x="350" y="550" fill="#10B981" font-size="11" text-anchor="middle">172+ Tools</text>
+        <text x="550" y="550" fill="#3B82F6" font-size="11" text-anchor="middle">7 Platform Adapters</text>
+        <text x="750" y="550" fill="#06B6D4" font-size="11" text-anchor="middle">4 Core Layers + 5 Security</text>
+      </svg>
+    </div>
+
+    <!-- 架构组件卡片 -->
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot blue"></div>
+          <h3>入口多样性</h3>
+        </div>
+        <ul>
+          <li>CLI 命令行</li>
+          <li>Gateway HTTP API</li>
+          <li>Batch 批量处理</li>
+          <li>7 个消息平台</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot cyan"></div>
+          <h3>核心引擎</h3>
+        </div>
+        <ul>
+          <li>AIAgent Main Loop</li>
+          <li>Context 压缩</li>
+          <li>Prompt 构建</li>
+          <li>Memory 管理</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>扩展能力</h3>
+        </div>
+        <ul>
+          <li>72 内置工具</li>
+          <li>MCP 协议支持</li>
+          <li>技能库自动管理</li>
+          <li>平台适配器</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

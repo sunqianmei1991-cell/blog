@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hermes Architecture - Editorial Light Showcase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --bg-primary: #FAF9F6;
+                --bg-secondary: #F5F3EF;
+                --text-primary: #1a1a1a;
+                --text-secondary: #4a4a4a;
+                --text-muted: #8a8a8a;
+                --accent: #D4A574;
+                --accent-light: #E8DFD3;
+                --accent-dark: #B8935F;
+                --border: #E5E2DC;
+                --success: #059669;
+                --warning: #D97706;
+                --error: #DC2626;
+                --info: #2563EB;
+            }
+            body {
+                font-family: 'Source Serif Pro', serif;
+                background-color: var(--bg-primary);
+                color: var(--text-primary);
+                line-height: 1.7;
+            }
+            h1, h2, h3, h4, .font-display {
+                font-family: 'Playfair Display', serif;
+                line-height: 1.3;
+            }
+            code, pre {
+                font-family: 'JetBrains Mono', monospace;
+            }
+        }
+        @layer components {
+            .grain-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                opacity: 0.025;
+                z-index: 0;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            }
+            
+            /* Layer Cards */
+            .layer-card {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.75rem;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+            .layer-card:hover {
+                border-color: var(--accent);
+                box-shadow: 0 8px 30px rgba(212, 165, 116, 0.12);
+                transform: translateY(-2px);
+            }
+            .layer-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 3px;
+                height: 100%;
+                background: var(--accent);
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+            .layer-card:hover::before {
+                opacity: 1;
+            }
+            .layer-number {
+                font-family: 'Playfair Display', serif;
+                font-size: 2.5rem;
+                font-weight: 600;
+                color: var(--accent);
+                opacity: 0.3;
+                line-height: 1;
+            }
+            
+            /* Architecture Diagram */
+            .arch-box {
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 0.75rem 1rem;
+                font-size: 0.8rem;
+                transition: all 0.2s;
+            }
+            .arch-box:hover {
+                border-color: var(--accent);
+                background: var(--bg-secondary);
+            }
+            
+            /* Code Block */
+            .code-block {
+                background: #1e1e2e;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            }
+            .code-block .header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 16px;
+                background: #16161e;
+                border-bottom: 1px solid #2a2a3c;
+            }
+            .code-block .dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+            }
+            .code-block .filename {
+                font-size: 0.75rem;
+                color: #6c7086;
+                margin-left: 8px;
+            }
+            .code-block pre {
+                padding: 16px;
+                overflow-x: auto;
+                font-size: 0.85rem;
+                line-height: 1.6;
+            }
+            
+            /* Feature List */
+            .feature-list li {
+                padding: 0.75rem 0;
+                padding-left: 1.5rem;
+                position: relative;
+                border-bottom: 1px solid var(--border);
+            }
+            .feature-list li:last-child {
+                border-bottom: none;
+            }
+            .feature-list li::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--accent);
+            }
+            
+            /* Comparison Table */
+            .comp-table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+            .comp-table th {
+                background: var(--bg-secondary);
+                padding: 14px 16px;
+                text-align: left;
+                font-weight: 600;
+                font-size: 0.8rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--text-muted);
+                border-bottom: 2px solid var(--border);
+            }
+            .comp-table td {
+                padding: 16px;
+                border-bottom: 1px solid var(--border);
+                font-size: 0.9rem;
+            }
+            .comp-table tr:hover td {
+                background: rgba(212, 165, 116, 0.03);
+            }
+            
+            /* Timeline */
+            .timeline-item {
+                position: relative;
+                padding-left: 2rem;
+                padding-bottom: 2rem;
+            }
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0.5rem;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: var(--accent);
+                border: 3px solid var(--bg-primary);
+                box-shadow: 0 0 0 2px var(--accent);
+            }
+            .timeline-item::after {
+                content: '';
+                position: absolute;
+                left: 4px;
+                top: 1.25rem;
+                width: 2px;
+                height: calc(100% - 1rem);
+                background: var(--border);
+            }
+            .timeline-item:last-child::after {
+                display: none;
+            }
+            
+            /* Quote Block */
+            .quote-block {
+                padding: 2rem;
+                border-left: 4px solid var(--accent);
+                background: linear-gradient(135deg, rgba(212, 165, 116, 0.05) 0%, transparent 100%);
+                font-style: italic;
+                color: var(--text-secondary);
+                position: relative;
+                border-radius: 0 12px 12px 0;
+            }
+            .quote-block::before {
+                content: '"';
+                font-family: 'Playfair Display', serif;
+                font-size: 5rem;
+                color: var(--accent);
+                opacity: 0.15;
+                position: absolute;
+                top: -0.5rem;
+                left: 1rem;
+                line-height: 1;
+            }
+            
+            /* Process Flow */
+            .process-step {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+            .process-step .number {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: var(--accent);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 600;
+                font-size: 0.9rem;
+                flex-shrink: 0;
+            }
+            
+            /* Stats Card */
+            .stat-card {
+                text-align: center;
+                padding: 1.5rem;
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+            }
+            .stat-card .number {
+                font-family: 'Playfair Display', serif;
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: var(--accent);
+            }
+            .stat-card .label {
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+            }
+            
+            /* Tag */
+            .tag {
+                display: inline-block;
+                padding: 4px 10px;
+                background: var(--accent-light);
+                color: var(--accent-dark);
+                border-radius: 4px;
+                font-size: 0.7rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen relative">
+    <div class="grain-overlay"></div>
+
+    <!-- Header -->
+    <header class="py-8 px-6 md:px-12 border-b border-[#E5E2DC] relative z-10">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-[#1a1a1a] flex items-center justify-center">
+                    <span class="text-[#FAF9F6] font-display text-lg font-bold">H</span>
+                </div>
+                <span class="font-display text-2xl font-semibold tracking-tight">Hermes Architecture</span>
+            </div>
+            <nav class="hidden md:flex gap-8 text-sm">
+                <a href="#layers" class="text-[#666] hover:text-[#1a1a1a] transition-colors">架构分层</a>
+                <a href="#workflow" class="text-[#666] hover:text-[#1a1a1a] transition-colors">工作流程</a>
+                <a href="#comparison" class="text-[#666] hover:text-[#1a1a1a] transition-colors">对比分析</a>
+                <a href="#insights" class="text-[#666] hover:text-[#1a1a1a] transition-colors">核心洞察</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="py-20 px-6 md:px-12 relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <div class="max-w-3xl">
+                <p class="text-[#D4A574] text-sm tracking-[0.2em] uppercase mb-4">Agent System Design</p>
+                <h1 class="text-5xl md:text-6xl font-display font-semibold leading-[1.1] mb-6">
+                    Hermes Agent<br/>架构深度解析
+                </h1>
+                <p class="text-xl text-[#666] leading-relaxed max-w-2xl">
+                    从 Agent Loop 到五层安全防护，全面剖析 Hermes Agent 的四层架构设计与实现原理。
+                </p>
+            </div>
+            
+            <!-- Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+                <div class="stat-card">
+                    <div class="number">4</div>
+                    <div class="label">架构层次</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">172+</div>
+                    <div class="label">可用工具</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">5</div>
+                    <div class="label">安全层级</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">7</div>
+                    <div class="label">平台适配</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Layer Cards Section -->
+    <section id="layers" class="py-16 px-6 md:px-12 bg-[#F5F3EF] relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-display font-semibold mb-12">架构分层</h2>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Layer 0 -->
+                <div class="layer-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="tag mb-2 inline-block">Core</span>
+                            <h3 class="font-display text-xl font-semibold">Agent Loop</h3>
+                        </div>
+                        <span class="layer-number">L0</span>
+                    </div>
+                    <p class="text-[#666] text-sm mb-4">从最简单的对话循环开始，理解所有 AI Agent 的核心机制。</p>
+                    <ul class="feature-list text-sm text-[#666]">
+                        <li>加载记忆 (MEMORY.md)</li>
+                        <li>组装系统提示词</li>
+                        <li>构建历史消息列表</li>
+                        <li>LLM 决策与工具执行</li>
+                    </ul>
+                </div>
+
+                <!-- Layer 1 -->
+                <div class="layer-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="tag mb-2 inline-block">Tools</span>
+                            <h3 class="font-display text-xl font-semibold">工具系统</h3>
+                        </div>
+                        <span class="layer-number">L1</span>
+                    </div>
+                    <p class="text-[#666] text-sm mb-4">注册表驱动的工具管理，从硬编码到声明式注册。</p>
+                    <ul class="feature-list text-sm text-[#666]">
+                        <li>72 个内置工具</li>
+                        <li>@register_tool 装饰器</li>
+                        <li>条件检查与过滤</li>
+                        <li>MCP 协议扩展</li>
+                    </ul>
+                </div>
+
+                <!-- Layer 2 -->
+                <div class="layer-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="tag mb-2 inline-block">Learning</span>
+                            <h3 class="font-display text-xl font-semibold">Self-Improve</h3>
+                        </div>
+                        <span class="layer-number">L2</span>
+                    </div>
+                    <p class="text-[#666] text-sm mb-4">自我改进机制，自动化的技能发现与注册生命周期。</p>
+                    <ul class="feature-list text-sm text-[#666]">
+                        <li>技能自动发现</li>
+                        <li>版本管理与测试</li>
+                        <li>效果评估与优化</li>
+                        <li>闭环反馈机制</li>
+                    </ul>
+                </div>
+
+                <!-- Layer 3 -->
+                <div class="layer-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="tag mb-2 inline-block">Memory</span>
+                            <h3 class="font-display text-xl font-semibold">三层记忆</h3>
+                        </div>
+                        <span class="layer-number">L3</span>
+                    </div>
+                    <p class="text-[#666] text-sm mb-4">解决 Claude "金鱼" 问题的四层记忆架构方案。</p>
+                    <ul class="feature-list text-sm text-[#666]">
+                        <li>上下文压缩 (200K → 128K)</li>
+                        <li>持久化记忆快照</li>
+                        <li>SQLite + FTS5 归档</li>
+                        <li>P-chain 跨会话关联</li>
+                    </ul>
+                </div>
+
+                <!-- Layer 4 -->
+                <div class="layer-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="tag mb-2 inline-block">Parallel</span>
+                            <h3 class="font-display text-xl font-semibold">Subagent</h3>
+                        </div>
+                        <span class="layer-number">L4</span>
+                    </div>
+                    <p class="text-[#666] text-sm mb-4">ThreadPoolExecutor 实现的并行任务委派架构。</p>
+                    <ul class="feature-list text-sm text-[#666]">
+                        <li>最大 3 个并行任务</li>
+                        <li>session_id 隔离</li>
+                        <li>max_turns 限制</li>
+                        <li>结果聚合</li>
+                    </ul>
+                </div>
+
+                <!-- Layer 5 -->
+                <div class="layer-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="tag mb-2 inline-block">Security</span>
+                            <h3 class="font-display text-xl font-semibold">安全机制</h3>
+                        </div>
+                        <span class="layer-number">L5</span>
+                    </div>
+                    <p class="text-[#666] text-sm mb-4">从命令过滤到沙箱隔离的五层安全防护体系。</p>
+                    <ul class="feature-list text-sm text-[#666]">
+                        <li>危险命令过滤</li>
+                        <li>提示词攻击检测</li>
+                        <li>代码执行审查</li>
+                        <li>沙箱环境隔离</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section id="workflow" class="py-16 px-6 md:px-12 relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-display font-semibold mb-12">Agent Loop 工作流程</h2>
+            
+            <div class="bg-white rounded-2xl border border-[#E5E2DC] p-8 md:p-12">
+                <div class="space-y-8">
+                    <div class="process-step">
+                        <div class="number">1</div>
+                        <div class="flex-1">
+                            <h4 class="font-display text-lg font-semibold mb-1">加载记忆</h4>
+                            <p class="text-[#666] text-sm">从 MEMORY.md 和 USER.md 加载持久化记忆快照，冻结在会话开始时。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="process-step">
+                        <div class="number">2</div>
+                        <div class="flex-1">
+                            <h4 class="font-display text-lg font-semibold mb-1">组装系统提示词</h4>
+                            <p class="text-[#666] text-sm">组合人格定义、环境记忆、用户画像和工具使用说明，用 XML 标签结构化。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="process-step">
+                        <div class="number">3</div>
+                        <div class="flex-1">
+                            <h4 class="font-display text-lg font-semibold mb-1">构建历史消息列表</h4>
+                            <p class="text-[#666] text-sm">系统提示词 + 对话历史 + 当前用户消息，形成完整的上下文。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="process-step">
+                        <div class="number">4</div>
+                        <div class="flex-1">
+                            <h4 class="font-display text-lg font-semibold mb-1">LLM 决策</h4>
+                            <p class="text-[#666] text-sm">调用工具还是直接文本回复？决策中心判断下一步行动。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="process-step">
+                        <div class="number">5</div>
+                        <div class="flex-1">
+                            <h4 class="font-display text-lg font-semibold mb-1">工具执行</h4>
+                            <p class="text-[#666] text-sm">通过注册表调用工具函数，获取执行结果，检查迭代次数防止死循环。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="process-step">
+                        <div class="number">6</div>
+                        <div class="flex-1">
+                            <h4 class="font-display text-lg font-semibold mb-1">结果反馈</h4>
+                            <p class="text-[#666] text-sm">将工具结果追加到消息历史，继续循环或返回最终答案。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Diagram -->
+    <section class="py-16 px-6 md:px-12 bg-[#F5F3EF] relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-display font-semibold mb-12">整体架构</h2>
+            
+            <div class="bg-white rounded-2xl border border-[#E5E2DC] p-8">
+                <!-- UI Layer -->
+                <div class="mb-4">
+                    <p class="text-xs text-[#999] uppercase tracking-wider mb-3">UI Layer</p>
+                    <div class="grid grid-cols-5 gap-2">
+                        <div class="arch-box text-center">CLI</div>
+                        <div class="arch-box text-center">Gateway</div>
+                        <div class="arch-box text-center">Batch</div>
+                        <div class="arch-box text-center">Bridge</div>
+                        <div class="arch-box text-center">7 Platforms</div>
+                    </div>
+                </div>
+                
+                <!-- Arrow -->
+                <div class="flex justify-center my-2">
+                    <svg class="w-5 h-5 text-[#D4A574]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                </div>
+                
+                <!-- Core Layer -->
+                <div class="mb-4">
+                    <p class="text-xs text-[#999] uppercase tracking-wider mb-3">Core Layer</p>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div class="arch-box text-center">AIAgent Loop</div>
+                        <div class="arch-box text-center">Prompt Builder</div>
+                        <div class="arch-box text-center">Context Compressor</div>
+                        <div class="arch-box text-center">Memory Manager</div>
+                    </div>
+                </div>
+                
+                <!-- Arrow -->
+                <div class="flex justify-center my-2">
+                    <svg class="w-5 h-5 text-[#D4A574]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                </div>
+                
+                <!-- Tools Layer -->
+                <div class="mb-4">
+                    <p class="text-xs text-[#999] uppercase tracking-wider mb-3">Tools Layer</p>
+                    <div class="grid grid-cols-5 gap-2">
+                        <div class="arch-box text-center">Registry</div>
+                        <div class="arch-box text-center">Orchestrator</div>
+                        <div class="arch-box text-center">72 Tools</div>
+                        <div class="arch-box text-center">MCP</div>
+                        <div class="arch-box text-center">Plugins</div>
+                    </div>
+                </div>
+                
+                <!-- Arrow -->
+                <div class="flex justify-center my-2">
+                    <svg class="w-5 h-5 text-[#D4A574]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                </div>
+                
+                <!-- Bottom Layers -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-xs text-[#999] uppercase tracking-wider mb-3">Infrastructure</p>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="arch-box text-center text-xs">SQLite</div>
+                            <div class="arch-box text-center text-xs">FTS5</div>
+                            <div class="arch-box text-center text-xs">Config</div>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-xs text-[#999] uppercase tracking-wider mb-3">Extensions</p>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="arch-box text-center text-xs">Skills Hub</div>
+                            <div class="arch-box text-center text-xs">IDE Bridge</div>
+                            <div class="arch-box text-center text-xs">Adapters</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section id="comparison" class="py-16 px-6 md:px-12 relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-display font-semibold mb-12">Hermes vs OpenClaw</h2>
+            
+            <div class="bg-white rounded-2xl border border-[#E5E2DC] overflow-hidden">
+                <table class="comp-table">
+                    <thead>
+                        <tr>
+                            <th>功能特性</th>
+                            <th>OpenClaw</th>
+                            <th>Hermes Agent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-medium">记忆架构</td>
+                            <td class="text-[#666]">单一会话上下文</td>
+                            <td class="text-[#D4A574] font-medium">四层记忆架构</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">持久化存储</td>
+                            <td class="text-[#DC2626]">无</td>
+                            <td class="text-[#059669]">SQLite + FTS5</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">跨会话关联</td>
+                            <td class="text-[#DC2626]">不支持</td>
+                            <td class="text-[#059669]">P-chain 链接</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">历史检索</td>
+                            <td class="text-[#DC2626]">不支持</td>
+                            <td class="text-[#059669]">session_search_tool</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">工具数量</td>
+                            <td class="text-[#666]">约 20-30 个</td>
+                            <td class="text-[#059669]">172+ (72 + MCP)</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">安全机制</td>
+                            <td class="text-[#666]">基础检查</td>
+                            <td class="text-[#059669]">五层安全 + 沙箱</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Insights Section -->
+    <section id="insights" class="py-16 px-6 md:px-12 bg-[#F5F3EF] relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-display font-semibold mb-12">核心洞察</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="quote-block">
+                    <p class="relative z-10 text-lg leading-relaxed">
+                        记忆不仅仅是存储，更是上下文的延续。Hermes 的四层记忆架构让 Agent 真正具备了"记忆力"，能够跨会话保持上下文连续性。
+                    </p>
+                    <p class="relative z-10 mt-4 text-sm text-[#999]">— 关于三层记忆架构</p>
+                </div>
+                
+                <div class="quote-block">
+                    <p class="relative z-10 text-lg leading-relaxed">
+                        工具注册表模式将硬编码转换为声明式配置，配合条件检查机制，实现了工具的智能加载和动态可用性判断。
+                    </p>
+                    <p class="relative z-10 mt-4 text-sm text-[#999]">— 关于工具系统设计</p>
+                </div>
+            </div>
+            
+            <!-- Code Example -->
+            <div class="mt-12">
+                <h3 class="font-display text-xl font-semibold mb-6">代码示例：工具注册</h3>
+                <div class="code-block">
+                    <div class="header">
+                        <div class="dot" style="background: #ff5f56;"></div>
+                        <div class="dot" style="background: #ffbd2e;"></div>
+                        <div class="dot" style="background: #27ca40;"></div>
+                        <span class="filename">registry.py</span>
+                    </div>
+                    <pre><code><span class="text-[#cba6f7]">class</span> <span class="text-[#f9e2af]">ToolRegistry</span>:
+    <span class="text-[#6c7086]">"""中心化工具注册表"""</span>
+    
+    <span class="text-[#cba6f7]">def</span> <span class="text-[#89b4fa]">__init__</span>(self):
+        self._tools: <span class="text-[#f38ba8]">dict</span>[<span class="text-[#f38ba8]">str</span>, Tool] = {}
+    
+    <span class="text-[#cba6f7]">def</span> <span class="text-[#89b4fa]">register</span>(self, tool: Tool, check_fn: <span class="text-[#f38ba8]">callable</span> = <span class="text-[#f38ba8]">None</span>):
+        <span class="text-[#6c7086]"># 条件检查：API Key 是否配置</span>
+        <span class="text-[#cba6f7]">if</span> check_fn <span class="text-[#cba6f7]">and not</span> check_fn():
+            <span class="text-[#cba6f7]">return</span>  <span class="text-[#6c7086]"># 条件不满足，不注册</span>
+        self._tools[tool.name] = tool
+    
+    <span class="text-[#cba6f7]">def</span> <span class="text-[#89b4fa]">get_available_tools</span>(self) -> <span class="text-[#f38ba8]">list</span>[Tool]:
+        <span class="text-[#cba6f7]">return</span> [<span class="text-[#f38ba8]">t</span> <span class="text-[#cba6f7]">for</span> t <span class="text-[#cba6f7]">in</span> self._tools.values() <span class="text-[#cba6f7]">if</span> t.is_available()]</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 md:px-12 border-t border-[#E5E2DC] relative z-10">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-sm text-[#999]">Hermes Agent Architecture Deep Dive</p>
+            <div class="flex gap-6 text-sm text-[#666]">
+                <span class="text-[#D4A574]">Editorial Light Theme</span>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layer 2: Self-Improve - Hermes Agent</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles-light.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Hermes Agent</div>
+      <div class="sidebar-subtitle">架构深度拆解</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">快速导航</div>
+      <a href="index.html" class="nav-item">
+        <span style="margin-right: 8px;">首页</span>
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">核心架构</div>
+      <a href="overview.html" class="nav-item">
+        <span style="margin-right: 8px;">整体架构</span>
+      </a>
+      <a href="layer0-agent-loop.html" class="nav-item">
+        <span class="layer-num">L0</span>Agent Loop
+      </a>
+      <a href="layer1-tools.html" class="nav-item">
+        <span class="layer-num">L1</span>工具系统
+      </a>
+      <a href="layer2-self-improve.html" class="nav-item active">
+        <span class="layer-num">L2</span>Self-Improve
+      </a>
+      <a href="layer3-memory.html" class="nav-item">
+        <span class="layer-num">L3</span>三层记忆
+      </a>
+      <a href="layer4-subagent.html" class="nav-item">
+        <span class="layer-num">L4</span>Subagent
+      </a>
+      <a href="layer5-security.html" class="nav-item">
+        <span class="layer-num">L5</span>安全机制
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">对比</div>
+      <a href="comparison.html" class="nav-item">
+        <span style="margin-right: 8px;">与 OpenClaw 对比</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="content-header">
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+        <span class="badge emerald">Layer 2</span>
+        <h1 class="content-title">Self-Improve - 自我改进机制</h1>
+      </div>
+      <p class="content-subtitle">Agent 如何自动学习、改进并优化自己的工作流程</p>
+    </div>
+
+    <!-- 技能创建流程（垂直布局） -->
+    <div class="diagram-title">
+      <span>流程</span>
+      <span>技能创建完整流程</span>
+    </div>
+    <div class="diagram-container">
+      <svg viewBox="0 0 1000 750">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#374151" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E5E2DC" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- 阶段1: 重复检测 -->
+        <text x="50" y="30" fill="#1e293b" font-size="13" font-weight="700">阶段 1: 重复模式检测</text>
+        
+        <rect x="50" y="45" width="200" height="50" rx="6" fill="#E0F9FA" stroke="#67E8F9" stroke-width="2"/>
+        <text x="150" y="70" fill="#1e293b" font-size="12" font-weight="600" text-anchor="middle">用户第1次请求</text>
+        <text x="150" y="88" fill="#374151" font-size="9" text-anchor="middle">"帮我生成日报"</text>
+
+        <!-- 箭头 down -->
+        <line x1="150" y1="95" x2="150" y2="115" stroke="#67E8F9" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+        <rect x="50" y="115" width="200" height="50" rx="6" fill="#E0F9FA" stroke="#67E8F9" stroke-width="2"/>
+        <text x="150" y="140" fill="#1e293b" font-size="12" font-weight="600" text-anchor="middle">用户第2次请求</text>
+        <text x="150" y="158" fill="#374151" font-size="9" text-anchor="middle">"生成今天的日报"</text>
+
+        <!-- 箭头 down -->
+        <line x1="150" y1="165" x2="150" y2="185" stroke="#67E8F9" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+        <rect x="50" y="185" width="200" height="50" rx="6" fill="#E0F9FA" stroke="#67E8F9" stroke-width="2"/>
+        <text x="150" y="210" fill="#1e293b" font-size="12" font-weight="600" text-anchor="middle">用户第3次请求</text>
+        <text x="150" y="228" fill="#374151" font-size="9" text-anchor="middle">"日报生成"</text>
+
+        <!-- 箭头 right to decision -->
+        <line x1="250" y1="210" x2="300" y2="210" stroke="#67E8F9" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+        <!-- 判断菱形 -->
+        <polygon points="350,175 385,210 350,245 315,210" fill="#FEF9C3" stroke="#FCD34D" stroke-width="2"/>
+        <text x="350" y="207" fill="#1e293b" font-size="11" font-weight="700" text-anchor="middle">检测到</text>
+        <text x="350" y="223" fill="#1e293b" font-size="11" font-weight="700" text-anchor="middle">重复模式?</text>
+
+        <!-- 分支: 否 -->
+        <line x1="385" y1="210" x2="450" y2="210" stroke="#D1D5DB" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <text x="420" y="200" fill="#6B7280" font-size="9">否</text>
+        
+        <rect x="450" y="185" width="140" height="50" rx="6" fill="#F8FAFC" stroke="#D1D5DB" stroke-width="2"/>
+        <text x="520" y="210" fill="#6B7280" font-size="12" font-weight="600" text-anchor="middle">继续普通执行</text>
+
+        <!-- 分支: 是 - down -->
+        <line x1="350" y1="245" x2="350" y2="290" stroke="#10B981" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <text x="370" y="270" fill="#10B981" font-size="10" font-weight="600">是</text>
+
+        <!-- 阶段2: 生成技能 -->
+        <text x="50" y="300" fill="#1e293b" font-size="13" font-weight="700">阶段 2: 技能生成</text>
+
+        <rect x="50" y="310" width="250" height="60" rx="6" fill="#FFFCF5" stroke="#FCD34D" stroke-width="2"/>
+        <text x="175" y="335" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">自动生成 SKILL.md</text>
+        <text x="175" y="355" fill="#374151" font-size="9" text-anchor="middle">名称、目的、步骤、工具组合</text>
+        <text x="175" y="370" fill="#D97706" font-size="9" text-anchor="middle">Agent 撰写技能文档</text>
+
+        <!-- 箭头 down -->
+        <line x1="175" y1="370" x2="175" y2="390" stroke="#FCD34D" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+        <!-- 阶段3: 安全扫描 -->
+        <text x="50" y="410" fill="#1e293b" font-size="13" font-weight="700">阶段 3: 安全扫描</text>
+
+        <rect x="50" y="420" width="250" height="60" rx="6" fill="#FFE4E8" stroke="#FDA4AF" stroke-width="2"/>
+        <text x="175" y="445" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">安全检查</text>
+        <text x="175" y="465" fill="#374151" font-size="9" text-anchor="middle">漏洞数据库 + 正则检测 (eval/exec/os)</text>
+        <text x="175" y="480" fill="#F43F5E" font-size="9" text-anchor="middle">扫描中...</text>
+
+        <!-- 箭头 right to security check -->
+        <line x1="300" y1="450" x2="350" y2="450" stroke="#FDA4AF" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+        <!-- 安全判断菱形 -->
+        <polygon points="400,415 435,450 400,485 365,450" fill="#DCFCE7" stroke="#6EE7B7" stroke-width="2"/>
+        <text x="400" y="447" fill="#1e293b" font-size="11" font-weight="700" text-anchor="middle">安全</text>
+        <text x="400" y="463" fill="#1e293b" font-size="11" font-weight="700" text-anchor="middle">通过?</text>
+
+        <!-- 未通过 -->
+        <line x1="435" y1="450" x2="520" y2="450" stroke="#FDA4AF" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <text x="480" y="440" fill="#F43F5E" font-size="9">未通过</text>
+        
+        <rect x="520" y="420" width="150" height="60" rx="6" fill="#FFE4E8" stroke="#FDA4AF" stroke-width="2"/>
+        <text x="595" y="445" fill="#F43F5E" font-size="12" font-weight="700" text-anchor="middle">拒绝并告警</text>
+        <text x="595" y="470" fill="#374151" font-size="9" text-anchor="middle">技能被阻止</text>
+
+        <!-- 通过 - down -->
+        <line x1="400" y1="485" x2="400" y2="530" stroke="#10B981" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <text x="420" y="510" fill="#10B981" font-size="10" font-weight="600">通过</text>
+
+        <!-- 阶段4: 激活使用 -->
+        <text x="50" y="540" fill="#1e293b" font-size="13" font-weight="700">阶段 4: 激活与使用</text>
+
+        <!-- 横向排列激活流程 -->
+        <rect x="50" y="550" width="180" height="60" rx="6" fill="#F0FDF7" stroke="#6EE7B7" stroke-width="2"/>
+        <text x="140" y="575" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">激活技能</text>
+        <text x="140" y="600" fill="#10B981" font-size="9" text-anchor="middle">写入 ~/.hermes/skills/</text>
+
+        <line x1="230" y1="580" x2="270" y2="580" stroke="#6EE7B7" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+        <rect x="270" y="550" width="180" height="60" rx="6" fill="#F0FDFF" stroke="#67E8F9" stroke-width="2"/>
+        <text x="360" y="575" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">注入系统提示</text>
+        <text x="360" y="600" fill="#06B6D4" font-size="9" text-anchor="middle">技能描述加入 Prompt</text>
+
+        <line x1="450" y1="580" x2="490" y2="580" stroke="#67E8F9" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+        <rect x="490" y="550" width="180" height="60" rx="6" fill="#F5F8FF" stroke="#93C5FD" stroke-width="2"/>
+        <text x="580" y="575" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">用户使用</text>
+        <text x="580" y="600" fill="#3B82F6" font-size="9" text-anchor="middle">直接调用技能</text>
+
+        <line x1="670" y1="580" x2="710" y2="580" stroke="#93C5FD" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+        <rect x="710" y="550" width="180" height="60" rx="6" fill="#FCF9FF" stroke="#C4B5FD" stroke-width="2"/>
+        <text x="800" y="575" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">持续改进</text>
+        <text x="800" y="600" fill="#A855F7" font-size="9" text-anchor="middle">发现更好方法 → 补丁</text>
+
+        <!-- 循环箭头 back -->
+        <path d="M 800 610 L 800 660 L 140 660 L 140 550" fill="none" stroke="#C4B5FD" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowhead)"/>
+        <text x="470" y="680" fill="#A855F7" font-size="9" text-anchor="middle">技能持续优化闭环</text>
+
+        <!-- 底部说明 -->
+        <rect x="50" y="700" width="840" height="35" rx="6" fill="#E0F9FA" stroke="#67E8F9" stroke-width="1"/>
+        <text x="470" y="723" fill="#1e293b" font-size="11" text-anchor="middle">
+          从检测到激活约需 <tspan font-weight="700" fill="#0891B2">3次重复任务</tspan>，激活后可直接使用，<tspan font-weight="700" fill="#7C3AED">5秒完成</tspan> 原本2分钟的任务
+        </text>
+      </svg>
+    </div>
+
+    <!-- 安全扫描详解 -->
+    <div class="diagram-title">
+      <span>安全</span>
+      <span>技能安全扫描机制</span>
+    </div>
+    <div class="diagram-container">
+      <svg viewBox="0 0 1000 160">
+        <defs>
+          <pattern id="grid3" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E5E2DC" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid3)" />
+
+        <rect x="50" y="30" width="250" height="100" rx="6" fill="#FFE4E8" stroke="#FDA4AF" stroke-width="1.5"/>
+        <text x="175" y="55" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">步骤1: 漏洞数据库扫描</text>
+        <text x="175" y="80" fill="#374151" font-size="9" text-anchor="middle">使用开源漏洞扫描器</text>
+        <text x="175" y="100" fill="#374151" font-size="9" text-anchor="middle">检测已知威胁模式</text>
+        <text x="175" y="118" fill="#F43F5E" font-size="9" text-anchor="middle">若发现威胁 → 拒绝</text>
+
+        <rect x="340" y="30" width="250" height="100" rx="6" fill="#FFFCF5" stroke="#FCD34D" stroke-width="1.5"/>
+        <text x="465" y="55" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">步骤2: 正则表达式检测</text>
+        <text x="465" y="80" fill="#374151" font-size="9" text-anchor="middle">eval() / exec() / __import__</text>
+        <text x="465" y="100" fill="#374151" font-size="9" text-anchor="middle">subprocess.Popen / os.system</text>
+        <text x="465" y="118" fill="#D97706" font-size="9" text-anchor="middle">匹配危险模式 → 拒绝</text>
+
+        <rect x="630" y="30" width="320" height="100" rx="6" fill="#F0FDF7" stroke="#6EE7B7" stroke-width="1.5"/>
+        <text x="790" y="55" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">步骤3: 通过扫描 → 激活技能</text>
+        <text x="790" y="80" fill="#374151" font-size="9" text-anchor="middle">未发现威胁模式</text>
+        <text x="790" y="100" fill="#374151" font-size="9" text-anchor="middle">未匹配危险正则</text>
+        <text x="790" y="118" fill="#10B981" font-size="10" font-weight="600" text-anchor="middle">技能激活，下次会话可用</text>
+
+        <line x1="300" y1="80" x2="340" y2="80" stroke="#D1D5DB" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <line x1="590" y1="80" x2="630" y2="80" stroke="#D1D5DB" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+      </svg>
+    </div>
+
+    <!-- 核心特点卡片 -->
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot cyan"></div>
+          <h3>自动发现</h3>
+        </div>
+        <ul>
+          <li>识别重复任务模式</li>
+          <li>检测可复用代码块</li>
+          <li>无需人工干预</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>安全扫描</h3>
+        </div>
+        <ul>
+          <li>漏洞数据库扫描</li>
+          <li>恶意代码检测</li>
+          <li>通过才能激活</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>持续改进</h3>
+        </div>
+        <ul>
+          <li>根据反馈优化</li>
+          <li>版本迭代升级</li>
+          <li>闭环优化</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

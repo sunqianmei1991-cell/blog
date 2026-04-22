@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layer 4: Subagent - Hermes Agent</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles-light.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Hermes Agent</div>
+      <div class="sidebar-subtitle">架构深度拆解</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">快速导航</div>
+      <a href="index.html" class="nav-item">
+        <span style="margin-right: 8px;">首页</span>
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">核心架构</div>
+      <a href="overview.html" class="nav-item">
+        <span style="margin-right: 8px;">整体架构</span>
+      </a>
+      <a href="layer0-agent-loop.html" class="nav-item">
+        <span class="layer-num">L0</span>Agent Loop
+      </a>
+      <a href="layer1-tools.html" class="nav-item">
+        <span class="layer-num">L1</span>工具系统
+      </a>
+      <a href="layer2-self-improve.html" class="nav-item">
+        <span class="layer-num">L2</span>Self-Improve
+      </a>
+      <a href="layer3-memory.html" class="nav-item">
+        <span class="layer-num">L3</span>三层记忆
+      </a>
+      <a href="layer4-subagent.html" class="nav-item active">
+        <span class="layer-num">L4</span>Subagent
+      </a>
+      <a href="layer5-security.html" class="nav-item">
+        <span class="layer-num">L5</span>安全机制
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-title">对比</div>
+      <a href="comparison.html" class="nav-item">
+        <span style="margin-right: 8px;">与 OpenClaw 对比</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="content-header">
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+        <span class="badge purple">Layer 4</span>
+        <h1 class="content-title">Subagent - 并行任务委派</h1>
+      </div>
+      <p class="content-subtitle">ThreadPoolExecutor 实现的多任务并行处理架构</p>
+    </div>
+
+    <!-- 委托流程 - 折线版 -->
+    <div class="diagram-title">
+      <span>流程</span>
+      <span>子代理委派流程</span>
+    </div>
+    <div class="diagram-container">
+      <svg viewBox="0 0 1000 550">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#374151" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E5E2DC" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- 父 Agent -->
+        <rect x="350" y="30" width="160" height="60" rx="6" fill="#F5F8FF" stroke="#93C5FD" stroke-width="2"/>
+        <text x="430" y="55" fill="#1e293b" font-size="13" font-weight="700" text-anchor="middle">父 Agent</text>
+        <text x="430" y="75" fill="#3B82F6" font-size="9" text-anchor="middle">分析复杂任务</text>
+
+        <!-- 箭头 down -->
+        <line x1="430" y1="90" x2="430" y2="110" stroke="#93C5FD" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+        <!-- 任务拆分 -->
+        <rect x="320" y="110" width="220" height="60" rx="6" fill="#FFFCF5" stroke="#FCD34D" stroke-width="2"/>
+        <text x="430" y="140" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">任务拆分</text>
+        <text x="430" y="160" fill="#374151" font-size="9" text-anchor="middle">拆分为子任务 A / B / C</text>
+
+        <!-- 箭头 down -->
+        <line x1="430" y1="170" x2="430" y2="190" stroke="#FCD34D" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+        <!-- ThreadPoolExecutor -->
+        <rect x="290" y="190" width="280" height="70" rx="6" fill="#E0F9FA" stroke="#67E8F9" stroke-width="2"/>
+        <text x="430" y="215" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">ThreadPoolExecutor</text>
+        <text x="430" y="235" fill="#374151" font-size="9" text-anchor="middle">最多 3 个并行子任务</text>
+        <text x="430" y="252" fill="#06B6D4" font-size="10" font-weight="600" text-anchor="middle">future = delegate_task()</text>
+
+        <!-- 折线分发到三个子 Agent -->
+        <!-- 子 Agent 1 -->
+        <path d="M 360 260 L 360 280 L 150 280 L 150 300" fill="none" stroke="#67E8F9" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        
+        <rect x="50" y="300" width="200" height="80" rx="6" fill="#F0FDFF" stroke="#67E8F9" stroke-width="1.5"/>
+        <text x="150" y="330" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">子 Agent 1</text>
+        <text x="150" y="355" fill="#0891B2" font-size="9" text-anchor="middle">独立 session_id</text>
+        <text x="150" y="375" fill="#6B7280" font-size="8" text-anchor="middle">max_turns=20 · 受限工具集</text>
+
+        <!-- 子 Agent 2 -->
+        <path d="M 430 260 L 430 290 L 430 300" fill="none" stroke="#67E8F9" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        
+        <rect x="330" y="300" width="200" height="80" rx="6" fill="#F0FDFF" stroke="#67E8F9" stroke-width="1.5"/>
+        <text x="430" y="330" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">子 Agent 2</text>
+        <text x="430" y="355" fill="#0891B2" font-size="9" text-anchor="middle">独立 session_id</text>
+        <text x="430" y="375" fill="#6B7280" font-size="8" text-anchor="middle">max_turns=20 · 受限工具集</text>
+
+        <!-- 子 Agent 3 -->
+        <path d="M 500 260 L 500 280 L 710 280 L 710 300" fill="none" stroke="#67E8F9" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        
+        <rect x="610" y="300" width="200" height="80" rx="6" fill="#F0FDFF" stroke="#67E8F9" stroke-width="1.5"/>
+        <text x="710" y="330" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">子 Agent 3</text>
+        <text x="710" y="355" fill="#0891B2" font-size="9" text-anchor="middle">独立 session_id</text>
+        <text x="710" y="375" fill="#6B7280" font-size="8" text-anchor="middle">max_turns=20 · 受限工具集</text>
+
+        <!-- 箭头 down 到结果 -->
+        <line x1="150" y1="380" x2="150" y2="400" stroke="#67E8F9" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <line x1="430" y1="380" x2="430" y2="400" stroke="#67E8F9" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <line x1="710" y1="380" x2="710" y2="400" stroke="#67E8F9" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <!-- 结果 -->
+        <rect x="50" y="400" width="200" height="50" rx="6" fill="#F0FDF7" stroke="#6EE7B7" stroke-width="1.5"/>
+        <text x="150" y="425" fill="#1e293b" font-size="12" font-weight="600" text-anchor="middle">结果 A</text>
+        <text x="150" y="442" fill="#10B981" font-size="9" text-anchor="middle">完成</text>
+
+        <rect x="330" y="400" width="200" height="50" rx="6" fill="#F0FDF7" stroke="#6EE7B7" stroke-width="1.5"/>
+        <text x="430" y="425" fill="#1e293b" font-size="12" font-weight="600" text-anchor="middle">结果 B</text>
+        <text x="430" y="442" fill="#10B981" font-size="9" text-anchor="middle">完成</text>
+
+        <rect x="610" y="400" width="200" height="50" rx="6" fill="#F0FDF7" stroke="#6EE7B7" stroke-width="1.5"/>
+        <text x="710" y="425" fill="#1e293b" font-size="12" font-weight="600" text-anchor="middle">结果 C</text>
+        <text x="710" y="442" fill="#10B981" font-size="9" text-anchor="middle">完成</text>
+
+        <!-- 折线汇聚到父 Agent -->
+        <path d="M 150 450 L 150 470 L 710 470 L 710 450" fill="none" stroke="#6EE7B7" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="430" y="465" fill="#374151" font-size="9" text-anchor="middle">future.result() 等待所有结果</text>
+
+        <!-- 父 Agent 汇总 -->
+        <rect x="350" y="480" width="160" height="60" rx="6" fill="#FEF9C3" stroke="#FCD34D" stroke-width="2"/>
+        <text x="430" y="505" fill="#1e293b" font-size="13" font-weight="700" text-anchor="middle">父 Agent 汇总</text>
+        <text x="430" y="525" fill="#374151" font-size="9" text-anchor="middle">综合分析结果</text>
+
+        <!-- 右侧限制说明 -->
+        <rect x="840" y="300" width="140" height="120" rx="6" fill="#FFF8F5" stroke="#FDA4AF" stroke-width="1.5"/>
+        <text x="910" y="325" fill="#F43F5E" font-size="12" font-weight="700" text-anchor="middle">关键限制</text>
+        <text x="910" y="350" fill="#374151" font-size="9" text-anchor="middle">• 子Agent无父历史</text>
+        <text x="910" y="370" fill="#374151" font-size="9" text-anchor="middle">• 不能delegate_task</text>
+        <text x="910" y="390" fill="#374151" font-size="9" text-anchor="middle">• 最多2层嵌套</text>
+        <text x="910" y="410" fill="#F43F5E" font-size="9" text-anchor="middle">- 硬编码限制</text>
+      </svg>
+    </div>
+
+    <!-- 关键设计点 -->
+    <div class="diagram-title">
+      <span>设计</span>
+      <span>关键设计点</span>
+    </div>
+    <div class="cards" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot blue"></div>
+          <h3>上下文隔离</h3>
+        </div>
+        <ul>
+          <li>子 Agent 看不到父历史</li>
+          <li>只接收 context 参数</li>
+        </ul>
+        <div class="card-highlight blue-text">避免上下文污染</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>工具限制</h3>
+        </div>
+        <ul>
+          <li>子 Agent 工具集受限</li>
+          <li>不能调用 delegate_task</li>
+        </ul>
+        <div class="card-highlight amber-text">防止无限递归</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>深度限制</h3>
+        </div>
+        <ul>
+          <li>最多 2 层</li>
+          <li>父 Agent → 子 Agent</li>
+        </ul>
+        <div class="card-highlight emerald-text">不允许孙级</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot purple"></div>
+          <h3>独立会话</h3>
+        </div>
+        <ul>
+          <li>独立的 session_id</li>
+          <li>独立的 task_id</li>
+        </ul>
+        <div class="card-highlight purple-text">工具缓存隔离</div>
+      </div>
+    </div>
+
+  </main>
+</body>
+</html>

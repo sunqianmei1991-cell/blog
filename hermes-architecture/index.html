@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hermes Agent 架构深度拆解</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles-light.css">
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Hermes Agent</div>
+      <div class="sidebar-subtitle">架构深度拆解</div>
+    </div>
+    
+    <nav>
+      <div class="nav-section">
+        <div class="nav-title">快速导航</div>
+        <a href="index.html" class="nav-item active">
+          首页
+        </a>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-title">核心架构</div>
+        <a href="overview.html" class="nav-item">整体架构</a>
+        <a href="layer0-agent-loop.html" class="nav-item">
+          <span class="layer-num">L0</span> Agent Loop
+        </a>
+        <a href="layer1-tools.html" class="nav-item">
+          <span class="layer-num">L1</span> 工具系统
+        </a>
+        <a href="layer2-self-improve.html" class="nav-item">
+          <span class="layer-num">L2</span> Self-Improve
+        </a>
+        <a href="layer3-memory.html" class="nav-item">
+          <span class="layer-num">L3</span> 三层记忆
+        </a>
+        <a href="layer4-subagent.html" class="nav-item">
+          <span class="layer-num">L4</span> Subagent
+        </a>
+        <a href="layer5-security.html" class="nav-item">
+          <span class="layer-num">L5</span> 安全机制
+        </a>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-title">对比</div>
+        <a href="comparison.html" class="nav-item">与 OpenClaw 对比</a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="content-header">
+      <h1 class="content-title">Hermes Agent 架构</h1>
+      <p class="content-subtitle">三层记忆架构设计，从 Agent Loop 到安全机制的深度解析</p>
+    </div>
+
+    <div class="grid">
+      <a href="layer0-agent-loop.html" class="card">
+        <div class="card-header">
+          <div class="card-dot blue"></div>
+          <h3>Layer 0: Agent Loop</h3>
+        </div>
+        <ul>
+          <li>核心循环机制</li>
+          <li>LLM决策与工具执行</li>
+          <li>迭代次数检查</li>
+        </ul>
+      </a>
+
+      <a href="layer1-tools.html" class="card">
+        <div class="card-header">
+          <div class="card-dot cyan"></div>
+          <h3>Layer 1: 工具系统</h3>
+        </div>
+        <ul>
+          <li>72个内置工具</li>
+          <li>注册表驱动设计</li>
+          <li>MCP协议扩展</li>
+        </ul>
+      </a>
+
+      <a href="layer2-self-improve.html" class="card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>Layer 2: Self-Improve</h3>
+        </div>
+        <ul>
+          <li>自我改进机制</li>
+          <li>自动化技能管理</li>
+          <li>探索与注册</li>
+        </ul>
+      </a>
+
+      <a href="layer3-memory.html" class="card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>Layer 3: 三层记忆</h3>
+        </div>
+        <ul>
+          <li>上下文压缩</li>
+          <li>持久化记忆快照</li>
+          <li>SQLite归档</li>
+        </ul>
+      </a>
+
+      <a href="layer4-subagent.html" class="card">
+        <div class="card-header">
+          <div class="card-dot purple"></div>
+          <h3>Layer 4: Subagent</h3>
+        </div>
+        <ul>
+          <li>并行子代理</li>
+          <li>ThreadPoolExecutor</li>
+          <li>任务委派模式</li>
+        </ul>
+      </a>
+
+      <a href="layer5-security.html" class="card">
+        <div class="card-header">
+          <div class="card-dot rose"></div>
+          <h3>Layer 5: 安全机制</h3>
+        </div>
+        <ul>
+          <li>五层安全防护</li>
+          <li>沙箱隔离</li>
+          <li>命令过滤</li>
+        </ul>
+      </a>
+    </div>
+  </main>
+</body>
+</html>
